@@ -1,81 +1,108 @@
 package gui;
 
-import entidades.Heroi;
-import entidades.Personagem;
-import itens.Item;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import entidades.Heroi;
+import entidades.Personagem;
 
 public class PainelCombate extends JPanel {
     private static final long serialVersionUID = 1L;
-
-    private JanelaPrincipal janela;
+    
     private Heroi heroi;
     private Personagem inimigo;
-
-    // Componentes visuais
-    private JLabel lblHeroiStatus;
-    private JLabel lblInimigoStatus;
+    
+    private JLabel lblStatusHeroi;
+    private JLabel lblStatusInimigo;
     private JTextArea logBatalha;
-    private JButton btnAtacar;
+    private JButton btnAtaque;
     private JButton btnMagia;
     private JButton btnItem;
-
-    public PainelCombate(JanelaPrincipal janela, Heroi heroi, Personagem inimigo) {
-        this.janela = janela;
+    
+    public PainelCombate(Heroi heroi, Personagem inimigo) {
         this.heroi = heroi;
         this.inimigo = inimigo;
 
-        setLayout(new BorderLayout());
+        // Define o layout principal deste painel como BorderLayout
+        this.setLayout(new BorderLayout());
 
-        // 1. Topo: Informações de Vida e Mana (JLabels)
-        JPanel painelStatus = new JPanel(new GridLayout(1, 2));
-        lblHeroiStatus = new JLabel(heroi.getNome() + " | HP: " + heroi.getVida() + " | MP: " + heroi.getMana());
-        lblInimigoStatus = new JLabel(inimigo.getNome() + " | HP: " + inimigo.getVida());
-        painelStatus.add(lblHeroiStatus);
-        painelStatus.add(lblInimigoStatus);
-        add(painelStatus, BorderLayout.NORTH);
-
-        // 2. Centro: Log de texto dos acontecimentos
+       
+        lblStatusHeroi = new JLabel(heroi.getNome() + " - HP: " + heroi.getVida() + " | MP: " + heroi.getMana());
+        lblStatusInimigo = new JLabel(inimigo.getNome() + " - HP: " + inimigo.getVida());
+        
+        JPanel painelSuperior = new JPanel(new GridLayout(1, 2));
+        painelSuperior.add(lblStatusHeroi);
+        painelSuperior.add(lblStatusInimigo);
+        this.add(painelSuperior, BorderLayout.NORTH);
+        
         logBatalha = new JTextArea();
         logBatalha.setEditable(false);
-        add(new JScrollPane(logBatalha), BorderLayout.CENTER);
-
-        // 3. Base: Botões de Ação
-        JPanel painelBotoes = new JPanel(new GridLayout(1, 3));
-        btnAtacar = new JButton("Golpe de Espada");
+        logBatalha.append("=== A BATALHA COMEÇOU ===\n");
+        JScrollPane scroll = new JScrollPane(logBatalha);
+        this.add(scroll, BorderLayout.CENTER);
+        
+        btnAtaque = new JButton("Golpe de Espada");
         btnMagia = new JButton("Bola de Fogo (7 MP)");
-        btnItem = new JButton("Usar Poção");
-
-        painelBotoes.add(btnAtacar);
+        btnItem = new JButton("Abrir Mochila");
+        
+        JPanel painelBotoes = new JPanel(new GridLayout(1, 3));
+        painelBotoes.add(btnAtaque);
         painelBotoes.add(btnMagia);
         painelBotoes.add(btnItem);
-        add(painelBotoes, BorderLayout.SOUTH);
-
-        // Configura os cliques dos botões
-        configurarEventos();
-    }
-
-    private void configurarEventos() {
-        btnAtacar.addActionListener(e -> {
-            heroi.atacar(inimigo);
-            atualizarTela();
-            turnoInimigo();
+        this.add(painelBotoes, BorderLayout.SOUTH);
+        
+     // Botão 1: Golpe de Espada
+        btnAtaque.addActionListener(e -> {
+            logBatalha.append("\n" + heroi.getNome() + " desferiu um Golpe de Espada!\n");
+            heroi.atacar(inimigo, 1);
+            atualizarStatus();
+            processarTurnoInimigo();
         });
 
-        // Configuração dos outros botões...
+        // Botão 2: Bola de Fogo
+        btnMagia.addActionListener(e -> {
+            if (heroi.getMana() >= 7) {
+                logBatalha.append("\n" + heroi.getNome() + " conjurou Bola de Fogo!\n");
+                heroi.atacar(inimigo, 2);
+                atualizarStatus();
+                processarTurnoInimigo();
+            } else {
+                logBatalha.append("\nMana insuficiente para conjurar Bola de Fogo!\n");
+            }
+        });
+        
     }
-
-    private void atualizarTela() {
-        lblHeroiStatus.setText(heroi.getNome() + " | HP: " + heroi.getVida() + " | MP: " + heroi.getMana());
-        lblInimigoStatus.setText(inimigo.getNome() + " | HP: " + inimigo.getVida());
+    
+    private void atualizarStatus() {
+    	    lblStatusHeroi.setText(heroi.getNome() + " - HP: " + heroi.getVida() + "/" + heroi.getVidaMaxima() + " | MP: " + heroi.getMana() + "/" + heroi.getManaMaxima());
+    	    lblStatusInimigo.setText(inimigo.getNome() + " - HP: " + inimigo.getVida() + "/" + inimigo.getVidaMaxima());
     }
-
-    private void turnoInimigo() {
+    
+    private void processarTurnoInimigo() {
         if (inimigo.estaVivo()) {
+            logBatalha.append("\n--- Turno de " + inimigo.getNome() + " ---\n");
             inimigo.atacar(heroi);
-            atualizarTela();
+            logBatalha.append(inimigo.getNome() + " atacou você!\n");
+            atualizarStatus();
+
+            if (!heroi.estaVivo()) {
+                logBatalha.append("\n=== VOCÊ FOI DERROTADO! ===\n");
+                desabilitarBotoes();
+            }
+        } else {
+            logBatalha.append("\n=== VITÓRIA! Você derrotou " + inimigo.getNome() + "! ===\n");
+            desabilitarBotoes();
         }
+    }
+
+    private void desabilitarBotoes() {
+        btnAtaque.setEnabled(false);
+        btnMagia.setEnabled(false);
+        btnItem.setEnabled(false);
     }
 }
