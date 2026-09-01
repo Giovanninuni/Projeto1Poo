@@ -31,6 +31,7 @@ public abstract class Personagem {
         this.vida = Math.min(this.vidaMaxima, this.vida + quantidade);
         System.out.printf("%s recuperou vida! (HP: %d/%d)%n", this.nome, this.vida, this.vidaMaxima);
     }
+    
 
     public boolean estaVivo() {
         return this.vida > 0;
@@ -52,4 +53,5 @@ public abstract class Personagem {
     public int getDefesa() { 
     	return defesa; 
     }
+    
 }

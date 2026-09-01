@@ -1,21 +1,24 @@
 package entidades;
 
 import java.util.Random;
+import itens.Inventario;
 
 public class Heroi extends Personagem {
    private int mana;
    private int manaMaxima;
+   private Inventario inventario;
    private Random random = new Random();
 
    public Heroi(String nome, int vidaMaxima, int ataqueBase, int defesa, int manaMaxima) {
       super(nome, vidaMaxima, ataqueBase, defesa);
       this.manaMaxima = manaMaxima;
       this.mana = manaMaxima;
+      this.inventario = new Inventario(5);
    }
    
    @Override
-   public void atacar(Personagem alvo) { // ainda nao entendi muito bem por que ter esse alem 
-	   golpeDeEspada(alvo);              // de evitar o erro de compilação
+   public void atacar(Personagem alvo) { 
+	   golpeDeEspada(alvo);              
    }
    
    public void atacar(Personagem alvo, int tipoAtaque){
@@ -64,5 +67,14 @@ public class Heroi extends Personagem {
 
    public int getManaMaxima() {
       return this.manaMaxima;
+   }
+   
+   public Inventario getInventario() {
+	   return this.inventario;
+   }
+   
+   public void recuperarMana(int quantidade) {
+       this.mana = Math.min(this.manaMaxima, this.mana + quantidade);
+       System.out.printf("%s recuperou mana! (HP: %d/%d)%n", this.getNome(), this.mana, this.manaMaxima);
    }
 }
