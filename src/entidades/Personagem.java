@@ -29,7 +29,7 @@ public abstract class Personagem {
 
     public void curar(int quantidade) {
         this.vida = Math.min(this.vidaMaxima, this.vida + quantidade);
-        System.out.printf("%s recuperou vida! (HP: %d/%d)%n", this.nome, this.vida, this.vidaMaxima);
+        System.out.printf("%n%s recuperou vida! (HP: %d/%d)%n", this.nome, this.vida, this.vidaMaxima);
     }
     
 

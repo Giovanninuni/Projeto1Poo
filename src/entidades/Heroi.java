@@ -2,6 +2,7 @@ package entidades;
 
 import java.util.Random;
 import itens.Inventario;
+import itens.Item;
 
 public class Heroi extends Personagem {
    private int mana;
@@ -58,7 +59,11 @@ public class Heroi extends Personagem {
          System.out.println("Mana insuficiente! Você tenta atacar com a espada no desespero...");
          this.golpeDeEspada(alvo);
       }
-
+   }
+   
+   public void recuperarMana(int quantidade) {
+       this.mana = Math.min(this.manaMaxima, this.mana + quantidade);
+       System.out.printf("%n%s recuperou mana! (HP: %d/%d)%n", this.getNome(), this.mana, this.manaMaxima);
    }
 
    public int getMana() {
@@ -73,8 +78,22 @@ public class Heroi extends Personagem {
 	   return this.inventario;
    }
    
-   public void recuperarMana(int quantidade) {
-       this.mana = Math.min(this.manaMaxima, this.mana + quantidade);
-       System.out.printf("%s recuperou mana! (HP: %d/%d)%n", this.getNome(), this.mana, this.manaMaxima);
+   public boolean usarItem(int indiceUsuario) {
+	   if(getInventario().estaVazio()) {
+		   System.out.println("Sua mochila esta vazia!");
+		   return false;
+   		}
+   	
+   	getInventario().listarItens();
+   	System.out.print("Escolha o número do item para usar: ");
+   	
+   	Item itemEscolhido = getInventario().consumirItem(indiceUsuario);
+   	if(itemEscolhido != null) {
+   		itemEscolhido.usar(this);
+   		return true;
+   	}
+   	return false;
    }
+   
+   
 }

@@ -1,9 +1,9 @@
 package entidades;
 
-public class Goblin extends Personagem{
+public class Goblin extends Monstro{
 	
 	public Goblin(String nome) {
-		super(nome, 50, 12, 2);
+		super(nome, 50, 12, 2, 8, 5);
 	}
 	
 	@Override

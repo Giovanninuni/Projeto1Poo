@@ -1,7 +1,6 @@
 package core;
 
 import entidades.Personagem;
-import itens.Item;
 import entidades.Heroi;
 import java.util.Scanner;
 
@@ -35,9 +34,9 @@ public class Combate {
         	System.out.print("Escolha o número do item para usar: ");
         	int indiceItem = scanner.nextInt();
         	
-        	Item itemEscolhido = heroi.getInventario().consumirItem(indiceItem);
-        	if(itemEscolhido != null) {
-        		itemEscolhido.usar(heroi);
+        	boolean usouComSucesso = heroi.usarItem(indiceItem);
+        	if(!usouComSucesso) {
+        		System.out.println("Você se atrapalhou e não usou nenhum item!");
         	}
         }
         else {

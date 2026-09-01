@@ -44,7 +44,7 @@ public class Inventario {
 			return this.itens.remove(indiceReal);
 		}
 		else {
-			System.out.println("Posição inválida!");
+			System.out.println("\nPosição inválida!");
 			return null;
 		}
 	}
