@@ -13,6 +13,6 @@ public class PocaoVida extends Item{
 	
 	@Override
 	public void usar(Heroi heroi) {
-		heroi.curar(quatidadeCura);
+		heroi.getVida().restaurar(quatidadeCura);
 	}
 }

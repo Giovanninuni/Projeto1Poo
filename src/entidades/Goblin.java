@@ -1,5 +1,9 @@
 package entidades;
 
+import atributos.Dano;
+import atributos.Dano.TipoDano;
+import habilidades.ResultadoAcao;
+
 public class Goblin extends Monstro{
 	
 	public Goblin(String nome) {
@@ -7,8 +11,11 @@ public class Goblin extends Monstro{
 	}
 	
 	@Override
-	public void atacar(Personagem alvo) {
-		System.out.printf("%s avança sorrateiramente com uma adaga enferrujada!%n", getNome());
-		alvo.receberDano(getAtaqueBase());
+	public ResultadoAcao atacar(Personagem alvo) {
+	    int ataque = getAtributos().getAtaque();
+	    Dano dano = new Dano(ataque, false, TipoDano.FISICO);
+	    int danoSofrido = alvo.receberDano(dano);
+	    
+	    return new ResultadoAcao(true, String.format("O %s atacou causando " + danoSofrido + " de dano !", getNome()));
 	}
 }

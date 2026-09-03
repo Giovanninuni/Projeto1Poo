@@ -13,6 +13,6 @@ public class PocaoMana extends Item {
 		
 		@Override
 		public void usar(Heroi heroi) {
-			heroi.recuperarMana(quatidadeMana);
+			heroi.getMana().restaurar(quatidadeMana);
 		}
 }
