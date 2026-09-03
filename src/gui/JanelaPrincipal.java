@@ -21,7 +21,7 @@ public class JanelaPrincipal extends JFrame {
         Heroi heroi = new Heroi("Arthur", 100, 18, 5, 30);
         Personagem esqueleto = new Esqueleto("Esqueleto Safado");
         heroi.getInventario().adicionarItem(new PocaoVida("Pocao Pequena", "Restaura 20Pts de Vida", 20));
-        heroi.getInventario().adicionarItem(new PocaoMana("Frasco de Mana", "Restaura 15Pts de Mana", 15));
+        heroi.getInventario().adicionarItem(new PocaoMana("Frasco de Mana", "Restaura 15Pts de Mana", 15));	
 
         // 1. Instanciamos o Controlador da batalha
         Combate combate = new Combate(heroi, esqueleto);
