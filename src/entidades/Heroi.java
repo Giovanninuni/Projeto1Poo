@@ -51,7 +51,7 @@ public class Heroi extends Personagem {
 	        itemEscolhido.usar(this); // Aplica a cura/mana
 	        
 	        // Retorna o sucesso e a mensagem para o JTextArea da tela imprimir
-	        return new ResultadoAcao(true, getNome() + " consumiu um item da mochila!");
+	        return new ResultadoAcao(true, getNome() + " consumiu um item da mochila!\n");
 	    }
 	    
 	    return new ResultadoAcao(false, "Item inválido selecionado!");

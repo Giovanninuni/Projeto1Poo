@@ -19,7 +19,7 @@ public class BolaDeFogo extends Habilidade{
 			Dano dano = new Dano(poder, false, TipoDano.MAGICO);
 			int danoSofrido = alvo.receberDano(dano);
 			
-			return new ResultadoAcao(true, String.format("%s conjurou Bola de Fogo em %s causando %d de dano mágico!", 
+			return new ResultadoAcao(true, String.format("%s conjurou Bola de Fogo em %s causando %d de dano mágico!%n", 
                     heroi.getNome(), alvo.getNome(), danoSofrido));
 			}
 			
