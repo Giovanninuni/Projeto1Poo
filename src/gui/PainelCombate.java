@@ -22,6 +22,11 @@ import habilidades.ResultadoAcao;
 public class PainelCombate extends JPanel {
     private static final long serialVersionUID = 1L;
     
+    final int originalSize = 32;
+    final int scale = 2;
+    final int tileSize = originalSize * scale; //64x64 tile
+    		
+    
     private Combate combate;
     private Heroi heroi;
     private Personagem inimigo;
@@ -42,8 +47,8 @@ public class PainelCombate extends JPanel {
     
     public PainelCombate(Combate combate) {
         this.combate = combate;
-        this.heroi = combate.getHeroi();
-        this.inimigo = combate.getInimigo();
+        this.heroi = combate.getHerois().get(0);
+        this.inimigo = combate.getInimigos().get(0);
 
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK); 
@@ -153,14 +158,14 @@ public class PainelCombate extends JPanel {
         // 3. EVENTOS DOS BOTÕES
         // ==========================================
         btnAtaque.addActionListener(e -> {
-            ResultadoAcao resultado = combate.processarAcaoHeroiHabilidade(0);
+            ResultadoAcao resultado = combate.processarAcaoHeroiHabilidade(0, 0, 0);
             logBatalha.append("\n> " + resultado.getMensagem());
             if (resultado.isSucesso() && combate.batalhaAtiva()) processarTurnoInimigo();
             verificarFimDeJogo();
         });
 
         btnMagia.addActionListener(e -> {
-            ResultadoAcao resultado = combate.processarAcaoHeroiHabilidade(1);
+        	ResultadoAcao resultado = combate.processarAcaoHeroiHabilidade(0, 1, 0);
             logBatalha.append("\n> " + resultado.getMensagem());
             if (resultado.isSucesso() && combate.batalhaAtiva()) processarTurnoInimigo();
             verificarFimDeJogo();
@@ -170,30 +175,31 @@ public class PainelCombate extends JPanel {
             // 1. Pede ao inventário a lista de itens formatada
             String[] opcoesMenu = heroi.getInventario().obterMenuDeItens();
             
-            // 2. Se o array voltou vazio, nem abre a tela, só avisa no log!
+            // 2. Se o array voltou vazio, avisa no log
             if (opcoesMenu.length == 0) {
                 logBatalha.append("\n> A sua mochila está completamente vazia!");
                 return; // Para a execução do botão aqui
             }
             
-            // 3. Mostra o pop-up com o Menu Dropdown!
+            // 3. Mostra o pop-up com o Menu Dropdown
             String escolhido = (String) JOptionPane.showInputDialog(
                     this,
                     "Escolha um item da mochila:",
                     "Abrir Mochila",
                     JOptionPane.PLAIN_MESSAGE,
                     null,
-                    opcoesMenu, // Aqui passamos o array com as opções
-                    opcoesMenu[0] // Aqui dizemos qual item vem selecionado por padrão
+                    opcoesMenu, 
+                    opcoesMenu[0] 
             );
             
-            // 4. Se o jogador escolheu um item e clicou em OK (não cancelou)
+            // 4. Se o jogador não cancelou a janela
             if (escolhido != null) {
-                // Truque: O texto escolhido é algo como "0 - Poção". 
-                // Vamos quebrar o texto no espaço vazio e pegar só o número "0" da frente!
-                int indice = Integer.parseInt(escolhido.split(" ")[0]);
+                // Quebra o texto (ex: "0 - Poção de Vida") e pega apenas o número 0
+                int indiceItem = Integer.parseInt(escolhido.split(" ")[0]);
                 
-                ResultadoAcao resultado = combate.processarAcaoHeroiItem(indice);
+                // AQUI ESTÁ A CORREÇÃO: Passamos Herói 0, Item escolhido
+                ResultadoAcao resultado = combate.processarAcaoHeroiItem(0, indiceItem);
+                
                 logBatalha.append("\n> " + resultado.getMensagem());
                 
                 if (resultado.isSucesso() && combate.batalhaAtiva()) {
@@ -249,7 +255,7 @@ public class PainelCombate extends JPanel {
     }
 
     private void processarTurnoInimigo() {
-        ResultadoAcao resultado = combate.processarTurnoInimigo();
+        ResultadoAcao resultado = combate.processarTurnoInimigos();
         logBatalha.append("\n  " + resultado.getMensagem());
     }
 

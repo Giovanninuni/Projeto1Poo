@@ -1,64 +1,108 @@
-package core;
+	package core;
 
 import entidades.Personagem;
 import entidades.Heroi;
 import habilidades.ResultadoAcao;
+import java.util.List;
 
 public class Combate {
-    private Heroi heroi;
-    private Personagem inimigo;
+    private List<Heroi> herois;
+    private List<Personagem> inimigos;
     
-    public Combate(Heroi heroi, Personagem inimigo) {
-        this.heroi = heroi;
-        this.inimigo = inimigo;
-    }
+    public Combate(List<Heroi> herois, List<Personagem> inimigos) {
+        this.herois = herois;
+        this.inimigos = inimigos;
+    }	
+    
+    
     
     // Método chamado pelo Swing quando o jogador clica no botão de Atacar/Magia
-    public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHabilidade) {
+    public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHeroi, int indiceHabilidade, int indiceAlvo) {
         if (!batalhaAtiva()) {
             return new ResultadoAcao(false, "A batalha já terminou!");
         }
-        // O herói age e devolvemos o texto do que aconteceu
-        return heroi.usarHabilidade(indiceHabilidade, inimigo);
+        
+        Heroi atacante = herois.get(indiceHeroi);
+        Personagem alvo = inimigos.get(indiceAlvo);
+        
+        if (!atacante.estaVivo()) return new ResultadoAcao(false, atacante.getNome() + " está desmaiado!");
+        if (!alvo.estaVivo()) return new ResultadoAcao(false, alvo.getNome() + " já está derrotado!");
+        
+        return atacante.usarHabilidade(indiceHabilidade, alvo);
     }
     
     // Método chamado pelo Swing quando o jogador clica para usar um Item da mochila
-    public ResultadoAcao processarAcaoHeroiItem(int indiceItem) {
+    public ResultadoAcao processarAcaoHeroiItem(int indiceHeroi, int indiceItem) {
         if (!batalhaAtiva()) {
             return new ResultadoAcao(false, "A batalha já terminou!");
         }
-        return heroi.usarItem(indiceItem);
+        return herois.get(indiceHeroi).usarItem(indiceItem);
     }
     
     // Método chamado logo após o herói agir com sucesso
-    public ResultadoAcao processarTurnoInimigo() {
-        if (inimigo.estaVivo()) {
-            return inimigo.atacar(heroi);
-        }
-        return new ResultadoAcao(false, inimigo.getNome() + " já está derrotado e não pode agir.");
+    public ResultadoAcao processarTurnoInimigos() {
+    	StringBuilder relatorioTurno = new StringBuilder();
+
+    	for(Personagem inimigo : inimigos) {
+    		if(inimigo.estaVivo() && timeHeroisVivo()) {
+    			
+    			// Por enquanto, o inimigo sempre ataca o primeiro herói vivo que encontrar
+                Heroi alvo = null;
+                for (Heroi h : herois) {
+                    if (h.estaVivo()) {
+                        alvo = h;
+                        break;
+                    }
+                }
+                ResultadoAcao acao = inimigo.atacar(alvo);
+                relatorioTurno.append(acao.getMensagem()).append("\n  ");
+    		}
+    	}
+    	return new ResultadoAcao(true, relatorioTurno.toString().trim());
     }
     
     // Verifica se os dois ainda estão vivos para continuar o combate
     public boolean batalhaAtiva() {
-        return heroi.estaVivo() && inimigo.estaVivo();
+        return 	timeHeroisVivo() && timeInimigosVivo();		
     }
     
     // Verifica quem foi o vencedor
     public String verificarVencedor() {
-        if (heroi.estaVivo() && !inimigo.estaVivo()) {
-            return "Vitória! Você derrotou o " + inimigo.getNome() + "!";
-        } else if (!heroi.estaVivo()) {
-            return "Derrota! Você tombou em batalha...";
+        if (timeHeroisVivo() && !timeInimigosVivo()) {
+        	if(inimigos.size() == 1) { // Se so tiver 1 heroi
+        		return "Vitória! Você derrotou o " + inimigos.get(0).getNome() + "!";
+        	}
+            return "Vitória! Você derrotou todos os inimigos!";
+        } else if (!timeHeroisVivo()) {
+        	if(herois.size() == 1) { // Se so tiver 1 inimigo
+        		return "Derrota! " + herois.get(0).getNome() + " tombou em batalha...";
+        	}
+            return "Derrota! Toda a sua equipe tombou em batalha...";
+            
         }
         return "A batalha ainda está acontecendo.";
     }
-
-    // Getters para a interface gráfica poder desenhar as barras de vida
-    public Heroi getHeroi() {
-        return heroi;
+    
+    public boolean timeHeroisVivo() {
+        for (Heroi h : herois) {
+            if (h.estaVivo()) return true;
+        }
+        return false;
+    }
+    
+    public boolean timeInimigosVivo() {
+        for (Personagem i : inimigos) {
+            if (i.estaVivo()) return true;
+        }
+        return false;
     }
 
-    public Personagem getInimigo() {
-        return inimigo;
+    // Getters para a interface gráfica poder desenhar as barras de vida
+    public List<Heroi> getHerois() {
+        return herois;
+    }
+
+    public List<Personagem> getInimigos() {
+        return inimigos;
     }
 }
