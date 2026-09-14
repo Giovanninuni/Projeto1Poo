@@ -1,35 +1,54 @@
 package gui;
 
-import javax.swing.JFrame;
-import core.Combate; 
-import entidades.Personagem;
-import itens.PocaoMana;
-import itens.PocaoVida;
-import entidades.Esqueleto;
 import entidades.Heroi;
+import entidades.Monstro;
+import core.Combate; 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.CardLayout;
+import java.util.ArrayList; 
+import java.util.List;
 
 public class JanelaPrincipal extends JFrame {
     
+    private CardLayout gerenciadorTelas;
+    private JPanel painelTelas;
+    
+    //Agora temos um ESQUADRÃO persistente
+    private List<Heroi> grupoHerois;
+
     public JanelaPrincipal() {
-    	
-        this.setTitle("Projeto Poo RPG");
-        this.setSize(800, 600);             
-        this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        this.setLocationRelativeTo(null);
-        
-        Heroi heroi = new Heroi("Arthur", 100, 18, 5, 30);
-        Personagem esqueleto = new Esqueleto("Esqueleto Safado");
-        heroi.getInventario().adicionarItem(new PocaoVida("Pocao Pequena", "Restaura 20Pts de Vida", 20));
-        heroi.getInventario().adicionarItem(new PocaoMana("Frasco de Mana", "Restaura 15Pts de Mana", 15));
+        super("RPG - A Vingança contra Vitor S.");
+        setSize(1024, 768);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-        // 1. Instanciamos o Controlador da batalha
-        Combate combate = new Combate(heroi, esqueleto);
+        // 2. Criando a Party estilo Final Fantasy
+        this.grupoHerois = new ArrayList<>();
+        this.grupoHerois.add(new Heroi("Arthur", 100, 15, 5, 50));
+        this.grupoHerois.add(new Heroi("Mago Merlin", 80, 5, 2, 120)); // Segundo membro!
 
-        // 2. Passamos o controlador para a View (Painel)
-        PainelCombate painelCombate = new PainelCombate(combate);
-        this.setContentPane(painelCombate);
+        this.gerenciadorTelas = new CardLayout();
+        this.painelTelas = new JPanel(this.gerenciadorTelas);
+        setContentPane(painelTelas);
         
-        this.setVisible(true); 
+        PainelMasmorra telaMasmorra = new PainelMasmorra(this);
+        this.painelTelas.add(telaMasmorra, "TELA_MASMORRA");
+        this.gerenciadorTelas.show(painelTelas, "TELA_MASMORRA");
+        telaMasmorra.requestFocusInWindow();
+    }
+
+    //O método recebe a gangue de inimigos inteira enviada pelo mapa
+    public void iniciarCombate(List<Monstro> grupoInimigos) {
+        // A classe Combate cruza a lista de heróis com a lista de inimigos
+        Combate combate = new Combate(this.grupoHerois, grupoInimigos);
+        PainelCombate telaCombate = new PainelCombate(combate);
+        
+        painelTelas.add(telaCombate, "TELA_COMBATE");
+        gerenciadorTelas.show(painelTelas, "TELA_COMBATE");
+    }
+
+    public void voltarMasmorra() {
+        gerenciadorTelas.show(painelTelas, "TELA_MASMORRA");
     }
 }
