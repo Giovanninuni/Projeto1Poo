@@ -14,7 +14,7 @@ public class Vida {
 	}
 	
 	public void restaurar(int quantidade) {
-		this.atual = Math.max(this.maxima, this.atual + quantidade);
+		this.atual = Math.min(this.maxima, this.atual + quantidade);
 	}
 	
 	public boolean estaZerado() {
