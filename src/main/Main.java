@@ -12,7 +12,7 @@ public class Main {
             
             // Instancia a janela principal que construímos.
             // (Como colocamos setVisible(true) no construtor dela, o jogo já vai abrir!)
-            new JanelaPrincipal();
+            new JanelaPrincipal().setVisible(true);
             
         });
         
