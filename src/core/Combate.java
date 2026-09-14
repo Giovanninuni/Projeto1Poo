@@ -1,64 +1,188 @@
 package core;
 
-import entidades.Personagem;
 import entidades.Heroi;
+import entidades.Monstro;
 import habilidades.ResultadoAcao;
+import java.util.List;
 
 public class Combate {
-    private Heroi heroi;
-    private Personagem inimigo;
     
-    public Combate(Heroi heroi, Personagem inimigo) {
-        this.heroi = heroi;
-        this.inimigo = inimigo;
+    private List<Heroi> herois;
+    private List<Monstro> monstros;
+    
+    private int indiceHeroiAtual = 0; 
+    private boolean combateAtivo = true; 
+
+    public Combate(List<Heroi> grupoHerois, List<Monstro> grupoMonstros) {
+        this.herois = grupoHerois;
+        this.monstros = grupoMonstros;
+        this.indiceHeroiAtual = 0;
+        this.combateAtivo = true;
     }
-    
-    // Método chamado pelo Swing quando o jogador clica no botão de Atacar/Magia
-    public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHabilidade) {
-        if (!batalhaAtiva()) {
-            return new ResultadoAcao(false, "A batalha já terminou!");
+
+    public void atacarAlvoSelecionado(int indiceMonstroClicado) {
+        if (!combateAtivo) return;
+
+        Heroi atacante = getHeroiAtual();
+        if (atacante == null) return; 
+
+        Monstro alvo = this.monstros.get(indiceMonstroClicado);
+        
+        if (!alvo.estaVivo()) {
+            System.out.println("Este monstro já foi derrotado! Escolha outro alvo.");
+            return; 
         }
-        // O herói age e devolvemos o texto do que aconteceu
-        return heroi.usarHabilidade(indiceHabilidade, inimigo);
-    }
-    
-    // Método chamado pelo Swing quando o jogador clica para usar um Item da mochila
-    public ResultadoAcao processarAcaoHeroiItem(int indiceItem) {
-        if (!batalhaAtiva()) {
-            return new ResultadoAcao(false, "A batalha já terminou!");
+        
+        // Delegação da lógica de dano encapsulada na classe dos personagens
+        atacante.atacar(alvo);
+        
+        if (verificarVitoria()) {
+            this.combateAtivo = false;
+            System.out.println("Vitória! Todos os monstros foram derrotados.");
+            return;
         }
-        return heroi.usarItem(indiceItem);
+        
+        avancarTurno();
     }
-    
-    // Método chamado logo após o herói agir com sucesso
-    public ResultadoAcao processarTurnoInimigo() {
-        if (inimigo.estaVivo()) {
-            return inimigo.atacar(heroi);
+
+    private void avancarTurno() {
+        if (verificarDerrota()) return; // Trava de segurança inicial
+
+        indiceHeroiAtual++;
+        
+        // Pula o turno de heróis que já não estão vivos
+        while (indiceHeroiAtual < herois.size() && !herois.get(indiceHeroiAtual).estaVivo()) {
+            indiceHeroiAtual++;
         }
-        return new ResultadoAcao(false, inimigo.getNome() + " já está derrotado e não pode agir.");
+        
+        if (indiceHeroiAtual >= herois.size()) {
+            turnoDosMonstros();
+            
+            if (verificarDerrota()) return; // Trava de segurança pós-ataque inimigo
+            
+            indiceHeroiAtual = 0;
+            while (indiceHeroiAtual < herois.size() && !herois.get(indiceHeroiAtual).estaVivo()) {
+                indiceHeroiAtual++;
+            }
+        }
     }
     
-    // Verifica se os dois ainda estão vivos para continuar o combate
+    private void turnoDosMonstros() {
+        if (!combateAtivo) return;
+
+        for (Monstro monstro : monstros) {
+            if (!monstro.estaVivo()) continue; 
+            
+            Heroi alvoSorteado = sortearHeroiVivo();
+            
+            if (alvoSorteado != null) {
+                // O monstro também utiliza o método padrão para causar dano
+                monstro.atacar(alvoSorteado);
+                System.out.println(monstro.getNome() + " atacou " + alvoSorteado.getNome());
+            }
+        }
+        
+        if (verificarDerrota()) {
+            this.combateAtivo = false;
+            System.out.println("Derrota! O esquadrão caiu em batalha.");
+        }
+    }
+
+    private Heroi sortearHeroiVivo() {
+        for (Heroi h : herois) {
+            if (h.estaVivo()) {
+                return h; 
+            }
+        }
+        return null; 
+    }
+
+    public boolean verificarVitoria() {
+        for (Monstro m : monstros) {
+            if (m.estaVivo()) return false; 
+        }
+        return true;
+    }
+
+    public boolean verificarDerrota() {
+        for (Heroi h : herois) {
+            if (h.estaVivo()) return false; 
+        }
+        return true;
+    }
+
+    public List<Heroi> getHerois() { return herois; }
+    public List<Monstro> getMonstros() { return monstros; }
+    
+    public Heroi getHeroiAtual() { 
+        // Impede que o sistema procure um índice inválido quando a party morre
+        if (indiceHeroiAtual >= herois.size()) return null;
+        return herois.get(indiceHeroiAtual); 
+    }
+    
+    public boolean isCombateAtivo() { return combateAtivo; }
+
+    // ==========================================
+    // --- MÉTODOS EXIGIDOS PELO PAINELCOMBATE ---
+    // ==========================================
+
     public boolean batalhaAtiva() {
-        return heroi.estaVivo() && inimigo.estaVivo();
+        return this.isCombateAtivo();
     }
-    
-    // Verifica quem foi o vencedor
+
     public String verificarVencedor() {
-        if (heroi.estaVivo() && !inimigo.estaVivo()) {
-            return "Vitória! Você derrotou o " + inimigo.getNome() + "!";
-        } else if (!heroi.estaVivo()) {
-            return "Derrota! Você tombou em batalha...";
+        if (verificarVitoria()) return "Vitória! Inimigos derrotados.";
+        if (verificarDerrota()) return "Derrota! A party foi aniquilada.";
+        return "Batalha em andamento...";
+    }
+
+    public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHeroi, int indiceHabilidade, int indiceAlvo) {
+        if (!isCombateAtivo()) return new ResultadoAcao(false, "A batalha já acabou.");
+        
+        Heroi atacante = this.herois.get(indiceHeroi);
+        Monstro alvo = this.monstros.get(indiceAlvo);
+        
+        if (!alvo.estaVivo()) { 
+            return new ResultadoAcao(false, "O alvo já está derrotado!");
         }
-        return "A batalha ainda está acontecendo.";
+
+        ResultadoAcao resultado = atacante.usarHabilidade(indiceHabilidade, alvo);
+        
+        if (verificarVitoria()) {
+            this.combateAtivo = false;
+        } else if (resultado.isSucesso()) {
+            avancarTurno(); 
+        }
+        
+        return resultado;
     }
 
-    // Getters para a interface gráfica poder desenhar as barras de vida
-    public Heroi getHeroi() {
-        return heroi;
+    public ResultadoAcao processarAcaoHeroiItem(int indiceHeroi, int indiceItem) {
+        if (!isCombateAtivo()) return new ResultadoAcao(false, "A batalha já acabou.");
+        
+        Heroi consumidor = this.herois.get(indiceHeroi);
+        ResultadoAcao resultado = consumidor.usarItem(indiceItem);
+        
+        if (resultado.isSucesso()) avancarTurno();
+        
+        return resultado;
     }
 
-    public Personagem getInimigo() {
-        return inimigo;
+    public ResultadoAcao processarTurnoInimigos() {
+        StringBuilder logInimigos = new StringBuilder();
+        
+        for (Monstro monstro : monstros) {
+            if (!monstro.estaVivo()) continue; 
+            
+            Heroi alvoSorteado = sortearHeroiVivo();
+            if (alvoSorteado != null) {
+                ResultadoAcao acao = monstro.atacar(alvoSorteado);
+                logInimigos.append(acao.getMensagem()).append("\n");
+            }
+        }
+        
+        if (verificarDerrota()) this.combateAtivo = false;
+        
+        return new ResultadoAcao(true, logInimigos.toString());
     }
 }
