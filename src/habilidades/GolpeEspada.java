@@ -20,7 +20,7 @@ public class GolpeEspada extends Habilidade {
 		
         String mensagem;
         if(dano.isCritico()) {
-			mensagem = String.format("ACERTO CRÍTICO! %s desfere um golpe devastador de espada!%n", usuario.getNome(), alvo.getNome(), danoSofrido);
+			mensagem = String.format("ACERTO CRÍTICO! %s desfere um golpe devastador de espada em %s, causando %d de dano.%n", usuario.getNome(), alvo.getNome(), danoSofrido);
 		}
         else {
         	mensagem = String.format("%s desferiu um golpe de espada em %s causando %d de dano.%n", usuario.getNome(), alvo.getNome(), danoSofrido);

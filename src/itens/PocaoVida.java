@@ -3,16 +3,16 @@ package itens;
 import entidades.Heroi;
 
 public class PocaoVida extends Item{
-	private int quatidadeCura;
+	private int quantidadeCura;
 	
 	public PocaoVida(String nome, String descricao, int quantidadeCura) {
 		super(nome, descricao);
-		this.quatidadeCura = quantidadeCura;
+		this.quantidadeCura = quantidadeCura;
 		
 	}
 	
 	@Override
 	public void usar(Heroi heroi) {
-		heroi.getVida().restaurar(quatidadeCura);
+		heroi.getVida().restaurar(quantidadeCura);
 	}
 }
