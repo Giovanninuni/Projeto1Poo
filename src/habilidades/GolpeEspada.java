@@ -11,7 +11,7 @@ public class GolpeEspada extends Habilidade {
 	}
 	
 	@Override
-	public ResultadoAcao executar(Personagem usuario, Personagem alvo) {
+	public ResultadoAcao usar(Personagem usuario, Personagem alvo) {
 		int ataqueBase = usuario.getAtributos().getAtaque();
 		
 		Dano dano = gerarDanoComCritico(ataqueBase, 25, TipoDano.FISICO);

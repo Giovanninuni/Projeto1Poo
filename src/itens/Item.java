@@ -1,8 +1,10 @@
 package itens;
 
-import entidades.Heroi;
+import entidades.Personagem;
+import acoes.Usavel;
+import habilidades.ResultadoAcao;
 
-public abstract class Item {
+public abstract class Item implements Usavel {
 	private String nome;
 	private String descricao;
 	
@@ -11,7 +13,7 @@ public abstract class Item {
 		this.descricao = descricao;
 	}
 	
-	public abstract void usar(Heroi heroi);
+	public abstract ResultadoAcao usar(Personagem usuario, Personagem alvo);
 	
 	public String getNome() {
 		return this.nome;	

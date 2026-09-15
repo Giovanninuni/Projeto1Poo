@@ -12,7 +12,7 @@ public class BolaDeFogo extends Habilidade{
 	}
 	
 	@Override
-	public ResultadoAcao executar(Personagem usuario, Personagem alvo) {
+	public ResultadoAcao usar(Personagem usuario, Personagem alvo) {
 		if(usuario instanceof Heroi heroi) { //checa e faz o cast para heroi
 			if (heroi.getMana().gastar(getCustoMana())) {	
 			int poder = usuario.getAtributos().getAtaque() + 10;

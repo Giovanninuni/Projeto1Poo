@@ -72,6 +72,8 @@ public class PainelMasmorra extends JPanel implements KeyListener {
             }
         }
     }
+    
+    // Metodos abaixo da classe keyListener
 
     @Override
     public void keyPressed(KeyEvent e) {

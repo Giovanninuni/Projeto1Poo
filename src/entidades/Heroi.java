@@ -34,7 +34,7 @@ public class Heroi extends Personagem {
    public ResultadoAcao usarHabilidade(int indice, Personagem alvo) {
        if (indice >= 0 && indice < this.habilidades.size()) {
            Habilidade habilidade = this.habilidades.get(indice);
-           return habilidade.executar(this, alvo);
+           return habilidade.usar(this, alvo);
        }
        return new ResultadoAcao(false, "Habilidade inválida ou não encontrada!");
    }
@@ -47,11 +47,11 @@ public class Heroi extends Personagem {
 	    // O herói tenta pegar o item no índice que a interface gráfica (Swing) mandou
 	    Item itemEscolhido = this.inventario.consumirItem(indiceItem);
 	    
-	    if(itemEscolhido != null) {
-	        itemEscolhido.usar(this); // Aplica a cura/mana
+	    if(itemEscolhido != null) { 
+	    	
+	        ResultadoAcao resultado = itemEscolhido.usar(this, this);
+	        return resultado;
 	        
-	        // Retorna o sucesso e a mensagem para o JTextArea da tela imprimir
-	        return new ResultadoAcao(true, getNome() + " consumiu um item da mochila!\n");
 	    }
 	    
 	    return new ResultadoAcao(false, "Item inválido selecionado!");

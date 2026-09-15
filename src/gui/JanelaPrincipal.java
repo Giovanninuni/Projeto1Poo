@@ -2,11 +2,13 @@ package gui;
 
 import entidades.Heroi;
 import entidades.Monstro;
-import core.Combate; 
+import core.Combate;
+import itens.PocaoMana;
+import itens.PocaoVida;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
-import java.util.ArrayList; 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JanelaPrincipal extends JFrame {
@@ -24,9 +26,21 @@ public class JanelaPrincipal extends JFrame {
         setLocationRelativeTo(null);
 
         // 2. Criando a Party estilo Final Fantasy
+        Heroi arthur = new Heroi("Arthur", 100, 15, 5, 50);
+        Heroi merlin = new Heroi("Mago Merlin", 80, 5, 2, 120);
+
+        // Cada herói começa com poções básicas na mochila
+        arthur.getInventario().adicionarItem(new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30));
+        arthur.getInventario().adicionarItem(new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30));
+        arthur.getInventario().adicionarItem(new PocaoMana("Poção de Mana", "Restaura 20 de mana", 20));
+
+        merlin.getInventario().adicionarItem(new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30));
+        merlin.getInventario().adicionarItem(new PocaoMana("Poção de Mana", "Restaura 20 de mana", 20));
+        merlin.getInventario().adicionarItem(new PocaoMana("Poção de Mana", "Restaura 20 de mana", 20));
+
         this.grupoHerois = new ArrayList<>();
-        this.grupoHerois.add(new Heroi("Arthur", 100, 15, 5, 50));
-        this.grupoHerois.add(new Heroi("Mago Merlin", 80, 5, 2, 120)); // Segundo membro!
+        this.grupoHerois.add(arthur);
+        this.grupoHerois.add(merlin); // Segundo membro!
 
         this.gerenciadorTelas = new CardLayout();
         this.painelTelas = new JPanel(this.gerenciadorTelas);
