@@ -28,6 +28,7 @@ public class Combate {
     // agiram na rodada, ele mesmo aciona o turno dos monstros e devolve o
     // log dessas ações para quem chamou (a GUI só exibe o texto, não decide
     // quando os monstros atacam).
+    
     private String avancarTurno() {
         if (verificarDerrota()) return "";
 
