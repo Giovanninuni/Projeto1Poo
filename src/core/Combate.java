@@ -3,7 +3,9 @@ package core;
 import entidades.Heroi;
 import entidades.Monstro;
 import habilidades.ResultadoAcao;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Combate {
 
@@ -12,6 +14,7 @@ public class Combate {
 
     private int indiceHeroiAtual = 0;
     private boolean combateAtivo = true;
+    private final Random sorteador = new Random();
 
     public Combate(List<Heroi> grupoHerois, List<Monstro> grupoMonstros) {
         this.herois = grupoHerois;
@@ -28,7 +31,6 @@ public class Combate {
     // agiram na rodada, ele mesmo aciona o turno dos monstros e devolve o
     // log dessas ações para quem chamou (a GUI só exibe o texto, não decide
     // quando os monstros atacam).
-    
     private String avancarTurno() {
         if (verificarDerrota()) return "";
 
@@ -78,12 +80,19 @@ public class Combate {
     }
 
     private Heroi sortearHeroiVivo() {
+        List<Heroi> vivos = new ArrayList<>();
         for (Heroi h : herois) {
             if (h.estaVivo()) {
-                return h;
+                vivos.add(h);
             }
         }
-        return null;
+
+        if (vivos.isEmpty()) {
+            return null;
+        }
+
+        int indiceAleatorio = sorteador.nextInt(vivos.size());
+        return vivos.get(indiceAleatorio);
     }
 
     public boolean verificarVitoria() {
