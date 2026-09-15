@@ -5,75 +5,70 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList; // Novas importações
 import java.util.List;
+
 import entidades.Monstro;
-import entidades.Goblin;
-import entidades.Esqueleto;
+import mundo.Masmorra;
 
 public class PainelMasmorra extends JPanel implements KeyListener {
-    
+
     private JanelaPrincipal janela;
-    
-    private int heroiX = 5; 
-    private int heroiY = 5;
-    
-    // 1. Coordenadas do Inimigo Invisível
-    private int goblinX = 10; 
-    private int goblinY = 5;
-    
-    // 2. Flag de controle
-    private boolean goblinDerrotado = false; 
-    
+    private Masmorra masmorra;
+
     private final int TAMANHO_CELULA = 50;
 
     public PainelMasmorra(JanelaPrincipal janela) {
         this.janela = janela;
+        this.masmorra = new Masmorra(20, 15);
         setBackground(Color.DARK_GRAY);
-        setFocusable(true); 
+        setFocusable(true);
         addKeyListener(this);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
-        // Pinta o herói (Azul)
+
+        // Pinta o herói (Azul) na posição informada pelo modelo
         g.setColor(Color.BLUE);
-        g.fillRect(heroiX * TAMANHO_CELULA, heroiY * TAMANHO_CELULA, TAMANHO_CELULA, TAMANHO_CELULA);
-        
-        // Pinta o Goblin (Vermelho) apenas se ele ainda estiver vivo
-        if (!goblinDerrotado) {
-            g.setColor(Color.RED);
-            g.fillRect(goblinX * TAMANHO_CELULA, goblinY * TAMANHO_CELULA, TAMANHO_CELULA, TAMANHO_CELULA);
+        g.fillRect(masmorra.getHeroiX() * TAMANHO_CELULA, masmorra.getHeroiY() * TAMANHO_CELULA, TAMANHO_CELULA, TAMANHO_CELULA);
+
+        // Pinta cada encontro (Vermelho) que ainda não foi derrotado
+        g.setColor(Color.RED);
+        for (Masmorra.Encontro encontro : masmorra.getEncontros()) {
+            if (!encontro.isDerrotado()) {
+                g.fillRect(encontro.getX() * TAMANHO_CELULA, encontro.getY() * TAMANHO_CELULA, TAMANHO_CELULA, TAMANHO_CELULA);
+            }
         }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         int tecla = e.getKeyCode();
-        
-        if (tecla == KeyEvent.VK_W || tecla == KeyEvent.VK_UP) heroiY--;
-        if (tecla == KeyEvent.VK_S || tecla == KeyEvent.VK_DOWN) heroiY++;
-        if (tecla == KeyEvent.VK_A || tecla == KeyEvent.VK_LEFT) heroiX--;
-        if (tecla == KeyEvent.VK_D || tecla == KeyEvent.VK_RIGHT) heroiX++;
-        
-        // 3. Sistema de Colisão (O Gatilho)
-        if (heroiX == goblinX && heroiY == goblinY && !goblinDerrotado) {
-            
-            // Instancia a lista temporária exigida pela JanelaPrincipal
-            List<Monstro> inimigos = new ArrayList<>();
-            inimigos.add(new Goblin("Vitor Santos"));
-            inimigos.add(new Esqueleto("Vitor Santos 2"));
-            
-            // Marca como derrotado para não lutar novamente ao pisar aqui
-            goblinDerrotado = true;
-            
+
+        int dx = 0;
+        int dy = 0;
+        if (tecla == KeyEvent.VK_W || tecla == KeyEvent.VK_UP) dy = -1;
+        if (tecla == KeyEvent.VK_S || tecla == KeyEvent.VK_DOWN) dy = 1;
+        if (tecla == KeyEvent.VK_A || tecla == KeyEvent.VK_LEFT) dx = -1;
+        if (tecla == KeyEvent.VK_D || tecla == KeyEvent.VK_RIGHT) dx = 1;
+
+        if (dx != 0 || dy != 0) {
+            masmorra.mover(dx, dy);
+        }
+
+        // Sistema de Colisão: pergunta ao modelo se há um encontro aqui
+        Masmorra.Encontro encontro = masmorra.getEncontroNaPosicaoDoHeroi();
+        if (encontro != null) {
+            encontro.marcarDerrotado();
+
+            List<Monstro> inimigos = encontro.getInimigos();
+
             // Dispara a troca de telas!
             janela.iniciarCombate(inimigos);
         }
-        
-        repaint(); 
+
+        repaint();
     }
 
     @Override
