@@ -3,23 +3,26 @@ package gui;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.List;
 
 import entidades.Monstro;
+import mundo.Mapa;
 import mundo.Masmorra;
+import mundo.TipoTile;
 
 public class PainelMasmorra extends JPanel implements KeyListener {
 
     private JanelaPrincipal janela;
     private Masmorra masmorra;
 
-    private final int TAMANHO_CELULA = 50;
+    private final int TAMANHO_TILE = 32;
 
     public PainelMasmorra(JanelaPrincipal janela) {
         this.janela = janela;
-        this.masmorra = new Masmorra(20, 15);
+        this.masmorra = new Masmorra();
         setBackground(Color.DARK_GRAY);
         setFocusable(true);
         addKeyListener(this);
@@ -29,15 +32,43 @@ public class PainelMasmorra extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        desenharMapa(g);
+
         // Pinta o herói (Azul) na posição informada pelo modelo
         g.setColor(Color.BLUE);
-        g.fillRect(masmorra.getHeroiX() * TAMANHO_CELULA, masmorra.getHeroiY() * TAMANHO_CELULA, TAMANHO_CELULA, TAMANHO_CELULA);
+        g.fillRect(masmorra.getHeroiX() * TAMANHO_TILE, masmorra.getHeroiY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
 
         // Pinta cada encontro (Vermelho) que ainda não foi derrotado
         g.setColor(Color.RED);
         for (Masmorra.Encontro encontro : masmorra.getEncontros()) {
             if (!encontro.isDerrotado()) {
-                g.fillRect(encontro.getX() * TAMANHO_CELULA, encontro.getY() * TAMANHO_CELULA, TAMANHO_CELULA, TAMANHO_CELULA);
+                g.fillRect(encontro.getX() * TAMANHO_TILE, encontro.getY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
+            }
+        }
+    }
+
+    /**
+     * Desenha cada tile do mapa. Se o sprite ainda não existir em
+     * assets/sprites/tiles/, cai pro retângulo da cor placeholder do
+     * TipoTile — assim o jogo roda normalmente antes dos sprites prontos.
+     */
+    private void desenharMapa(Graphics g) {
+        Mapa mapa = masmorra.getMapa();
+
+        for (int y = 0; y < mapa.getAltura(); y++) {
+            for (int x = 0; x < mapa.getLargura(); x++) {
+                TipoTile tipo = mapa.getTile(x, y);
+                BufferedImage sprite = CarregadorSprites.carregar(tipo.getArquivoSprite());
+
+                int px = x * TAMANHO_TILE;
+                int py = y * TAMANHO_TILE;
+
+                if (sprite != null) {
+                    g.drawImage(sprite, px, py, TAMANHO_TILE, TAMANHO_TILE, null);
+                } else {
+                    g.setColor(tipo.getCorPlaceholder());
+                    g.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+                }
             }
         }
     }

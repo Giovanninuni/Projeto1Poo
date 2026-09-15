@@ -41,15 +41,17 @@ public class Masmorra {
         public void marcarDerrotado() { this.derrotado = true; }
     }
 
-    private final int largura;
-    private final int altura;
+    private final Mapa mapa;
     private int heroiX;
     private int heroiY;
     private final List<Encontro> encontros;
 
-    public Masmorra(int largura, int altura) {
-        this.largura = largura;
-        this.altura = altura;
+    public Masmorra() {
+        this(Mapa.criarMapaTeste());
+    }
+
+    public Masmorra(Mapa mapa) {
+        this.mapa = mapa;
         this.heroiX = 5;
         this.heroiY = 5;
         this.encontros = new ArrayList<>();
@@ -64,14 +66,14 @@ public class Masmorra {
 
     /**
      * Tenta mover o herói por (dx, dy). Retorna false e não move nada se o
-     * destino ficar fora dos limites do mapa (antes disso não existia
-     * nenhum limite: dava para andar para fora da tela).
+     * destino for fora do mapa ou for um tile que bloqueia passagem
+     * (ex: parede) — quem decide isso é o Mapa, não a Masmorra.
      */
     public boolean mover(int dx, int dy) {
         int novoX = heroiX + dx;
         int novoY = heroiY + dy;
 
-        if (novoX < 0 || novoX >= largura || novoY < 0 || novoY >= altura) {
+        if (!mapa.podeAndar(novoX, novoY)) {
             return false;
         }
 
@@ -95,7 +97,6 @@ public class Masmorra {
 
     public int getHeroiX() { return heroiX; }
     public int getHeroiY() { return heroiY; }
-    public int getLargura() { return largura; }
-    public int getAltura() { return altura; }
+    public Mapa getMapa() { return mapa; }
     public List<Encontro> getEncontros() { return encontros; }
 }
