@@ -9,10 +9,13 @@ import java.awt.event.KeyListener;
 import java.util.List;
 
 import entidades.Monstro;
+import habilidades.ResultadoAcao;
+import javax.swing.JOptionPane;
 import mundo.CarregadorMapa;
 import mundo.Mapa;
 import mundo.Masmorra;
 import mundo.TipoTile;
+import objetos.Bau;
 
 public class PainelMasmorra extends JPanel implements KeyListener {
 
@@ -49,6 +52,17 @@ public class PainelMasmorra extends JPanel implements KeyListener {
                 g.fillRect(encontro.getX() * TAMANHO_TILE, encontro.getY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
             }
         }
+        
+        for (Bau i: masmorra.getBaus()) {
+            if (i.isFechado()) {
+                g.setColor(Color.YELLOW);
+                g.fillRect(i.getX() * TAMANHO_TILE, i.getY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
+            }else{
+                g.setColor(Color.ORANGE);
+                g.fillRect(i.getX() * TAMANHO_TILE, i.getY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
+            }
+        }
+        
     }
 
     /**
@@ -108,6 +122,16 @@ public class PainelMasmorra extends JPanel implements KeyListener {
 
             // Dispara a troca de telas!
             janela.iniciarCombate(inimigos);
+        }
+        
+        if (tecla == KeyEvent.VK_E){
+            Bau bauAdjacente = masmorra.getBauAdjacenteAoHeroi();
+            
+            if(bauAdjacente != null){
+                ResultadoAcao abriuBau = bauAdjacente.abrir(janela.getHerois().get(0));
+                
+                JOptionPane.showMessageDialog(janela, abriuBau.getMensagem());
+            }
         }
 
         repaint();

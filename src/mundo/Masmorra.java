@@ -6,6 +6,8 @@ import java.util.List;
 import entidades.Esqueleto;
 import entidades.Goblin;
 import entidades.Monstro;
+import itens.*;
+import objetos.Bau;
 
 /**
  * Modelo do mapa da masmorra: guarda a posição do herói, os limites do
@@ -40,11 +42,14 @@ public class Masmorra {
         public boolean isDerrotado() { return derrotado; }
         public void marcarDerrotado() { this.derrotado = true; }
     }
+    
 
     private final Mapa mapa;
     private int heroiX;
     private int heroiY;
     private final List<Encontro> encontros;
+    private final List<Bau> baus;
+    private List<Item> itensDisponiveis;
 
     public Masmorra() {
         this(Mapa.criarMapaTeste());
@@ -55,6 +60,8 @@ public class Masmorra {
         this.heroiX = 5;
         this.heroiY = 5;
         this.encontros = new ArrayList<>();
+        
+        
 
         // Encontro de teste que já existia no protótipo original,
         // só que agora vive aqui, e não dentro da classe de GUI.
@@ -62,6 +69,13 @@ public class Masmorra {
         grupoTeste.add(new Goblin("Vitor Santos"));
         grupoTeste.add(new Esqueleto("Vitor Santos 2"));
         this.encontros.add(new Encontro(10, 5, grupoTeste));
+        
+        this.baus = new ArrayList<>();
+        this.itensDisponiveis = new ArrayList<>();
+        this.itensDisponiveis.add(new PocaoMana("Poção de mana", "Restaura 30 de mana", 30));
+        this.itensDisponiveis.add(new PocaoVida("Poção de cura", "Restaura 30 de vida", 30));
+        this.baus.add(new Bau(17, 6, itensDisponiveis));
+        this.baus.add(new Bau(10, 10, itensDisponiveis));
     }
 
     /**
@@ -81,6 +95,7 @@ public class Masmorra {
         this.heroiY = novoY;
         return true;
     }
+    
 
     /**
      * Retorna o encontro (ainda não derrotado) na posição atual do herói,
@@ -94,9 +109,20 @@ public class Masmorra {
         }
         return null;
     }
+    
+    public Bau getBauAdjacenteAoHeroi(){
+        for(Bau i: baus){
+            if(Math.abs(i.getX() - heroiX) + Math.abs(i.getY() - heroiY) == 1){
+                return i;
+            }
+        }
+        return null;
+    }
 
     public int getHeroiX() { return heroiX; }
     public int getHeroiY() { return heroiY; }
     public Mapa getMapa() { return mapa; }
     public List<Encontro> getEncontros() { return encontros; }
+    
+    public List<Bau> getBaus() { return baus; }
 }

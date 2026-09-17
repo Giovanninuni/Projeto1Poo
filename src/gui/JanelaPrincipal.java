@@ -65,4 +65,8 @@ public class JanelaPrincipal extends JFrame {
     public void voltarMasmorra() {
         gerenciadorTelas.show(painelTelas, "TELA_MASMORRA");
     }
+    
+    public List<Heroi> getHerois(){
+        return this.grupoHerois;
+    }
 }
