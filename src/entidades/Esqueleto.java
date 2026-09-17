@@ -11,6 +11,7 @@ public class Esqueleto extends Monstro{
 	}
 	
 	// Tipo perfurante ignora defesa
+        //teste de commit
 	
 	@Override
 	public ResultadoAcao atacar(Personagem alvo) {
