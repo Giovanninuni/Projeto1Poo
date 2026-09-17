@@ -9,6 +9,7 @@ import java.awt.event.KeyListener;
 import java.util.List;
 
 import entidades.Monstro;
+import mundo.CarregadorMapa;
 import mundo.Mapa;
 import mundo.Masmorra;
 import mundo.TipoTile;
@@ -20,9 +21,12 @@ public class PainelMasmorra extends JPanel implements KeyListener {
 
     private final int TAMANHO_TILE = 32;
 
+    private static final String FOLHA_MODICUS = "tiles/modicus.png";
+    private static final int MODICUS_COLUNAS = 4;
+
     public PainelMasmorra(JanelaPrincipal janela) {
         this.janela = janela;
-        this.masmorra = new Masmorra();
+        this.masmorra = new Masmorra(CarregadorMapa.carregarDeTmx("mapa1.tmx"));
         setBackground(Color.DARK_GRAY);
         setFocusable(true);
         addKeyListener(this);
@@ -57,16 +61,21 @@ public class PainelMasmorra extends JPanel implements KeyListener {
 
         for (int y = 0; y < mapa.getAltura(); y++) {
             for (int x = 0; x < mapa.getLargura(); x++) {
-                TipoTile tipo = mapa.getTile(x, y);
-                BufferedImage sprite = CarregadorSprites.carregar(tipo.getArquivoSprite());
-
                 int px = x * TAMANHO_TILE;
                 int py = y * TAMANHO_TILE;
+                int idVisual = mapa.getIdVisual(x, y);
+
+                // Se a célula tem um tile específico de uma folha de sprites
+                // (ex: veio de um mapa do Tiled), desenha esse recorte. Senão,
+                // cai pro sprite único por TipoTile (ou a cor placeholder).
+                BufferedImage sprite = (idVisual >= 0)
+                        ? CarregadorSprites.recortarTile(FOLHA_MODICUS, idVisual, MODICUS_COLUNAS, TAMANHO_TILE)
+                        : CarregadorSprites.carregar(mapa.getTile(x, y).getArquivoSprite());
 
                 if (sprite != null) {
                     g.drawImage(sprite, px, py, TAMANHO_TILE, TAMANHO_TILE, null);
                 } else {
-                    g.setColor(tipo.getCorPlaceholder());
+                    g.setColor(mapa.getTile(x, y).getCorPlaceholder());
                     g.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
                 }
             }

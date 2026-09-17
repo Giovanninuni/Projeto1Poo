@@ -11,13 +11,34 @@ package mundo;
 public class Mapa {
 
     private final TipoTile[][] tiles;
+    private final int[][] idsVisuais;
     private final int largura;
     private final int altura;
 
     public Mapa(int[][] codigos) {
+        this(codigos, semIdsVisuais(codigos.length, codigos[0].length));
+    }
+
+    private static int[][] semIdsVisuais(int altura, int largura) {
+        int[][] idsVisuais = new int[altura][largura];
+        for (int[] linha : idsVisuais) {
+            java.util.Arrays.fill(linha, -1);
+        }
+        return idsVisuais;
+    }
+
+    /**
+     * idsVisuais guarda, por célula, o índice do tile dentro de uma folha
+     * de sprites externa (ex: um tileset feito no Tiled) — usado só pra
+     * desenhar o pedaço certo da imagem. -1 quer dizer "sem sprite
+     * específico pra essa célula", e quem desenha cai de volta pro
+     * placeholder de cor do TipoTile.
+     */
+    public Mapa(int[][] codigos, int[][] idsVisuais) {
         this.altura = codigos.length;
         this.largura = codigos[0].length;
         this.tiles = new TipoTile[altura][largura];
+        this.idsVisuais = idsVisuais;
 
         for (int y = 0; y < altura; y++) {
             for (int x = 0; x < largura; x++) {
@@ -28,6 +49,10 @@ public class Mapa {
 
     public TipoTile getTile(int x, int y) {
         return tiles[y][x];
+    }
+
+    public int getIdVisual(int x, int y) {
+        return idsVisuais[y][x];
     }
 
     /**

@@ -35,6 +35,7 @@ public enum TipoTile {
         throw new IllegalArgumentException("Código de tile desconhecido: " + codigo);
     }
 
+    public int getCodigo() { return codigo; }
     public boolean isBloqueiaPassagem() { return bloqueiaPassagem; }
     public String getArquivoSprite() { return arquivoSprite; }
     public Color getCorPlaceholder() { return corPlaceholder; }

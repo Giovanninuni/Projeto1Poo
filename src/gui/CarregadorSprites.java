@@ -37,4 +37,21 @@ public class CarregadorSprites {
         CACHE.put(caminhoRelativo, imagem);
         return imagem;
     }
+
+    /**
+     * Recorta um tile específico de dentro de uma folha de sprites (ex: um
+     * tileset exportado do Tiled com vários tiles lado a lado). indice conta
+     * da esquerda pra direita, de cima pra baixo, começando em 0 — do jeito
+     * que o Tiled também numera. Retorna null se a folha ainda não existir.
+     */
+    public static BufferedImage recortarTile(String caminhoRelativoFolha, int indice, int colunas, int tamanhoTile) {
+        BufferedImage folha = carregar(caminhoRelativoFolha);
+        if (folha == null) {
+            return null;
+        }
+
+        int coluna = indice % colunas;
+        int linha = indice / colunas;
+        return folha.getSubimage(coluna * tamanhoTile, linha * tamanhoTile, tamanhoTile, tamanhoTile);
+    }
 }
