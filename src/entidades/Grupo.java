@@ -1,6 +1,7 @@
 package entidades;
 
 import atributos.Ouro;
+import equipamentos.DepositoEquipamentos;
 import java.util.List;
 
 // Estado persistente do grupo do jogador — sobrevive entre a exploração e
@@ -9,10 +10,12 @@ import java.util.List;
 public class Grupo {
 	private List<Heroi> herois;
 	private Ouro ouro;
+	private DepositoEquipamentos deposito;
 
 	public Grupo(List<Heroi> herois) {
 		this.herois = herois;
 		this.ouro = new Ouro();
+		this.deposito = new DepositoEquipamentos();
 	}
 
 	public List<Heroi> getHerois() {
@@ -21,6 +24,10 @@ public class Grupo {
 
 	public Ouro getOuro() {
 		return ouro;
+	}
+
+	public DepositoEquipamentos getDeposito() {
+		return deposito;
 	}
         
         public String[] obterMenuDeHerois(){

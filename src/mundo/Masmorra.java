@@ -6,6 +6,7 @@ import java.util.List;
 import entidades.Esqueleto;
 import entidades.Goblin;
 import entidades.Monstro;
+import equipamentos.CatalogoDeEquipamentos;
 import itens.*;
 import objetos.Bau;
 
@@ -70,8 +71,9 @@ public class Masmorra {
         this.itensDisponiveis = new ArrayList<>();
         this.itensDisponiveis.add(new PocaoMana("Poção de mana", "Restaura 30 de mana", 30));
         this.itensDisponiveis.add(new PocaoVida("Poção de cura", "Restaura 30 de vida", 30));
-        this.baus.add(new Bau(17, 6, itensDisponiveis));
-        this.baus.add(new Bau(10, 10, itensDisponiveis));
+        
+        this.baus.add(new Bau(17, 6, itensDisponiveis, List.of(CatalogoDeEquipamentos.acessorioDoViajante())));
+        this.baus.add(new Bau(10, 10, itensDisponiveis, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
     }
 
     /**

@@ -9,6 +9,9 @@ import java.awt.event.KeyListener;
 
 import acoes.ResultadoAcao;
 import javax.swing.JOptionPane;
+import entidades.Heroi;
+import equipamentos.DepositoEquipamentos;
+import equipamentos.Equipamento;
 import mundo.Mapa;
 import mundo.Masmorra;
 import mundo.TipoTile;
@@ -143,14 +146,61 @@ public class PainelMasmorra extends JPanel implements KeyListener {
                 
                 if(heroiEscolhido != null){
                     int indice = Integer.parseInt(heroiEscolhido.split(" ")[0]);
-                    
-                    ResultadoAcao abriuBau = bauAdjacente.abrir(janela.getGrupo().getHerois().get(indice - 1));
-                
+
+                    ResultadoAcao abriuBau = bauAdjacente.abrir(janela.getGrupo().getHerois().get(indice - 1), janela.getGrupo().getDeposito());
+
                     JOptionPane.showMessageDialog(janela, abriuBau.getMensagem());
                 }
-                
-                
 
+
+
+            }
+        }
+
+        //abre o menu de equipar itens do deposito apertando I
+        if (tecla == KeyEvent.VK_I){
+            DepositoEquipamentos deposito = janela.getGrupo().getDeposito();
+
+            if(deposito.estaVazio()){
+                JOptionPane.showMessageDialog(janela, "O depósito de equipamentos está vazio!");
+            } else {
+                String[] opcoesHerois = janela.getGrupo().obterMenuDeHerois();
+
+                String heroiEscolhido = (String) JOptionPane.showInputDialog(
+                        this,
+                        "Escolha um Heroi para equipar: ",
+                        "Depósito de Equipamentos",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        opcoesHerois,
+                        opcoesHerois[0]
+                );
+
+                if(heroiEscolhido != null){
+                    int indiceHeroi = Integer.parseInt(heroiEscolhido.split(" ")[0]);
+                    Heroi heroiSelecionado = janela.getGrupo().getHerois().get(indiceHeroi - 1);
+
+                    String[] opcoesEquipamentos = deposito.obterMenu();
+
+                    String equipamentoEscolhido = (String) JOptionPane.showInputDialog(
+                            this,
+                            "Escolha um equipamento para " + heroiSelecionado.getNome() + ": ",
+                            "Depósito de Equipamentos",
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            opcoesEquipamentos,
+                            opcoesEquipamentos[0]
+                    );
+
+                    if(equipamentoEscolhido != null){
+                        int indiceEquipamento = Integer.parseInt(equipamentoEscolhido.split(" ")[0]);
+                        Equipamento equipamentoRetirado = deposito.retirar(indiceEquipamento);
+
+                        ResultadoAcao resultado = heroiSelecionado.equipar(equipamentoRetirado, deposito);
+
+                        JOptionPane.showMessageDialog(janela, resultado.getMensagem());
+                    }
+                }
             }
         }
 

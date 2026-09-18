@@ -5,6 +5,7 @@ import entidades.Guerreiro;
 import entidades.Mago;
 import entidades.Grupo;
 import core.Combate;
+import equipamentos.CatalogoDeEquipamentos;
 import itens.PocaoMana;
 import itens.PocaoVida;
 import javax.swing.JFrame;
@@ -48,6 +49,13 @@ public class JanelaPrincipal extends JFrame {
         listaHerois.add(arthur);
         listaHerois.add(merlin); // Segundo membro!
         this.grupo = new Grupo(listaHerois);
+
+        // Equipamentos iniciais de cada heroi (ver CatalogoDeEquipamentos)
+        arthur.equipar(CatalogoDeEquipamentos.espadaDeTreino(), grupo.getDeposito());
+        arthur.equipar(CatalogoDeEquipamentos.armaduraDeCouro(), grupo.getDeposito());
+
+        merlin.equipar(CatalogoDeEquipamentos.cajadoDeAprendiz(), grupo.getDeposito());
+        merlin.equipar(CatalogoDeEquipamentos.vestesDeAprendiz(), grupo.getDeposito());
 
         this.masmorra = new Masmorra(CarregadorMapa.carregarDeTmx("mapa1.tmx"));
 

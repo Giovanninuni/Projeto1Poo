@@ -7,6 +7,10 @@ import itens.Item;
 import ataques.Ataque;
 import ataques.Habilidade;
 import acoes.ResultadoAcao;
+import equipamentos.DepositoEquipamentos;
+import equipamentos.Equipamento;
+import equipamentos.Equipagem;
+import equipamentos.TipoEquipamento;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +20,7 @@ public abstract class Heroi extends Personagem {
    private List<Habilidade> habilidades;
    private Ataque ataquePadrao;
    private Experiencia experiencia;
+   private Equipagem equipagem;
 
    public Heroi(String nome, int vidaMaxima, int ataqueBase, int defesa, int manaMaxima, Ataque ataquePadrao) {
       super(nome, vidaMaxima, ataqueBase, defesa);
@@ -24,6 +29,7 @@ public abstract class Heroi extends Personagem {
       this.habilidades = new ArrayList<>();
       this.ataquePadrao = ataquePadrao;
       this.experiencia = new Experiencia();
+      this.equipagem = new Equipagem();
    }
 
    public void ganharXp(int quantidade) {
@@ -58,6 +64,43 @@ public abstract class Heroi extends Personagem {
 
 	    return new ResultadoAcao(false, "Item inválido selecionado!");
 	}
+
+   // Retira o equipamento do deposito do grupo antes de chamar este metodo.
+   // Se o heroi nao puder usar o equipamento (restricao de classe), ou se
+   // ele estiver trocando um item que ja estava equipado, o equipamento
+   // que sair do slot (o antigo, ou o proprio novo em caso de rejeicao)
+   // volta pro deposito automaticamente.
+   public ResultadoAcao equipar(Equipamento novo, DepositoEquipamentos deposito) {
+       if (!novo.podeSerUsadoPor(this)) {
+           deposito.adicionar(novo);
+           return new ResultadoAcao(false, this.getNome() + " não pode usar " + novo.getNome() + "!");
+       }
+
+       Equipamento antigo = equipagem.equipar(getAtributos(), novo);
+
+       if (antigo != null) {
+           deposito.adicionar(antigo);
+       }
+
+       return new ResultadoAcao(true, this.getNome() + " equipou " + novo.getNome() + "!");
+   }
+
+   // Esvazia um slot sem equipar outra coisa no lugar; o item removido
+   // volta pro deposito do grupo (nao "some").
+   public ResultadoAcao desequipar(TipoEquipamento tipo, DepositoEquipamentos deposito) {
+       Equipamento removido = equipagem.desequipar(getAtributos(), tipo);
+
+       if (removido == null) {
+           return new ResultadoAcao(false, this.getNome() + " não tem nada equipado nesse slot!");
+       }
+
+       deposito.adicionar(removido);
+       return new ResultadoAcao(true, this.getNome() + " removeu " + removido.getNome() + "!");
+   }
+
+   public Equipagem getEquipagem() {
+       return this.equipagem;
+   }
 
    public Ataque getAtaquePadrao() {
 	   return this.ataquePadrao;

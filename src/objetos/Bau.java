@@ -8,6 +8,8 @@ import acoes.ResultadoAcao;
 import itens.Item;
 import java.util.List;
 import entidades.Heroi;
+import equipamentos.DepositoEquipamentos;
+import equipamentos.Equipamento;
 
 /**
  *
@@ -18,28 +20,42 @@ public class Bau {
     private int x;
     private int y;
     private List<Item> itens;
-    
-    public Bau(int x, int y, List<Item> itens){
+    private List<Equipamento> equipamentos;
+
+    public Bau(int x, int y, List<Item> itens, List<Equipamento> equipamentos){
         this.x = x;
         this.y = y;
         this.itens = itens;
+        this.equipamentos = equipamentos;
     }
-    
-    public ResultadoAcao abrir(Heroi usuario){
+
+    // NOTA (2026-09-18): o Laedson vai mexer nesse fluxo pra mostrar o item
+    // antes de escolher o heroi (ver anotação de projeto). Quando isso for
+    // refeito, os equipamentos dessa lista também precisam entrar nessa
+    // revisão: eles não vão pra mochila de ninguém, vão direto pro
+    // DepositoEquipamentos do grupo (não dependem de qual heroi abriu o baú).
+    public ResultadoAcao abrir(Heroi usuario, DepositoEquipamentos deposito){
         if(isFechado()){
             fechado = false;
-            
-            if(itens.isEmpty()){
+
+            if(itens.isEmpty() && equipamentos.isEmpty()){
                 return new ResultadoAcao(true, "O baú foi aberto, mas dentro dele não havia nada!");
             }
-            
+
             StringBuilder log = new StringBuilder("O baú foi aberto e voce encontrou: ");
             //pra cada item dentro do bau o item é adicionado e seu nome vai pra o log da mensagem
             for(Item i: itens){
                 usuario.getInventario().adicionarItem(i);
                 log.append(i.getNome()).append(", ");
             }
-            
+
+            //equipamentos nao vao pra mochila de ninguem, vao pro deposito do grupo
+            //Provisorio isso aqui laedson a gente pode mudar depois
+            for(Equipamento e: equipamentos){
+                deposito.adicionar(e);
+                log.append(e.getNome()).append(" (foi para o depósito de equipamentos), ");
+            }
+
             log.append("!");
             return new ResultadoAcao(true, log.toString());
         }

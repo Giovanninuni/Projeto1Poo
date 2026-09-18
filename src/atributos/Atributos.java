@@ -24,4 +24,14 @@ public class Atributos {
 	public void aumentarDefesa(int quantidade) {
 		this.defesa += quantidade;
 	}
+
+	// Usados ao trocar/remover equipamento: remove o bonus do item antigo
+	// antes de aplicar o do novo, ou ao desequipar de vez (ver equipamentos.Equipagem).
+	public void reduzirAtaque(int quantidade) {
+		this.ataque -= quantidade;
+	}
+
+	public void reduzirDefesa(int quantidade) {
+		this.defesa -= quantidade;
+	}
 }
