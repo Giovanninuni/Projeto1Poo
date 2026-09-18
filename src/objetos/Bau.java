@@ -26,7 +26,7 @@ public class Bau {
     }
     
     public ResultadoAcao abrir(Heroi usuario){
-        if(fechado){
+        if(isFechado()){
             fechado = false;
             
             if(itens.isEmpty()){

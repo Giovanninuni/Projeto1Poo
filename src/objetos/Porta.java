@@ -22,8 +22,11 @@ public class Porta {
     }
     //adicionar mecanica de porta trancada depois
     public ResultadoAcao abrir(Heroi usuario){
-        this.fechada = false;
-        return new ResultadoAcao(true, "A porta foi aberta");
+        if(isFechada()){
+            this.fechada = false;
+            return new ResultadoAcao(true, "A porta foi aberta");
+        }
+        return new ResultadoAcao(false, "A porta já está aberta!");
     }
     
     public int getX(){
