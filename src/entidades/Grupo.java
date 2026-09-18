@@ -1,0 +1,42 @@
+package entidades;
+
+import atributos.Ouro;
+import equipamentos.DepositoEquipamentos;
+import java.util.List;
+
+// Estado persistente do grupo do jogador — sobrevive entre a exploração e
+// os combates. Fica em entidades, não na GUI, porque é estado de domínio:
+// a janela só exibe, não é dona dele.
+public class Grupo {
+	private List<Heroi> herois;
+	private Ouro ouro;
+	private DepositoEquipamentos deposito;
+
+	public Grupo(List<Heroi> herois) {
+		this.herois = herois;
+		this.ouro = new Ouro();
+		this.deposito = new DepositoEquipamentos();
+	}
+
+	public List<Heroi> getHerois() {
+		return herois;
+	}
+
+	public Ouro getOuro() {
+		return ouro;
+	}
+
+	public DepositoEquipamentos getDeposito() {
+		return deposito;
+	}
+        
+        public String[] obterMenuDeHerois(){
+            String[] menu = new String[this.herois.size()];
+            
+            for(int i = 0; i < this.herois.size(); i++){
+                menu[i] = (i + 1) + " - " +this.herois.get(i).getNome();
+            }
+            
+            return menu;
+        }
+}
