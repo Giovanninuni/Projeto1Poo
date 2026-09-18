@@ -34,6 +34,7 @@ public class Bau {
             }
             
             StringBuilder log = new StringBuilder("O baú foi aberto e voce encontrou: ");
+            //pra cada item dentro do bau o item é adicionado e seu nome vai pra o log da mensagem
             for(Item i: itens){
                 usuario.getInventario().adicionarItem(i);
                 log.append(i.getNome()).append(", ");

@@ -50,6 +50,8 @@ public class PainelMasmorra extends JPanel implements KeyListener {
             }
         }
         
+        
+        //pinta os baus fechados e abertos de cores diferentes -- Lalae
         for (Bau i: masmorra.getBaus()) {
             if (i.isFechado()) {
                 g.setColor(Color.YELLOW);
@@ -119,13 +121,35 @@ public class PainelMasmorra extends JPanel implements KeyListener {
             janela.iniciarCombate(encontro);
         }
         
+        //checagem para abrir baus apertando E -- Lalae
         if (tecla == KeyEvent.VK_E){
             Bau bauAdjacente = masmorra.getBauAdjacenteAoHeroi();
             
             if(bauAdjacente != null){
-                ResultadoAcao abriuBau = bauAdjacente.abrir(janela.getGrupo().getHerois().get(0));
+                //escolhendo o heroi que vai pegar o item
                 
-                JOptionPane.showMessageDialog(janela, abriuBau.getMensagem());
+                String[] opcoesHerois = janela.getGrupo().obterMenuDeHerois();
+                
+                String heroiEscolhido = (String) JOptionPane.showInputDialog(
+                        this,
+                        "Escolha um Heroi para receber o item: ",
+                        "Bau Velho",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        opcoesHerois,
+                        opcoesHerois[0]
+                );
+                
+                if(heroiEscolhido != null){
+                    int indice = Integer.parseInt(heroiEscolhido.split(" ")[0]);
+                    
+                    ResultadoAcao abriuBau = bauAdjacente.abrir(janela.getGrupo().getHerois().get(indice - 1));
+                
+                    JOptionPane.showMessageDialog(janela, abriuBau.getMensagem());
+                }
+                
+                
+
             }
         }
 

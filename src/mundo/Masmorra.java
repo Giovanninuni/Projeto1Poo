@@ -82,8 +82,8 @@ public class Masmorra {
     public boolean mover(int dx, int dy) {
         int novoX = heroiX + dx;
         int novoY = heroiY + dy;
-
-        if (!mapa.podeAndar(novoX, novoY)) {
+        
+        if (!mapa.podeAndar(novoX, novoY) || existeBau(novoX, novoY)) {
             return false;
         }
 
@@ -106,6 +106,7 @@ public class Masmorra {
         return null;
     }
     
+    //retorna baus que tiverem adjacente ao heroi por posiçao absoluta (checagem para interação) -- lalae
     public Bau getBauAdjacenteAoHeroi(){
         for(Bau i: baus){
             if(Math.abs(i.getX() - heroiX) + Math.abs(i.getY() - heroiY) == 1){
@@ -114,11 +115,21 @@ public class Masmorra {
         }
         return null;
     }
+    
+    
+    //checa se tem um bau pra onde o pesonagem vai se mover (checagem de movimento) -- lalae
+    public boolean existeBau(int x, int y){
+        for(Bau i: baus){
+            if(i.getX() == x && i.getY() == y){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public int getHeroiX() { return heroiX; }
     public int getHeroiY() { return heroiY; }
     public Mapa getMapa() { return mapa; }
     public List<Encontro> getEncontros() { return encontros; }
-    
     public List<Bau> getBaus() { return baus; }
 }

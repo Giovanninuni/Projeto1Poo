@@ -22,4 +22,14 @@ public class Grupo {
 	public Ouro getOuro() {
 		return ouro;
 	}
+        
+        public String[] obterMenuDeHerois(){
+            String[] menu = new String[this.herois.size()];
+            
+            for(int i = 0; i < this.herois.size(); i++){
+                menu[i] = (i + 1) + " - " +this.herois.get(i).getNome();
+            }
+            
+            return menu;
+        }
 }
