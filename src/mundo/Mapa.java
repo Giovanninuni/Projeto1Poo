@@ -68,23 +68,4 @@ public class Mapa {
 
     public int getLargura() { return largura; }
     public int getAltura() { return altura; }
-
-    /**
-     * Mapa de teste pra usar enquanto não temos um mapa feito no Tiled:
-     * um retângulo de chão cercado por parede nas bordas.
-     */
-    public static Mapa criarMapaTeste() {
-        int largura = 20;
-        int altura = 15;
-        int[][] codigos = new int[altura][largura];
-
-        for (int y = 0; y < altura; y++) {
-            for (int x = 0; x < largura; x++) {
-                boolean borda = (x == 0 || y == 0 || x == largura - 1 || y == altura - 1);
-                codigos[y][x] = borda ? 1 : 0;
-            }
-        }
-
-        return new Mapa(codigos);
-    }
 }

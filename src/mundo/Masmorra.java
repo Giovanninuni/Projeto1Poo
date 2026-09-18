@@ -51,10 +51,6 @@ public class Masmorra {
     private final List<Bau> baus;
     private List<Item> itensDisponiveis;
 
-    public Masmorra() {
-        this(Mapa.criarMapaTeste());
-    }
-
     public Masmorra(Mapa mapa) {
         this.mapa = mapa;
         this.heroiX = 5;
