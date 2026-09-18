@@ -128,7 +128,7 @@ public class PainelMasmorra extends JPanel implements KeyListener {
             Bau bauAdjacente = masmorra.getBauAdjacenteAoHeroi();
             
             if(bauAdjacente != null){
-                ResultadoAcao abriuBau = bauAdjacente.abrir(janela.getHerois().get(0));
+                ResultadoAcao abriuBau = bauAdjacente.abrir(janela.getGrupo().getHerois().get(0));
                 
                 JOptionPane.showMessageDialog(janela, abriuBau.getMensagem());
             }

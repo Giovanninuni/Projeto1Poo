@@ -1,6 +1,7 @@
 package entidades;
 
 import atributos.Mana;
+import atributos.Experiencia;
 import itens.Inventario;
 import itens.Item;
 import ataques.Ataque;
@@ -14,6 +15,7 @@ public abstract class Heroi extends Personagem {
    private Inventario inventario;
    private List<Habilidade> habilidades;
    private Ataque ataquePadrao;
+   private Experiencia experiencia;
 
    public Heroi(String nome, int vidaMaxima, int ataqueBase, int defesa, int manaMaxima, Ataque ataquePadrao) {
       super(nome, vidaMaxima, ataqueBase, defesa);
@@ -21,6 +23,22 @@ public abstract class Heroi extends Personagem {
       this.inventario = new Inventario(10);
       this.habilidades = new ArrayList<>();
       this.ataquePadrao = ataquePadrao;
+      this.experiencia = new Experiencia();
+   }
+
+   public void ganharXp(int quantidade) {
+       int niveisGanhos = experiencia.ganhar(quantidade);
+
+       for (int i = 0; i < niveisGanhos; i++) {
+           getVida().aumentarMaxima(10);
+           getMana().aumentarMaxima(5);
+           getAtributos().aumentarAtaque(2);
+           getAtributos().aumentarDefesa(1);
+       }
+   }
+
+   public int getNivel() {
+       return experiencia.getNivel();
    }
 
    public ResultadoAcao usarItem(int indiceItem) {

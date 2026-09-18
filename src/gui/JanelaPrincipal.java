@@ -3,6 +3,7 @@ package gui;
 import entidades.Heroi;
 import entidades.Guerreiro;
 import entidades.Mago;
+import entidades.Grupo;
 import entidades.Monstro;
 import core.Combate;
 import itens.PocaoMana;
@@ -18,8 +19,7 @@ public class JanelaPrincipal extends JFrame {
     private CardLayout gerenciadorTelas;
     private JPanel painelTelas;
     
-    //Agora temos um ESQUADRÃO persistente
-    private List<Heroi> grupoHerois;
+    private Grupo grupo;
     private PainelMasmorra telaMasmorra;
 
     public JanelaPrincipal() {
@@ -41,9 +41,10 @@ public class JanelaPrincipal extends JFrame {
         merlin.getInventario().adicionarItem(new PocaoMana("Poção de Mana", "Restaura 20 de mana", 20));
         merlin.getInventario().adicionarItem(new PocaoMana("Poção de Mana", "Restaura 20 de mana", 20));
 
-        this.grupoHerois = new ArrayList<>();
-        this.grupoHerois.add(arthur);
-        this.grupoHerois.add(merlin); // Segundo membro!
+        List<Heroi> listaHerois = new ArrayList<>();
+        listaHerois.add(arthur);
+        listaHerois.add(merlin); // Segundo membro!
+        this.grupo = new Grupo(listaHerois);
 
         this.gerenciadorTelas = new CardLayout();
         this.painelTelas = new JPanel(this.gerenciadorTelas);
@@ -58,7 +59,7 @@ public class JanelaPrincipal extends JFrame {
     //O método recebe a gangue de inimigos inteira enviada pelo mapa
     public void iniciarCombate(List<Monstro> grupoInimigos) {
         // A classe Combate cruza a lista de heróis com a lista de inimigos
-        Combate combate = new Combate(this.grupoHerois, grupoInimigos);
+        Combate combate = new Combate(this.grupo.getHerois(), grupoInimigos);
         PainelCombate telaCombate = new PainelCombate(this, combate);
         
         painelTelas.add(telaCombate, "TELA_COMBATE");
@@ -70,7 +71,7 @@ public class JanelaPrincipal extends JFrame {
         telaMasmorra.requestFocusInWindow();
     }
     
-    public List<Heroi> getHerois(){
-        return this.grupoHerois;
+    public Grupo getGrupo() {
+        return this.grupo;
     }
 }

@@ -18,6 +18,7 @@ public class Combate {
 
     private int indiceHeroiAtual = 0;
     private boolean combateAtivo = true;
+    private int ouroGanho = 0;
     private final Random sorteador = new Random();
 
     public Combate(List<Heroi> grupoHerois, List<Monstro> grupoMonstros) {
@@ -161,20 +162,7 @@ public class Combate {
 
         ResultadoAcao resultado = executarAtaque(atacante, alvo, habilidade);
 
-        StringBuilder mensagem = new StringBuilder(resultado.getMensagem());
-
-        if (verificarVitoria()) {
-            this.combateAtivo = false;
-        } else {
-            // avancarTurno() decide sozinho se é a vez do próximo herói
-            // ou se a rodada virou e os monstros devem atacar agora.
-            String logMonstros = avancarTurno();
-            if (!logMonstros.isEmpty()) {
-                mensagem.append("\n").append(logMonstros);
-            }
-        }
-
-        return new ResultadoAcao(true, mensagem.toString());
+        return finalizarAcao(new StringBuilder(resultado.getMensagem()));
     }
 
     public ResultadoAcao processarAtaqueBasicoHeroi(int indiceHeroi, int indiceAlvo) {
@@ -189,18 +177,7 @@ public class Combate {
 
         ResultadoAcao resultado = executarAtaque(atacante, alvo, atacante.getAtaquePadrao());
 
-        StringBuilder mensagem = new StringBuilder(resultado.getMensagem());
-
-        if (verificarVitoria()) {
-            this.combateAtivo = false;
-        } else {
-            String logMonstros = avancarTurno();
-            if (!logMonstros.isEmpty()) {
-                mensagem.append("\n").append(logMonstros);
-            }
-        }
-
-        return new ResultadoAcao(true, mensagem.toString());
+        return finalizarAcao(new StringBuilder(resultado.getMensagem()));
     }
 
     public ResultadoAcao processarAcaoHeroiItem(int indiceHeroi, int indiceItem) {
@@ -213,10 +190,16 @@ public class Combate {
             return resultado;
         }
 
-        StringBuilder mensagem = new StringBuilder(resultado.getMensagem());
+        return finalizarAcao(new StringBuilder(resultado.getMensagem()));
+    }
 
+    // avancarTurno() decide sozinho se é a vez do próximo herói ou se a
+    // rodada virou e os monstros devem atacar agora; se a vitória aconteceu
+    // nesta ação, concede as recompensas em vez de continuar os turnos.
+    private ResultadoAcao finalizarAcao(StringBuilder mensagem) {
         if (verificarVitoria()) {
             this.combateAtivo = false;
+            mensagem.append("\n").append(concederRecompensas());
         } else {
             String logMonstros = avancarTurno();
             if (!logMonstros.isEmpty()) {
@@ -225,6 +208,48 @@ public class Combate {
         }
 
         return new ResultadoAcao(true, mensagem.toString());
+    }
+
+    // ==========================================
+    // --- RECOMPENSAS DE VITÓRIA ---
+    // ==========================================
+    // XP é dividido entre os heróis vivos; ouro vai pro contador único do
+    // grupo (quem lê getOuroGanho() e credita é a JanelaPrincipal).
+    private String concederRecompensas() {
+        int xpTotal = 0;
+        int ouroTotal = 0;
+        for (Monstro m : monstros) {
+            xpTotal += m.getXpConcedida();
+            ouroTotal += m.getOuroDropado();
+        }
+
+        List<Heroi> vivos = new ArrayList<>();
+        for (Heroi h : herois) {
+            if (h.estaVivo()) {
+                vivos.add(h);
+            }
+        }
+
+        int xpPorHeroi = vivos.isEmpty() ? 0 : xpTotal / vivos.size();
+
+        StringBuilder mensagem = new StringBuilder(
+            String.format("O grupo ganhou %d de ouro! Cada sobrevivente recebeu %d de XP.", ouroTotal, xpPorHeroi));
+
+        for (Heroi h : vivos) {
+            int nivelAntes = h.getNivel();
+            h.ganharXp(xpPorHeroi);
+            if (h.getNivel() > nivelAntes) {
+                mensagem.append(String.format("%n%s subiu para o nível %d!", h.getNome(), h.getNivel()));
+            }
+        }
+
+        this.ouroGanho = ouroTotal;
+
+        return mensagem.toString();
+    }
+
+    public int getOuroGanho() {
+        return ouroGanho;
     }
 
     // ==========================================

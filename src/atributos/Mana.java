@@ -27,6 +27,11 @@ public class Mana {
 		}
 	}
 
+	public void aumentarMaxima(int quantidade) {
+		this.maxima += quantidade;
+		this.atual += quantidade;
+	}
+
     public int getAtual() {
     	return atual; 
     }

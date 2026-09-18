@@ -244,7 +244,10 @@ public class PainelCombate extends JPanel {
             logBatalha.append("\n> Não há como fugir desta batalha!");
         });
 
-        btnContinuar.addActionListener(e -> janela.voltarMasmorra()); // Aqui
+        btnContinuar.addActionListener(e -> {
+            janela.getGrupo().getOuro().adicionar(combate.getOuroGanho());
+            janela.voltarMasmorra();
+        });
 
         atualizarStatus(); // Carrega os valores e a cor do turno pela primeira vez
     }

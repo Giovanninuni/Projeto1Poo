@@ -16,4 +16,12 @@ public class Atributos {
 	public int getDefesa() {
 		return this.defesa;
 	}
+
+	public void aumentarAtaque(int quantidade) {
+		this.ataque += quantidade;
+	}
+
+	public void aumentarDefesa(int quantidade) {
+		this.defesa += quantidade;
+	}
 }
