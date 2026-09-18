@@ -19,6 +19,8 @@ import org.w3c.dom.Element;
  * que cai fora dessa faixa (célula vazia, ou tile de outro tileset ainda
  * não ligado ao jogo) vira TipoTile.PAREDE e sem sprite específico —
  * quem desenha cai de volta pro placeholder de cor.
+ * 
+ * VIBE CODADO
  */
 public class CarregadorMapa {
 

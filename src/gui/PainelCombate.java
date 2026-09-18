@@ -25,10 +25,6 @@ import acoes.ResultadoAcao;
 public class PainelCombate extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    final int originalSize = 32;
-    final int scale = 2;
-    final int tileSize = originalSize * scale; // 64x64 tile
-
     private JanelaPrincipal janela;
     private Combate combate;
 
@@ -246,7 +242,7 @@ public class PainelCombate extends JPanel {
 
         btnContinuar.addActionListener(e -> {
             janela.getGrupo().getOuro().adicionar(combate.getOuroGanho());
-            janela.voltarMasmorra();
+            janela.concluirVitoria();
         });
 
         atualizarStatus(); // Carrega os valores e a cor do turno pela primeira vez

@@ -6,12 +6,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.List;
 
-import entidades.Monstro;
 import acoes.ResultadoAcao;
 import javax.swing.JOptionPane;
-import mundo.CarregadorMapa;
 import mundo.Mapa;
 import mundo.Masmorra;
 import mundo.TipoTile;
@@ -27,9 +24,9 @@ public class PainelMasmorra extends JPanel implements KeyListener {
     private static final String FOLHA_MODICUS = "tiles/modicus.png";
     private static final int MODICUS_COLUNAS = 4;
 
-    public PainelMasmorra(JanelaPrincipal janela) {
+    public PainelMasmorra(JanelaPrincipal janela, Masmorra masmorra) {
         this.janela = janela;
-        this.masmorra = new Masmorra(CarregadorMapa.carregarDeTmx("mapa1.tmx"));
+        this.masmorra = masmorra;
         setBackground(Color.DARK_GRAY);
         setFocusable(true);
         addKeyListener(this);
@@ -113,15 +110,13 @@ public class PainelMasmorra extends JPanel implements KeyListener {
             masmorra.mover(dx, dy);
         }
 
-        // Sistema de Colisão: pergunta ao modelo se há um encontro aqui
+        // Sistema de Colisão: pergunta ao modelo se há um encontro aqui.
+        // O encontro só é marcado como derrotado quando o Combate confirma
+        // a vitória (JanelaPrincipal.concluirVitoria) — não aqui, no
+        // instante de pisar no tile.
         Masmorra.Encontro encontro = masmorra.getEncontroNaPosicaoDoHeroi();
         if (encontro != null) {
-            encontro.marcarDerrotado();
-
-            List<Monstro> inimigos = encontro.getInimigos();
-
-            // Dispara a troca de telas!
-            janela.iniciarCombate(inimigos);
+            janela.iniciarCombate(encontro);
         }
         
         if (tecla == KeyEvent.VK_E){
