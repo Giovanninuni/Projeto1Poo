@@ -1,7 +1,7 @@
 package itens;
 
 import entidades.Personagem;
-import habilidades.ResultadoAcao;
+import acoes.ResultadoAcao;
 
 public class PocaoVida extends Item{
 	private int quantidadeCura;
@@ -13,7 +13,7 @@ public class PocaoVida extends Item{
 	}
 	
 	@Override
-	public ResultadoAcao usar(Personagem usuario, Personagem alvo) {
+	public ResultadoAcao consumir(Personagem usuario, Personagem alvo) {
 			alvo.getVida().restaurar(quantidadeCura);
 			
 			return new ResultadoAcao(true, String.format("%s usou uma Poção de Cura em %s, lhe concedendo %d de Vida!%n", 

@@ -18,6 +18,7 @@ public class JanelaPrincipal extends JFrame {
     
     //Agora temos um ESQUADRÃO persistente
     private List<Heroi> grupoHerois;
+    private PainelMasmorra telaMasmorra;
 
     public JanelaPrincipal() {
         super("RPG - A Vingança contra Vitor S.");
@@ -46,7 +47,7 @@ public class JanelaPrincipal extends JFrame {
         this.painelTelas = new JPanel(this.gerenciadorTelas);
         setContentPane(painelTelas);
         
-        PainelMasmorra telaMasmorra = new PainelMasmorra(this);
+        this.telaMasmorra = new PainelMasmorra(this);
         this.painelTelas.add(telaMasmorra, "TELA_MASMORRA");
         this.gerenciadorTelas.show(painelTelas, "TELA_MASMORRA");
         telaMasmorra.requestFocusInWindow();
@@ -56,7 +57,7 @@ public class JanelaPrincipal extends JFrame {
     public void iniciarCombate(List<Monstro> grupoInimigos) {
         // A classe Combate cruza a lista de heróis com a lista de inimigos
         Combate combate = new Combate(this.grupoHerois, grupoInimigos);
-        PainelCombate telaCombate = new PainelCombate(combate);
+        PainelCombate telaCombate = new PainelCombate(this, combate);
         
         painelTelas.add(telaCombate, "TELA_COMBATE");
         gerenciadorTelas.show(painelTelas, "TELA_COMBATE");
@@ -64,6 +65,7 @@ public class JanelaPrincipal extends JFrame {
 
     public void voltarMasmorra() {
         gerenciadorTelas.show(painelTelas, "TELA_MASMORRA");
+        telaMasmorra.requestFocusInWindow();
     }
     
     public List<Heroi> getHerois(){

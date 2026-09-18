@@ -1,7 +1,6 @@
 package entidades;
 
 import atributos.Vida;
-import habilidades.ResultadoAcao;
 import atributos.Atributos;
 import atributos.Dano;
 
@@ -15,8 +14,6 @@ public abstract class Personagem {
         this.vida = new Vida(vidaMaxima); // Inicia com a vida cheia
         this.atributos = new Atributos(ataqueBase, defesa);
     }
-    
-    public abstract ResultadoAcao atacar(Personagem alvo);
 
     // Método de negócio com cálculo de dano e encapsulamento
     public int receberDano(Dano dano) {

@@ -1,4 +1,4 @@
-package habilidades;
+package acoes;
 
 public class ResultadoAcao {
 	private final boolean sucesso; // final aplicada a um atributo significa que o valor dele só pode ser atribuído uma única vez

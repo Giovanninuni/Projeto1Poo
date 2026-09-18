@@ -1,38 +1,33 @@
-package habilidades;
+package ataques;
 
 import java.util.Random;
 
-import acoes.Usavel;
 import atributos.Dano;
 import atributos.Dano.TipoDano;
-import entidades.Personagem;	
+import entidades.Personagem;
 
-public abstract class Habilidade implements Usavel{
-	private String nome;
+public abstract class Habilidade extends Ataque {
 	private int custoMana;
 	private static final Random sorteador = new Random();
-	
+
 	public Habilidade(String nome, int custoMana) {
-		this.nome = nome;
+		super(nome);
 		this.custoMana = custoMana;
 	}
-	
-	public abstract ResultadoAcao usar(Personagem usuario, Personagem alvo);
-	
+
+	@Override
+	public abstract Dano calcularDano(Personagem usuario);
+
 	protected Dano gerarDanoComCritico(int ataqueBase, int chanceCritico, TipoDano tipo) {
         boolean critico = sorteador.nextInt(100) < chanceCritico;
         int danoFinal = ataqueBase;
         if (critico) {
             danoFinal = (int) (ataqueBase * 1.5); // Aumenta em 50%
         }
-        
+
         return new Dano(danoFinal, critico, tipo);
     }
-		
-	public String getNome() {
-		return nome;
-	}
-	
+
 	public int getCustoMana() {
 		return custoMana;
 	}

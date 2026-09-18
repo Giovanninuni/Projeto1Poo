@@ -2,7 +2,7 @@ package itens;
 
 import entidades.Heroi;
 import entidades.Personagem;
-import habilidades.ResultadoAcao;
+import acoes.ResultadoAcao;
 
 public class PocaoMana extends Item {
 	private int quantidadeMana;
@@ -14,7 +14,7 @@ public class PocaoMana extends Item {
 		}
 		
 		@Override
-		public ResultadoAcao usar(Personagem usuario, Personagem alvo) {
+		public ResultadoAcao consumir(Personagem usuario, Personagem alvo) {
 			if(usuario instanceof Heroi heroiUsuario && alvo instanceof Heroi heroiAlvo) {
 			heroiAlvo.getMana().restaurar(quantidadeMana);
 			

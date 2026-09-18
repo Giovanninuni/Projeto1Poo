@@ -9,7 +9,7 @@ import java.awt.event.KeyListener;
 import java.util.List;
 
 import entidades.Monstro;
-import habilidades.ResultadoAcao;
+import acoes.ResultadoAcao;
 import javax.swing.JOptionPane;
 import mundo.CarregadorMapa;
 import mundo.Mapa;

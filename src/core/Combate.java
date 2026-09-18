@@ -2,7 +2,11 @@ package core;
 
 import entidades.Heroi;
 import entidades.Monstro;
-import habilidades.ResultadoAcao;
+import entidades.Personagem;
+import ataques.Ataque;
+import ataques.Habilidade;
+import acoes.ResultadoAcao;
+import atributos.Dano;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -67,7 +71,7 @@ public class Combate {
             Heroi alvoSorteado = sortearHeroiVivo();
 
             if (alvoSorteado != null) {
-                ResultadoAcao acao = monstro.atacar(alvoSorteado);
+                ResultadoAcao acao = executarAtaque(monstro, alvoSorteado, monstro.getAtaque());
                 log.append(acao.getMensagem()).append("\n");
             }
         }
@@ -144,11 +148,18 @@ public class Combate {
             return new ResultadoAcao(false, "O alvo já está derrotado!");
         }
 
-        ResultadoAcao resultado = atacante.usarHabilidade(indiceHabilidade, alvo);
-
-        if (!resultado.isSucesso()) {
-            return resultado;
+        List<Habilidade> habilidadesHeroi = atacante.getHabilidades();
+        if (indiceHabilidade < 0 || indiceHabilidade >= habilidadesHeroi.size()) {
+            return new ResultadoAcao(false, "Habilidade inválida ou não encontrada!");
         }
+        Habilidade habilidade = habilidadesHeroi.get(indiceHabilidade);
+
+        if (!atacante.getMana().gastar(habilidade.getCustoMana())) {
+            return new ResultadoAcao(false, String.format(
+                "%s não tem mana suficiente para usar %s!", atacante.getNome(), habilidade.getNome()));
+        }
+
+        ResultadoAcao resultado = executarAtaque(atacante, alvo, habilidade);
 
         StringBuilder mensagem = new StringBuilder(resultado.getMensagem());
 
@@ -188,5 +199,27 @@ public class Combate {
         }
 
         return new ResultadoAcao(true, mensagem.toString());
+    }
+
+    // ==========================================
+    // --- APLICAÇÃO DE DANO ---
+    // ==========================================
+    // Único ponto do sistema que resolve um ataque: o Ataque só calcula o
+    // Dano (calcularDano), quem aplica no alvo e monta a mensagem é o
+    // Combate — evita repetir esse padrão em cada Habilidade/Monstro.
+    private ResultadoAcao executarAtaque(Personagem atacante, Personagem alvo, Ataque ataque) {
+        Dano dano = ataque.calcularDano(atacante);
+        int danoSofrido = alvo.receberDano(dano);
+
+        String mensagem;
+        if (dano.isCritico()) {
+            mensagem = String.format("ACERTO CRÍTICO! %s usa %s em %s, causando %d de dano!",
+                atacante.getNome(), ataque.getNome(), alvo.getNome(), danoSofrido);
+        } else {
+            mensagem = String.format("%s usa %s em %s, causando %d de dano.",
+                atacante.getNome(), ataque.getNome(), alvo.getNome(), danoSofrido);
+        }
+
+        return new ResultadoAcao(true, mensagem);
     }
 }

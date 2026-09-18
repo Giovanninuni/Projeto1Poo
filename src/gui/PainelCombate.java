@@ -19,7 +19,7 @@ import javax.swing.JTextArea;
 import core.Combate;
 import entidades.Heroi;
 import entidades.Monstro;
-import habilidades.ResultadoAcao;
+import acoes.ResultadoAcao;
 
 public class PainelCombate extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -28,6 +28,7 @@ public class PainelCombate extends JPanel {
     final int scale = 2;
     final int tileSize = originalSize * scale; // 64x64 tile
 
+    private JanelaPrincipal janela;
     private Combate combate;
 
     // Variável de controle: 0 = Espada, 1 = Magia
@@ -43,12 +44,15 @@ public class PainelCombate extends JPanel {
     private JButton btnAtaque;
     private JButton btnMagia;
     private JButton btnItem;
+    private JPanel painelComandos;
+    private JButton btnContinuar;
 
     // Cores clássicas de RPG
     private final Color AZUL_RPG = new Color(0, 0, 128);
     private final Color BRANCO = Color.WHITE;
 
-    public PainelCombate(Combate combate) {
+    public PainelCombate(JanelaPrincipal janela, Combate combate) {
+        this.janela = janela;
         this.combate = combate;
 
         this.setLayout(new BorderLayout());
@@ -125,13 +129,14 @@ public class PainelCombate extends JPanel {
         painelLog.add(new JScrollPane(logBatalha), BorderLayout.CENTER);
 
         // --- CAIXA 2: Comandos (Centro) ---
-        JPanel painelComandos = criarPainelAzul();
+        painelComandos = criarPainelAzul();
         painelComandos.setLayout(new GridLayout(2, 2, 5, 5));
 
         btnAtaque = estilizarBotao("Ataque");
         btnMagia = estilizarBotao("Magia");
         btnItem = estilizarBotao("Item");
         JButton btnFugir = estilizarBotao("Fugir");
+        btnContinuar = estilizarBotao("Continuar");
 
         painelComandos.add(btnAtaque);
         painelComandos.add(btnMagia);
@@ -228,6 +233,8 @@ public class PainelCombate extends JPanel {
             logBatalha.append("\n> Não há como fugir desta batalha!");
         });
 
+        btnContinuar.addActionListener(e -> janela.voltarMasmorra()); // Aqui
+
         atualizarStatus(); // Carrega os valores e a cor do turno pela primeira vez
     }
 
@@ -282,6 +289,15 @@ public class PainelCombate extends JPanel {
             btnAtaque.setEnabled(false);
             btnMagia.setEnabled(false);
             btnItem.setEnabled(false);
+
+            // Na derrota, a batalha fica travada por enquanto (sem tela de
+            // Game Over ainda). Só na vitória liberamos o retorno ao mapa.
+            if (combate.verificarVitoria()) {
+                painelComandos.removeAll();
+                painelComandos.add(btnContinuar);
+                painelComandos.revalidate();
+                painelComandos.repaint();
+            }
         }
     }
 }

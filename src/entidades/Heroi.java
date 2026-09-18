@@ -3,10 +3,10 @@ package entidades;
 import atributos.Mana;
 import itens.Inventario;
 import itens.Item;
-import habilidades.Habilidade;
-import habilidades.BolaDeFogo;
-import habilidades.GolpeEspada;
-import habilidades.ResultadoAcao;
+import ataques.Habilidade;
+import ataques.BolaDeFogo;
+import ataques.GolpeEspada;
+import acoes.ResultadoAcao;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,20 +25,6 @@ public class Heroi extends Personagem {
       this.habilidades.add(new BolaDeFogo());
    }
    
-   @Override
-   public ResultadoAcao atacar(Personagem alvo) {
-       // O ataque básico do herói é simplesmente usar sua habilidade padrão (índice 0)
-       return usarHabilidade(0, alvo);
-   }
-   
-   public ResultadoAcao usarHabilidade(int indice, Personagem alvo) {
-       if (indice >= 0 && indice < this.habilidades.size()) {
-           Habilidade habilidade = this.habilidades.get(indice);
-           return habilidade.usar(this, alvo);
-       }
-       return new ResultadoAcao(false, "Habilidade inválida ou não encontrada!");
-   }
-   
    public ResultadoAcao usarItem(int indiceItem) {
 	    if(this.inventario.estaVazio()) {
 	        return new ResultadoAcao(false, "Sua mochila está vazia!");
@@ -49,7 +35,7 @@ public class Heroi extends Personagem {
 	    
 	    if(itemEscolhido != null) { 
 	    	
-	        ResultadoAcao resultado = itemEscolhido.usar(this, this);
+	        ResultadoAcao resultado = itemEscolhido.consumir(this, this);
 	        return resultado;
 	        
 	    }

@@ -4,7 +4,7 @@
  */
 package objetos;
 
-import habilidades.ResultadoAcao;
+import acoes.ResultadoAcao;
 import itens.Item;
 import java.util.List;
 import entidades.Heroi;
