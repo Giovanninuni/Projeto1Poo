@@ -1,6 +1,8 @@
 package gui;
 
 import entidades.Heroi;
+import entidades.Guerreiro;
+import entidades.Mago;
 import entidades.Monstro;
 import core.Combate;
 import itens.PocaoMana;
@@ -27,8 +29,8 @@ public class JanelaPrincipal extends JFrame {
         setLocationRelativeTo(null);
 
         // 2. Criando a Party estilo Final Fantasy
-        Heroi arthur = new Heroi("Arthur", 100, 15, 5, 50);
-        Heroi merlin = new Heroi("Mago Merlin", 80, 5, 2, 120);
+        Heroi arthur = new Guerreiro("Arthur", 100, 15, 5, 50);
+        Heroi merlin = new Mago("Mago Merlin", 80, 5, 2, 120);
 
         // Cada herói começa com poções básicas na mochila
         arthur.getInventario().adicionarItem(new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30));

@@ -4,10 +4,10 @@ import atributos.Dano;
 import atributos.Dano.TipoDano;
 import entidades.Personagem;
 
-public class GolpeEspada extends Habilidade {
+public class GolpeEspada extends Ataque {
 
 	public GolpeEspada() {
-		super("Golpe de Espada", 0); //Sem custo de mana
+		super("Golpe de Espada");
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
 import core.Combate;
 import entidades.Heroi;
 import entidades.Monstro;
+import ataques.Habilidade;
 import acoes.ResultadoAcao;
 
 public class PainelCombate extends JPanel {
@@ -31,8 +32,8 @@ public class PainelCombate extends JPanel {
     private JanelaPrincipal janela;
     private Combate combate;
 
-    // Variável de controle: 0 = Espada, 1 = Magia
-    private int habilidadeArmada = 0;
+    // Variável de controle: -1 = ataque básico (sempre disponível), >=0 = índice na lista de habilidades
+    private int habilidadeArmada = -1;
 
     // Listas para armazenar as barras e nomes da HUD dinâmica
     private List<JProgressBar> barrasHPHerois = new ArrayList<>();
@@ -87,11 +88,15 @@ public class PainelCombate extends JPanel {
                 // Pega o índice de quem é a vez no motor lógico
                 int indiceTurno = combate.getHerois().indexOf(combate.getHeroiAtual());
 
-                // Dispara a habilidade "armada" no alvo clicado.
-                // O Combate já decide sozinho, internamente, se depois dessa
-                // ação é a vez do próximo herói ou se os monstros atacam agora
-                // (o log dos monstros já vem embutido na mensagem de retorno).
-                ResultadoAcao resultado = combate.processarAcaoHeroiHabilidade(indiceTurno, habilidadeArmada, indiceAlvo);
+                // Dispara a ação "armada" no alvo clicado. -1 é o ataque
+                // básico (sempre disponível); >=0 é o índice na lista de
+                // habilidades (as que custam mana). O Combate já decide
+                // sozinho, internamente, se depois dessa ação é a vez do
+                // próximo herói ou se os monstros atacam agora (o log
+                // dessas ações já vem embutido na mensagem de retorno).
+                ResultadoAcao resultado = (habilidadeArmada == -1)
+                        ? combate.processarAtaqueBasicoHeroi(indiceTurno, indiceAlvo)
+                        : combate.processarAcaoHeroiHabilidade(indiceTurno, habilidadeArmada, indiceAlvo);
                 logBatalha.append("\n> " + resultado.getMensagem());
 
                 // Atualiza a barra do monstro específico
@@ -133,7 +138,7 @@ public class PainelCombate extends JPanel {
         painelComandos.setLayout(new GridLayout(2, 2, 5, 5));
 
         btnAtaque = estilizarBotao("Ataque");
-        btnMagia = estilizarBotao("Magia");
+        btnMagia = estilizarBotao("Habilidade");
         btnItem = estilizarBotao("Item");
         JButton btnFugir = estilizarBotao("Fugir");
         btnContinuar = estilizarBotao("Continuar");
@@ -186,13 +191,19 @@ public class PainelCombate extends JPanel {
         // 3. EVENTOS DOS BOTÕES
         // ==========================================
         btnAtaque.addActionListener(e -> {
-            this.habilidadeArmada = 0; // Índice de GolpeEspada
-            logBatalha.append("\n> Golpe de Espada selecionado. Clique em um alvo!");
+            this.habilidadeArmada = -1;
+            String nomeAtaque = combate.getHeroiAtual().getAtaquePadrao().getNome();
+            logBatalha.append("\n> " + nomeAtaque + " selecionado. Clique em um alvo!");
         });
 
         btnMagia.addActionListener(e -> {
-            this.habilidadeArmada = 1; // Índice de BolaDeFogo
-            logBatalha.append("\n> Bola de Fogo selecionada. Clique em um alvo!");
+            List<Habilidade> habilidadesHeroi = combate.getHeroiAtual().getHabilidades();
+            if (habilidadesHeroi.isEmpty()) {
+                logBatalha.append("\n> Nenhuma habilidade disponível!");
+                return;
+            }
+            this.habilidadeArmada = 0;
+            logBatalha.append("\n> " + habilidadesHeroi.get(0).getNome() + " selecionada. Clique em um alvo!");
         });
 
         btnItem.addActionListener(e -> {

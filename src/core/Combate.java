@@ -177,6 +177,32 @@ public class Combate {
         return new ResultadoAcao(true, mensagem.toString());
     }
 
+    public ResultadoAcao processarAtaqueBasicoHeroi(int indiceHeroi, int indiceAlvo) {
+        if (!isCombateAtivo()) return new ResultadoAcao(false, "A batalha já acabou.");
+
+        Heroi atacante = this.herois.get(indiceHeroi);
+        Monstro alvo = this.monstros.get(indiceAlvo);
+
+        if (!alvo.estaVivo()) {
+            return new ResultadoAcao(false, "O alvo já está derrotado!");
+        }
+
+        ResultadoAcao resultado = executarAtaque(atacante, alvo, atacante.getAtaquePadrao());
+
+        StringBuilder mensagem = new StringBuilder(resultado.getMensagem());
+
+        if (verificarVitoria()) {
+            this.combateAtivo = false;
+        } else {
+            String logMonstros = avancarTurno();
+            if (!logMonstros.isEmpty()) {
+                mensagem.append("\n").append(logMonstros);
+            }
+        }
+
+        return new ResultadoAcao(true, mensagem.toString());
+    }
+
     public ResultadoAcao processarAcaoHeroiItem(int indiceHeroi, int indiceItem) {
         if (!isCombateAtivo()) return new ResultadoAcao(false, "A batalha já acabou.");
 
