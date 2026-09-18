@@ -51,7 +51,20 @@ public class Bau {
     public boolean isFechado(){
         return this.fechado;
     }
-    
+
+    // Sugestão de refatoração (ainda não feita): Bau, Porta e Masmorra.Encontro
+    // todos têm x/y e hoje são buscados por posição em métodos separados e
+    // duplicados dentro de Masmorra (getBauAdjacenteAoHeroi, existeBau,
+    // getEncontroNaPosicaoDoHeroi fazem o mesmo tipo de loop). Dá pra extrair
+    // uma interface comum:
+    //   interface Posicionavel { int getX(); int getY(); }
+    // implementada por Bau, Porta e Encontro, e escrever UM único par de
+    // métodos genéricos reaproveitável pelos três, por exemplo:
+    //   Posicionavel encontrarAdjacente(List<? extends Posicionavel> lista, int heroiX, int heroiY)
+    //   boolean existeNaPosicao(List<? extends Posicionavel> lista, int x, int y)
+    // Assim, quando a Porta for integrada de fato, ela reaproveita esses
+    // métodos em vez de precisar de um getPortaAdjacenteAoHeroi()/existePorta()
+    // copiado igual aos de Bau.
     public int getX(){
         return this.x;
     }

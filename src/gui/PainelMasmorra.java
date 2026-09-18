@@ -39,29 +39,30 @@ public class PainelMasmorra extends JPanel implements KeyListener {
         desenharMapa(g);
 
         // Pinta o herói (Azul) na posição informada pelo modelo
-        g.setColor(Color.BLUE);
-        g.fillRect(masmorra.getHeroiX() * TAMANHO_TILE, masmorra.getHeroiY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
+        desenharTile(g, masmorra.getHeroiX(), masmorra.getHeroiY(), Color.BLUE);
 
         // Pinta cada encontro (Vermelho) que ainda não foi derrotado
-        g.setColor(Color.RED);
         for (Masmorra.Encontro encontro : masmorra.getEncontros()) {
             if (!encontro.isDerrotado()) {
-                g.fillRect(encontro.getX() * TAMANHO_TILE, encontro.getY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
+                desenharTile(g, encontro.getX(), encontro.getY(), Color.RED);
             }
         }
-        
-        
+
         //pinta os baus fechados e abertos de cores diferentes -- Lalae
         for (Bau i: masmorra.getBaus()) {
-            if (i.isFechado()) {
-                g.setColor(Color.YELLOW);
-                g.fillRect(i.getX() * TAMANHO_TILE, i.getY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
-            }else{
-                g.setColor(Color.ORANGE);
-                g.fillRect(i.getX() * TAMANHO_TILE, i.getY() * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
-            }
+            Color cor = i.isFechado() ? Color.YELLOW : Color.ORANGE;
+            desenharTile(g, i.getX(), i.getY(), cor);
         }
-        
+
+    }
+
+    /**
+     * Pinta um tile de cor sólida na posição (x, y) do grid — usado pra
+     * herói, encontros e baús, que ainda não têm sprite próprio.
+     */
+    private void desenharTile(Graphics g, int x, int y, Color cor) {
+        g.setColor(cor);
+        g.fillRect(x * TAMANHO_TILE, y * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE);
     }
 
     /**
