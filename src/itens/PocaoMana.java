@@ -7,10 +7,14 @@ import acoes.ResultadoAcao;
 public class PocaoMana extends Item {
 	private int quantidadeMana;
 	
-		public PocaoMana(String nome, String descricao, int quantidadeMana) {
-			super(nome, descricao);
+		// Package-private de proposito: só quem está no pacote itens (o
+		// CatalogoDeItens) pode criar uma PocaoMana, pra não ter valores
+		// divergentes criados em pontos diferentes do código (ver Masmorra
+		// vs JanelaPrincipal antes dessa mudança).
+		PocaoMana(String nome, String descricao, int quantidadeMana, String caminhoSprite) {
+			super(nome, descricao, caminhoSprite);
 			this.quantidadeMana = quantidadeMana;
-			
+
 		}
 		
 		@Override

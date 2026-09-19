@@ -27,6 +27,10 @@ public class Experiencia {
 		return nivel * 50; // provisório, balancear depois
 	}
 
+	public int getXpParaProximoNivel() {
+		return custoProximoNivel();
+	}
+
 	public int getNivel() {
 		return nivel;
 	}

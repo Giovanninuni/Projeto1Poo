@@ -1,18 +1,11 @@
 package gui;
 
-import entidades.Heroi;
-import entidades.Guerreiro;
-import entidades.Mago;
 import entidades.Grupo;
 import core.Combate;
-import equipamentos.CatalogoDeEquipamentos;
-import itens.PocaoMana;
-import itens.PocaoVida;
+import core.FabricaDeJogoNovo;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
-import java.util.ArrayList;
-import java.util.List;
 import mundo.CarregadorMapa;
 import mundo.Masmorra;
 
@@ -32,31 +25,7 @@ public class JanelaPrincipal extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // 2. Criando a Party
-        Heroi arthur = new Guerreiro("Arthur", 100, 15, 5, 50);
-        Heroi merlin = new Mago("Mago Merlin", 80, 5, 2, 120);
-
-        // Cada herói começa com poções básicas na mochila
-        arthur.getInventario().adicionarItem(new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30));
-        arthur.getInventario().adicionarItem(new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30));
-        arthur.getInventario().adicionarItem(new PocaoMana("Poção de Mana", "Restaura 20 de mana", 20));
-
-        merlin.getInventario().adicionarItem(new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30));
-        merlin.getInventario().adicionarItem(new PocaoMana("Poção de Mana", "Restaura 20 de mana", 20));
-        merlin.getInventario().adicionarItem(new PocaoMana("Poção de Mana", "Restaura 20 de mana", 20));
-
-        List<Heroi> listaHerois = new ArrayList<>();
-        listaHerois.add(arthur);
-        listaHerois.add(merlin); // Segundo membro!
-        this.grupo = new Grupo(listaHerois);
-
-        // Equipamentos iniciais de cada heroi (ver CatalogoDeEquipamentos)
-        arthur.equipar(CatalogoDeEquipamentos.espadaDeTreino(), grupo.getDeposito());
-        arthur.equipar(CatalogoDeEquipamentos.armaduraDeCouro(), grupo.getDeposito());
-
-        merlin.equipar(CatalogoDeEquipamentos.cajadoDeAprendiz(), grupo.getDeposito());
-        merlin.equipar(CatalogoDeEquipamentos.vestesDeAprendiz(), grupo.getDeposito());
-
+        this.grupo = FabricaDeJogoNovo.criarGrupoInicial();
         this.masmorra = new Masmorra(CarregadorMapa.carregarDeTmx("mapa1.tmx"));
 
         this.gerenciadorTelas = new CardLayout();
@@ -96,6 +65,14 @@ public class JanelaPrincipal extends JFrame {
     public void voltarMasmorra() {
         gerenciadorTelas.show(painelTelas, "TELA_MASMORRA");
         telaMasmorra.requestFocusInWindow();
+    }
+
+    // Recria a tela de status a cada chamada pra sempre refletir o estado
+    // atual do grupo (mesmo padrão do iniciarCombate).
+    public void mostrarStatus() {
+        PainelStatus telaStatus = new PainelStatus(this, this.grupo);
+        painelTelas.add(telaStatus, "TELA_STATUS");
+        gerenciadorTelas.show(painelTelas, "TELA_STATUS");
     }
 
     public Grupo getGrupo() {

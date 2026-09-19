@@ -50,7 +50,6 @@ public class Masmorra {
     private int heroiY;
     private final List<Encontro> encontros;
     private final List<Bau> baus;
-    private List<Item> itensDisponiveis;
 
     public Masmorra(Mapa mapa) {
         this.mapa = mapa;
@@ -68,12 +67,15 @@ public class Masmorra {
         this.encontros.add(new Encontro(10, 5, grupoTeste));
         
         this.baus = new ArrayList<>();
-        this.itensDisponiveis = new ArrayList<>();
-        this.itensDisponiveis.add(new PocaoMana("Poção de mana", "Restaura 30 de mana", 30));
-        this.itensDisponiveis.add(new PocaoVida("Poção de cura", "Restaura 30 de vida", 30));
-        
-        this.baus.add(new Bau(17, 6, itensDisponiveis, List.of(CatalogoDeEquipamentos.acessorioDoViajante())));
-        this.baus.add(new Bau(10, 10, itensDisponiveis, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
+
+        List<Item> itensDoBauUm = new ArrayList<>();
+        itensDoBauUm.add(CatalogoDeItens.pocaoDeMana());
+        itensDoBauUm.add(CatalogoDeItens.pocaoDeVida());
+        this.baus.add(new Bau(17, 6, itensDoBauUm, List.of(CatalogoDeEquipamentos.acessorioDoViajante())));
+
+        List<Item> itensDoBauDois = new ArrayList<>();
+        itensDoBauDois.add(CatalogoDeItens.pocaoDeVida());
+        this.baus.add(new Bau(10, 10, itensDoBauDois, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
     }
 
     /**

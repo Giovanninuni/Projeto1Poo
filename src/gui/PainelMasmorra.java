@@ -125,6 +125,12 @@ public class PainelMasmorra extends JPanel implements KeyListener {
             janela.iniciarCombate(encontro);
         }
         
+        //abre a tela de status apertando P
+        if (tecla == KeyEvent.VK_P){
+            janela.mostrarStatus();
+            return;
+        }
+
         //checagem para abrir baus apertando E -- Lalae
         if (tecla == KeyEvent.VK_E){
             Bau bauAdjacente = masmorra.getBauAdjacenteAoHeroi();

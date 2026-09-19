@@ -23,7 +23,7 @@ import ataques.Habilidade;
 import acoes.ResultadoAcao;
 
 public class PainelCombate extends JPanel {
-    private static final long serialVersiddonUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private JanelaPrincipal janela;
     private Combate combate;

@@ -110,6 +110,10 @@ public abstract class Heroi extends Personagem {
       return this.mana;
    }
 
+   public Experiencia getExperiencia() {
+       return this.experiencia;
+   }
+
    public Inventario getInventario() {
 	   return this.inventario;
    }
