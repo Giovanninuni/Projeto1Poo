@@ -241,7 +241,6 @@ public class PainelCombate extends JPanel {
         });
 
         btnContinuar.addActionListener(e -> {
-            janela.getGrupo().getOuro().adicionar(combate.getOuroGanho());
             janela.concluirVitoria();
         });
 

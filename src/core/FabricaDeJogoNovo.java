@@ -7,13 +7,16 @@ import entidades.Mago;
 import equipamentos.CatalogoDeEquipamentos;
 import itens.CatalogoDeItens;
 import java.util.List;
+import mundo.CarregadorMapa;
+import mundo.Masmorra;
 
 /**
  * Sabe montar o estado inicial de uma partida nova: quais heróis existem,
- * com que atributos, o que cada um carrega na mochila e o que já vem
- * equipado. Fica aqui, e não em JanelaPrincipal, porque isso é regra de
- * jogo (balanceamento, composição do grupo inicial) -- não é
- * responsabilidade de uma janela Swing decidir isso, só de exibir.
+ * com que atributos, o que cada um carrega na mochila, o que já vem
+ * equipado, e qual masmorra o jogo começa carregando. Fica aqui, e não em
+ * JanelaPrincipal, porque isso é regra de jogo (balanceamento, composição
+ * do grupo inicial, mapa inicial) -- não é responsabilidade de uma janela
+ * Swing decidir isso, só de exibir.
  */
 public class FabricaDeJogoNovo {
 
@@ -40,5 +43,9 @@ public class FabricaDeJogoNovo {
         merlin.equipar(CatalogoDeEquipamentos.vestesDeAprendiz(), grupo.getDeposito());
 
         return grupo;
+    }
+
+    public static Masmorra criarMasmorraInicial() {
+        return new Masmorra(CarregadorMapa.carregarDeTmx("mapa1.tmx"));
     }
 }

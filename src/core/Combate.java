@@ -7,6 +7,7 @@ import ataques.Ataque;
 import ataques.Habilidade;
 import acoes.ResultadoAcao;
 import atributos.Dano;
+import atributos.Ouro;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,15 +16,20 @@ public class Combate {
 
     private List<Heroi> herois;
     private List<Monstro> monstros;
+    private Ouro ouro;
 
     private int indiceHeroiAtual = 0;
     private boolean combateAtivo = true;
-    private int ouroGanho = 0;
     private final Random sorteador = new Random();
 
-    public Combate(List<Heroi> grupoHerois, List<Monstro> grupoMonstros) {
+    // Recebe o Ouro do grupo (não o Grupo inteiro) pelo mesmo motivo de só
+    // receber List<Heroi> em vez de Grupo: Combate só deve enxergar o que
+    // precisa pra creditar recompensa, não o depósito de equipamentos nem
+    // o resto do estado do grupo.
+    public Combate(List<Heroi> grupoHerois, List<Monstro> grupoMonstros, Ouro ouro) {
         this.herois = grupoHerois;
         this.monstros = grupoMonstros;
+        this.ouro = ouro;
         this.indiceHeroiAtual = 0;
         this.combateAtivo = true;
     }
@@ -213,8 +219,10 @@ public class Combate {
     // ==========================================
     // --- RECOMPENSAS DE VITÓRIA ---
     // ==========================================
-    // XP é dividido entre os heróis vivos; ouro vai pro contador único do
-    // grupo (quem lê getOuroGanho() e credita é a JanelaPrincipal).
+    // XP é dividido entre os heróis vivos; ouro é creditado direto no Ouro
+    // do grupo, do mesmo jeito que XP é creditado direto em cada Heroi —
+    // Combate aplica a própria recompensa, não devolve um número pra
+    // outra camada aplicar.
     private String concederRecompensas() {
         int xpTotal = 0;
         int ouroTotal = 0;
@@ -243,13 +251,9 @@ public class Combate {
             }
         }
 
-        this.ouroGanho = ouroTotal;
+        this.ouro.adicionar(ouroTotal);
 
         return mensagem.toString();
-    }
-
-    public int getOuroGanho() {
-        return ouroGanho;
     }
 
     // ==========================================

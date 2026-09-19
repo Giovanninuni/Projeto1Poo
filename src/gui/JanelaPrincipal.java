@@ -6,7 +6,6 @@ import core.FabricaDeJogoNovo;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
-import mundo.CarregadorMapa;
 import mundo.Masmorra;
 
 public class JanelaPrincipal extends JFrame {
@@ -26,7 +25,7 @@ public class JanelaPrincipal extends JFrame {
         setLocationRelativeTo(null);
 
         this.grupo = FabricaDeJogoNovo.criarGrupoInicial();
-        this.masmorra = new Masmorra(CarregadorMapa.carregarDeTmx("mapa1.tmx"));
+        this.masmorra = FabricaDeJogoNovo.criarMasmorraInicial();
 
         this.gerenciadorTelas = new CardLayout();
         this.painelTelas = new JPanel(this.gerenciadorTelas);
@@ -44,7 +43,7 @@ public class JanelaPrincipal extends JFrame {
         this.encontroAtual = encontro;
 
         // A classe Combate cruza a lista de heróis com a lista de inimigos
-        Combate combate = new Combate(this.grupo.getHerois(), encontro.getInimigos());
+        Combate combate = new Combate(this.grupo.getHerois(), encontro.getInimigos(), this.grupo.getOuro());
         PainelCombate telaCombate = new PainelCombate(this, combate);
 
         painelTelas.add(telaCombate, "TELA_COMBATE");
@@ -53,7 +52,9 @@ public class JanelaPrincipal extends JFrame {
 
     // Chamado só quando o Combate confirma vitória (o botão "Continuar" só
     // existe nesse caso) — é aqui, e não no instante de pisar no tile, que
-    // o encontro é marcado como derrotado de verdade.
+    // o encontro é marcado como derrotado de verdade. O próprio Combate já
+    // creditou XP e ouro antes desse botão sequer aparecer (dentro de
+    // concederRecompensas()) — aqui só falta marcar o encontro e voltar.
     public void concluirVitoria() {
         if (encontroAtual != null) {
             encontroAtual.marcarDerrotado();
