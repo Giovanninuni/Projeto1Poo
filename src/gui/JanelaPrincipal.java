@@ -20,22 +20,31 @@ public class JanelaPrincipal extends JFrame {
     private Masmorra.Encontro encontroAtual;
 
     public JanelaPrincipal() {
-        super("RPG - A Vingança contra Vitor S.");
+    	super("RPG - A Vingança contra Vitor S.");
         setSize(1024, 768);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
-        this.grupo = FabricaDeJogoNovo.criarGrupoInicial();
-        this.masmorra = FabricaDeJogoNovo.criarMasmorraInicial();
 
         this.gerenciadorTelas = new CardLayout();
         this.painelTelas = new JPanel(this.gerenciadorTelas);
         setContentPane(painelTelas);
 
+        iniciarPartida();
+    }
+    
+ // Monta uma partida do zero: usado ao abrir o jogo e ao recomeçar após o Game Over.
+    private void iniciarPartida() {
+        this.grupo = FabricaDeJogoNovo.criarGrupoInicial();
+        this.masmorra = FabricaDeJogoNovo.criarMasmorraInicial();
+
         this.telaMasmorra = new PainelMasmorra(this, this.masmorra);
-        this.painelTelas.add(telaMasmorra, "TELA_MASMORRA");
-        this.gerenciadorTelas.show(painelTelas, "TELA_MASMORRA");
-        telaMasmorra.requestFocusInWindow();
+        painelTelas.add(telaMasmorra, "TELA_MASMORRA");
+        voltarMasmorra();
+    }
+
+    public void reiniciarJogo() {
+        painelTelas.remove(telaMasmorra); // tira o painel da partida antiga
+        iniciarPartida();
     }
 
     // Recebe o encontro inteiro (não só a lista de monstros) para poder
@@ -67,7 +76,7 @@ public class JanelaPrincipal extends JFrame {
     		}
     			
     		case DERROTA -> {
-    			//mostrarGameOver();
+    			mostrarGameOver();
     		}
     		
     		case EM_ANDAMENTO -> {}
@@ -87,6 +96,12 @@ public class JanelaPrincipal extends JFrame {
         PainelStatus telaStatus = new PainelStatus(this, this.grupo);
         painelTelas.add(telaStatus, "TELA_STATUS");
         gerenciadorTelas.show(painelTelas, "TELA_STATUS");
+    }
+    
+    public void mostrarGameOver() {
+        PainelGameOver telaGameOver = new PainelGameOver(this);
+        painelTelas.add(telaGameOver, "TELA_GAME_OVER");
+        gerenciadorTelas.show(painelTelas, "TELA_GAME_OVER");
     }
 
     public Grupo getGrupo() {

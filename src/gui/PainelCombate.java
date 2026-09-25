@@ -83,9 +83,6 @@ public class PainelCombate extends JPanel {
 			barraHP.setStringPainted(true);
 
 			btnAlvo.addActionListener(e -> {
-				// Pega o índice de quem é a vez no motor lógico
-				int indiceTurno = combate.getHerois().indexOf(combate.getHeroiAtual());
-
 				// Dispara a ação "armada" no alvo clicado. -1 é o ataque
 				// básico (sempre disponível); >=0 é o índice na lista de
 				// habilidades (as que custam mana). O Combate já decide
@@ -93,8 +90,8 @@ public class PainelCombate extends JPanel {
 				// próximo herói ou se os monstros atacam agora (o log
 				// dessas ações já vem embutido na mensagem de retorno).
 				ResultadoAcao resultado = (habilidadeArmada == -1)
-						? combate.processarAtaqueBasicoHeroi(indiceTurno, indiceAlvo)
-						: combate.processarAcaoHeroiHabilidade(indiceTurno, habilidadeArmada, indiceAlvo);
+						? combate.processarAtaqueBasicoHeroi(indiceAlvo)
+						: combate.processarAcaoHeroiHabilidade(habilidadeArmada, indiceAlvo);
 				logBatalha.append("\n> " + resultado.getMensagem());
 
 				// Atualiza a barra do monstro específico
@@ -206,7 +203,6 @@ public class PainelCombate extends JPanel {
 
 		btnItem.addActionListener(e -> {
 			Heroi heroiTurno = combate.getHeroiAtual();
-			int indiceTurno = combate.getHerois().indexOf(heroiTurno);
 
 			String[] opcoesMenu = heroiTurno.getInventario().obterMenuDeItens();
 
@@ -223,7 +219,7 @@ public class PainelCombate extends JPanel {
 
 				// Assim como no ataque, o Combate já resolve sozinho se o
 				// turno dos monstros deve entrar em seguida.
-				ResultadoAcao resultado = combate.processarAcaoHeroiItem(indiceTurno, indiceItem);
+				ResultadoAcao resultado = combate.processarAcaoHeroiItem(indiceItem);
 				logBatalha.append("\n> " + resultado.getMensagem());
 				atualizarStatus();
 
@@ -277,8 +273,11 @@ public class PainelCombate extends JPanel {
 			barrasMPHerois.get(i).setValue(h.getMana().getAtual());
 			barrasMPHerois.get(i).setString("MP: " + h.getMana().getAtual());
 
-			// Destaca de quem é o turno com uma seta amarela e texto
-			if (combate.getHerois().indexOf(combate.getHeroiAtual()) == i) {
+			// Destaca de quem é o turno com uma seta amarela e texto.
+			// Compara o próprio objeto (==) em vez de procurar a posição com
+			// indexOf: quando o grupo perde, getHeroiAtual() é null, e
+			// List.of(...).indexOf(null) lança NullPointerException.
+			if (h == combate.getHeroiAtual()) {
 				labelsNomesHerois.get(i).setForeground(Color.YELLOW);
 				labelsNomesHerois.get(i).setText("▶ " + h.getNome());
 			} else {

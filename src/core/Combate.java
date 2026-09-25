@@ -139,11 +139,15 @@ public class Combate {
     	return this.estadoBatalha;
     }
 
-
-    public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHeroi, int indiceHabilidade, int indiceAlvo) {
+    // As ações do herói não recebem "qual herói" de fora: o Combate já sabe
+    // de quem é a vez (indiceHeroiAtual). Assim a GUI não precisa descobrir
+    // o índice do turno, e não consegue mandar agir um herói fora da vez.
+    // A checagem de estado vem antes de getHeroiAtual() de propósito: com a
+    // batalha em andamento sempre existe um herói da vez (nunca null).
+    public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHabilidade, int indiceAlvo) {
         if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
 
-        Heroi atacante = this.herois.get(indiceHeroi);
+        Heroi atacante = getHeroiAtual();
         Monstro alvo = this.monstros.get(indiceAlvo);
 
         if (!alvo.estaVivo()) {
@@ -166,10 +170,10 @@ public class Combate {
         return finalizarAcao(new StringBuilder(resultado.getMensagem()));
     }
 
-    public ResultadoAcao processarAtaqueBasicoHeroi(int indiceHeroi, int indiceAlvo) {
+    public ResultadoAcao processarAtaqueBasicoHeroi(int indiceAlvo) {
         if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
 
-        Heroi atacante = this.herois.get(indiceHeroi);
+        Heroi atacante = getHeroiAtual();
         Monstro alvo = this.monstros.get(indiceAlvo);
 
         if (!alvo.estaVivo()) {
@@ -181,10 +185,10 @@ public class Combate {
         return finalizarAcao(new StringBuilder(resultado.getMensagem()));
     }
 
-    public ResultadoAcao processarAcaoHeroiItem(int indiceHeroi, int indiceItem) {
+    public ResultadoAcao processarAcaoHeroiItem(int indiceItem) {
         if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
 
-        Heroi consumidor = this.herois.get(indiceHeroi);
+        Heroi consumidor = getHeroiAtual();
         ResultadoAcao resultado = consumidor.usarItem(indiceItem);
 
         if (!resultado.isSucesso()) {
