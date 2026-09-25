@@ -13,6 +13,7 @@ public class JanelaPrincipal extends JFrame {
     
     private CardLayout gerenciadorTelas;
     private JPanel painelTelas;
+    private JPanel telaTemporaria; // combate, status ou game over que está por cima da masmorra
     
     private Grupo grupo;
     private Masmorra masmorra;
@@ -46,6 +47,17 @@ public class JanelaPrincipal extends JFrame {
         painelTelas.remove(telaMasmorra); // tira o painel da partida antiga
         iniciarPartida();
     }
+    
+	 // Mostra uma tela temporária e descarta a anterior. A masmorra nunca é
+	 // removida aqui: é a tela permanente para onde o jogo sempre volta.
+    private void mostrarTelaTemporaria(JPanel novaTela, String nome) {
+    	painelTelas.add(novaTela, nome);
+	    gerenciadorTelas.show(painelTelas, nome);
+	    if (telaTemporaria != null) {
+	        painelTelas.remove(telaTemporaria);
+	    }
+	    telaTemporaria = novaTela;
+	}
 
     // Recebe o encontro inteiro (não só a lista de monstros) para poder
     // marcá-lo como derrotado depois, quando a batalha for de fato vencida.
@@ -55,9 +67,8 @@ public class JanelaPrincipal extends JFrame {
         // A classe Combate cruza a lista de heróis com a lista de inimigos
         Combate combate = new Combate(this.grupo.getHerois(), encontro.getInimigos(), this.grupo.getOuro());
         PainelCombate telaCombate = new PainelCombate(this, combate);
-
-        painelTelas.add(telaCombate, "TELA_COMBATE");
-        gerenciadorTelas.show(painelTelas, "TELA_COMBATE");
+        
+        mostrarTelaTemporaria(telaCombate, "TELA_COMBATE");
     }
 
     // Único ponto de saída do combate: a GUI só informa o resultado, aqui se
@@ -88,20 +99,22 @@ public class JanelaPrincipal extends JFrame {
     public void voltarMasmorra() {
         gerenciadorTelas.show(painelTelas, "TELA_MASMORRA");
         telaMasmorra.requestFocusInWindow();
+        if (telaTemporaria != null) {
+            painelTelas.remove(telaTemporaria);
+            telaTemporaria = null;
+        }
     }
 
     // Recria a tela de status a cada chamada pra sempre refletir o estado
     // atual do grupo (mesmo padrão do iniciarCombate).
     public void mostrarStatus() {
         PainelStatus telaStatus = new PainelStatus(this, this.grupo);
-        painelTelas.add(telaStatus, "TELA_STATUS");
-        gerenciadorTelas.show(painelTelas, "TELA_STATUS");
+        mostrarTelaTemporaria(telaStatus, "TELA_STATUS");
     }
     
     public void mostrarGameOver() {
         PainelGameOver telaGameOver = new PainelGameOver(this);
-        painelTelas.add(telaGameOver, "TELA_GAME_OVER");
-        gerenciadorTelas.show(painelTelas, "TELA_GAME_OVER");
+        mostrarTelaTemporaria(telaGameOver, "TELA_GAME_OVER");
     }
 
     public Grupo getGrupo() {
