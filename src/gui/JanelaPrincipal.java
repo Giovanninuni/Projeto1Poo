@@ -2,6 +2,7 @@ package gui;
 
 import entidades.Grupo;
 import core.Combate;
+import core.EstadoBatalha;
 import core.FabricaDeJogoNovo;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -50,17 +51,29 @@ public class JanelaPrincipal extends JFrame {
         gerenciadorTelas.show(painelTelas, "TELA_COMBATE");
     }
 
-    // Chamado só quando o Combate confirma vitória (o botão "Continuar" só
-    // existe nesse caso) — é aqui, e não no instante de pisar no tile, que
-    // o encontro é marcado como derrotado de verdade. O próprio Combate já
-    // creditou XP e ouro antes desse botão sequer aparecer (dentro de
-    // concederRecompensas()) — aqui só falta marcar o encontro e voltar.
-    public void concluirVitoria() {
-        if (encontroAtual != null) {
-            encontroAtual.marcarDerrotado();
-            encontroAtual = null;
-        }
-        voltarMasmorra();
+    // Único ponto de saída do combate: a GUI só informa o resultado, aqui se
+    // decide para onde ir. O encontro só é marcado como derrotado aqui, na
+    // vitória confirmada — não no instante em que o herói pisa no tile.
+    public void concluirCombate(EstadoBatalha resultado) {
+    	switch (resultado) {
+    	//com a seta executa normal, mas ele para no primeiro case que entra, não precisando de break
+    		case VITORIA -> {
+    			encontroAtual.marcarDerrotado();
+    			voltarMasmorra();
+    		}
+    
+    		case FUGA -> {
+    			voltarMasmorra();
+    		}
+    			
+    		case DERROTA -> {
+    			//mostrarGameOver();
+    		}
+    		
+    		case EM_ANDAMENTO -> {}
+    	}
+    	// Se nao tem nenhum, nao esta em batalha
+    	encontroAtual = null;
     }
 
     public void voltarMasmorra() {

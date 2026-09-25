@@ -17,9 +17,9 @@ public class Combate {
     private List<Heroi> herois;
     private List<Monstro> monstros;
     private Ouro ouro;
+    private EstadoBatalha estadoBatalha;
 
     private int indiceHeroiAtual = 0;
-    private boolean combateAtivo = true;
     private final Random sorteador = new Random();
 
     // Recebe o Ouro do grupo (não o Grupo inteiro) pelo mesmo motivo de só
@@ -31,7 +31,7 @@ public class Combate {
         this.monstros = grupoMonstros;
         this.ouro = ouro;
         this.indiceHeroiAtual = 0;
-        this.combateAtivo = true;
+        this.estadoBatalha = EstadoBatalha.EM_ANDAMENTO;
     }
 
     // ==========================================
@@ -43,7 +43,7 @@ public class Combate {
     // log dessas ações para quem chamou (a GUI só exibe o texto, não decide
     // quando os monstros atacam).
     private String avancarTurno() {
-        if (verificarDerrota()) return "";
+        if (estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return "";
 
         indiceHeroiAtual++;
 
@@ -58,7 +58,7 @@ public class Combate {
             // A rodada de heróis terminou: agora é a vez dos monstros
             logMonstros = turnoDosMonstros();
 
-            if (!verificarDerrota()) {
+            if (estadoBatalha == EstadoBatalha.EM_ANDAMENTO) {
                 indiceHeroiAtual = 0;
                 while (indiceHeroiAtual < herois.size() && !herois.get(indiceHeroiAtual).estaVivo()) {
                     indiceHeroiAtual++;
@@ -83,10 +83,8 @@ public class Combate {
             }
         }
 
-        if (verificarDerrota()) {
-            this.combateAtivo = false;
-        }
-
+        atualizarEstado();
+        
         return log.toString();
     }
 
@@ -106,19 +104,27 @@ public class Combate {
         return vivos.get(indiceAleatorio);
     }
 
-    public boolean verificarVitoria() {
+    private boolean verificarVitoria() {
         for (Monstro m : monstros) {
-            if (m.estaVivo()) return false;
+            if (m.estaVivo())  return false;
         }
         return true;
     }
 
-    public boolean verificarDerrota() {
+    private boolean verificarDerrota() {
         for (Heroi h : herois) {
             if (h.estaVivo()) return false;
         }
         return true;
     }
+    
+    private void atualizarEstado() {
+        if (verificarVitoria()) {
+            estadoBatalha = EstadoBatalha.VITORIA;
+        } else if (verificarDerrota()) {
+            estadoBatalha = EstadoBatalha.DERROTA;
+        }
+    } //Ainda não mudei nada para que esse metodo seja usado
 
     public List<Heroi> getHerois() { return herois; }
     public List<Monstro> getMonstros() { return monstros; }
@@ -128,25 +134,14 @@ public class Combate {
         if (indiceHeroiAtual >= herois.size()) return null;
         return herois.get(indiceHeroiAtual);
     }
-
-    public boolean isCombateAtivo() { return combateAtivo; }
-
-    // ==========================================
-    // --- MÉTODOS EXIGIDOS PELO PAINELCOMBATE ---
-    // ==========================================
-
-    public boolean batalhaAtiva() {
-        return this.isCombateAtivo();
+    
+    public EstadoBatalha getEstado() {
+    	return this.estadoBatalha;
     }
 
-    public String verificarVencedor() {
-        if (verificarVitoria()) return "Vitória! Inimigos derrotados.";
-        if (verificarDerrota()) return "Derrota! A party foi aniquilada.";
-        return "Batalha em andamento...";
-    }
 
     public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHeroi, int indiceHabilidade, int indiceAlvo) {
-        if (!isCombateAtivo()) return new ResultadoAcao(false, "A batalha já acabou.");
+        if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
 
         Heroi atacante = this.herois.get(indiceHeroi);
         Monstro alvo = this.monstros.get(indiceAlvo);
@@ -172,7 +167,7 @@ public class Combate {
     }
 
     public ResultadoAcao processarAtaqueBasicoHeroi(int indiceHeroi, int indiceAlvo) {
-        if (!isCombateAtivo()) return new ResultadoAcao(false, "A batalha já acabou.");
+        if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
 
         Heroi atacante = this.herois.get(indiceHeroi);
         Monstro alvo = this.monstros.get(indiceAlvo);
@@ -187,7 +182,7 @@ public class Combate {
     }
 
     public ResultadoAcao processarAcaoHeroiItem(int indiceHeroi, int indiceItem) {
-        if (!isCombateAtivo()) return new ResultadoAcao(false, "A batalha já acabou.");
+        if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
 
         Heroi consumidor = this.herois.get(indiceHeroi);
         ResultadoAcao resultado = consumidor.usarItem(indiceItem);
@@ -203,8 +198,8 @@ public class Combate {
     // rodada virou e os monstros devem atacar agora; se a vitória aconteceu
     // nesta ação, concede as recompensas em vez de continuar os turnos.
     private ResultadoAcao finalizarAcao(StringBuilder mensagem) {
-        if (verificarVitoria()) {
-            this.combateAtivo = false;
+    	atualizarEstado();
+        if (estadoBatalha == EstadoBatalha.VITORIA) {
             mensagem.append("\n").append(concederRecompensas());
         } else {
             String logMonstros = avancarTurno();
@@ -216,6 +211,22 @@ public class Combate {
         return new ResultadoAcao(true, mensagem.toString());
     }
 
+    public ResultadoAcao fugir() {
+    	if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
+    	
+    	boolean conseguiuFugir = sorteador.nextInt(100) < 50;
+    	// 50% de chance de fugir
+    	
+    	if(conseguiuFugir) {
+    		this.estadoBatalha = EstadoBatalha.FUGA;
+        	return new ResultadoAcao(true, "A equipe fugiu!");
+    	}
+    	
+    	return finalizarAcao(new StringBuilder("A equipe não conseguiu fugir!"));
+    	
+    } 
+    
+    
     // ==========================================
     // --- RECOMPENSAS DE VITÓRIA ---
     // ==========================================

@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import core.Combate;
+import core.EstadoBatalha;
 import entidades.Heroi;
 import entidades.Monstro;
 import ataques.Habilidade;
@@ -28,7 +29,8 @@ public class PainelCombate extends JPanel {
     private JanelaPrincipal janela;
     private Combate combate;
 
-    // Variável de controle: -1 = ataque básico (sempre disponível), >=0 = índice na lista de habilidades
+	// Variável de controle: -1 = ataque básico (sempre disponível), >=0 = índice na
+	// lista de habilidades
     private int habilidadeArmada = -1;
 
     // Listas para armazenar as barras e nomes da HUD dinâmica
@@ -213,15 +215,8 @@ public class PainelCombate extends JPanel {
                 return;
             }
 
-            String escolhido = (String) JOptionPane.showInputDialog(
-                    this,
-                    "Escolha um item:",
-                    "Mochila de " + heroiTurno.getNome(),
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    opcoesMenu,
-                    opcoesMenu[0]
-            );
+			String escolhido = (String) JOptionPane.showInputDialog(this, "Escolha um item:",
+					"Mochila de " + heroiTurno.getNome(), JOptionPane.PLAIN_MESSAGE, null, opcoesMenu, opcoesMenu[0]);
 
             if (escolhido != null) {
                 int indiceItem = Integer.parseInt(escolhido.split(" ")[0]);
@@ -237,11 +232,14 @@ public class PainelCombate extends JPanel {
         });
 
         btnFugir.addActionListener(e -> {
-            logBatalha.append("\n> Não há como fugir desta batalha!");
+			ResultadoAcao resultado = combate.fugir();
+			logBatalha.append("\n> " + resultado.getMensagem());
+			atualizarStatus();
+			verificarFimDeJogo();
         });
 
         btnContinuar.addActionListener(e -> {
-            janela.concluirVitoria();
+			janela.concluirCombate(combate.getEstado());
         });
 
         atualizarStatus(); // Carrega os valores e a cor do turno pela primeira vez
@@ -254,10 +252,8 @@ public class PainelCombate extends JPanel {
     private JPanel criarPainelAzul() {
         JPanel painel = new JPanel();
         painel.setBackground(AZUL_RPG);
-        painel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BRANCO, 3),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
+		painel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(BRANCO, 3),
+				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         return painel;
     }
 
@@ -293,20 +289,24 @@ public class PainelCombate extends JPanel {
     }
 
     private void verificarFimDeJogo() {
-        if (!combate.batalhaAtiva()) {
-            logBatalha.append("\n\n=== " + combate.verificarVencedor() + " ===");
-            btnAtaque.setEnabled(false);
-            btnMagia.setEnabled(false);
-            btnItem.setEnabled(false);
+		EstadoBatalha estado = combate.getEstado();
+		if (estado == EstadoBatalha.EM_ANDAMENTO) {
+			return;
+		}
 
-            // Na derrota, a batalha fica travada por enquanto (sem tela de
-            // Game Over ainda). Só na vitória liberamos o retorno ao mapa.
-            if (combate.verificarVitoria()) {
+		String mensagemFinal = switch (estado) {
+		case VITORIA -> "Vitória! Inimigos derrotados.";
+		case DERROTA -> "Derrota! A party foi aniquilada.";
+		case FUGA -> "O grupo fugiu da batalha.";
+		case EM_ANDAMENTO -> "";
+		};
+
+		logBatalha.append("\n\n=== " + mensagemFinal + " ===");
+
                 painelComandos.removeAll();
                 painelComandos.add(btnContinuar);
                 painelComandos.revalidate();
                 painelComandos.repaint();
             }
-        }
-    }
+
 }

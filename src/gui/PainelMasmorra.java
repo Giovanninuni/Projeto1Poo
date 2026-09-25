@@ -111,18 +111,16 @@ public class PainelMasmorra extends JPanel implements KeyListener {
         if (tecla == KeyEvent.VK_S || tecla == KeyEvent.VK_DOWN) dy = 1;
         if (tecla == KeyEvent.VK_A || tecla == KeyEvent.VK_LEFT) dx = -1;
         if (tecla == KeyEvent.VK_D || tecla == KeyEvent.VK_RIGHT) dx = 1;
+        
+        /* FOI FEITA UMA MUDANÇA AQUI ABAIXO, PARA CORRIGIR UM BUG EM QUE APÓS FUGIR DA BATALHA, ANDAR 
+        FAZIA A BATALHA VOLTAR */
 
-        if (dx != 0 || dy != 0) {
-            masmorra.mover(dx, dy);
-        }
-
-        // Sistema de Colisão: pergunta ao modelo se há um encontro aqui.
-        // O encontro só é marcado como derrotado quando o Combate confirma
-        // a vitória (JanelaPrincipal.concluirVitoria) — não aqui, no
-        // instante de pisar no tile.
-        Masmorra.Encontro encontro = masmorra.getEncontroNaPosicaoDoHeroi();
-        if (encontro != null) {
-            janela.iniciarCombate(encontro);
+        if ((dx != 0 || dy != 0) && masmorra.mover(dx, dy)) {
+            Masmorra.Encontro encontro = masmorra.getEncontroNaPosicaoDoHeroi();
+            if (encontro != null) {
+                janela.iniciarCombate(encontro);
+                return;
+            }
         }
         
         //abre a tela de status apertando P
