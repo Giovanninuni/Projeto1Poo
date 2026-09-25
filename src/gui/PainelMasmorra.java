@@ -1,13 +1,15 @@
 package gui;
 
 import javax.swing.JPanel;
+
+import contratos.ResultadoAcao;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import acoes.ResultadoAcao;
 import javax.swing.JOptionPane;
 import entidades.Heroi;
 import equipamentos.DepositoEquipamentos;
@@ -16,6 +18,7 @@ import mundo.Mapa;
 import mundo.Masmorra;
 import mundo.TipoTile;
 import objetos.Bau;
+import objetos.Mercador;
 
 public class PainelMasmorra extends JPanel implements KeyListener {
 
@@ -55,6 +58,11 @@ public class PainelMasmorra extends JPanel implements KeyListener {
         for (Bau i: masmorra.getBaus()) {
             Color cor = i.isFechado() ? Color.YELLOW : Color.ORANGE;
             desenharTile(g, i.getX(), i.getY(), cor);
+        }
+
+        // Pinta cada mercador (Verde)
+        for (Mercador mercador : masmorra.getMercadores()) {
+            desenharTile(g, mercador.getX(), mercador.getY(), Color.GREEN);
         }
 
     }
@@ -132,7 +140,10 @@ public class PainelMasmorra extends JPanel implements KeyListener {
         //checagem para abrir baus apertando E -- Lalae
         if (tecla == KeyEvent.VK_E){
             Bau bauAdjacente = masmorra.getBauAdjacenteAoHeroi();
-            
+            Mercador mercadorAdjacente = masmorra.getMercadorAdjacenteAoHeroi();
+
+            // Se o herói estiver ao lado de um baú E de um mercador ao mesmo
+            // tempo, o baú tem prioridade (else if): o E faz uma coisa só.
             if(bauAdjacente != null){
                 //escolhendo o heroi que vai pegar o item
                 
@@ -158,6 +169,10 @@ public class PainelMasmorra extends JPanel implements KeyListener {
 
 
 
+            } else if (mercadorAdjacente != null) {
+                // Provisório até a PainelLoja existir: depois vira
+                // janela.mostrarLoja(mercadorAdjacente.getLoja());
+                JOptionPane.showMessageDialog(janela, "Bem-vindo à " + mercadorAdjacente.getLoja().getNome() + "!");
             }
         }
 

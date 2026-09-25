@@ -43,7 +43,7 @@ public class Inventario {
         
         for (int i = 0; i < this.itens.size(); i++) {
             // Vai criar textos como: "0 - Poção de Vida" ou "1 - Éter"
-            menu[i] = (i + 1) + " - " + this.itens.get(i).getNome(); 
+            menu[i] = (i + 1) + " - " + this.itens.get(i).getNome();
         }
         
         return menu;
@@ -51,6 +51,10 @@ public class Inventario {
 	
 	public boolean estaVazio(){
 		return this.itens.isEmpty();
+	}
+	
+	public boolean temEspaco() {
+		return itens.size() < capacidadeMaxima;
 	}
 	
 	public int getQuantidadeItens() {

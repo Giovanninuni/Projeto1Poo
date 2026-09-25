@@ -1,8 +1,8 @@
 package itens;
 
+import contratos.ResultadoAcao;
 import entidades.Heroi;
 import entidades.Personagem;
-import acoes.ResultadoAcao;
 
 public class PocaoMana extends Item {
 	private int quantidadeMana;
@@ -11,8 +11,8 @@ public class PocaoMana extends Item {
 		// CatalogoDeItens) pode criar uma PocaoMana, pra não ter valores
 		// divergentes criados em pontos diferentes do código (ver Masmorra
 		// vs JanelaPrincipal antes dessa mudança).
-		PocaoMana(String nome, String descricao, int quantidadeMana, String caminhoSprite) {
-			super(nome, descricao, caminhoSprite);
+		PocaoMana(String nome, String descricao, int quantidadeMana, int valor, String caminhoSprite) {
+			super(nome, descricao, valor, caminhoSprite);
 			this.quantidadeMana = quantidadeMana;
 
 		}

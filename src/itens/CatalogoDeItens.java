@@ -16,17 +16,17 @@ package itens;
 public class CatalogoDeItens {
 
     public static Item pocaoDeVida() {
-        return new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30, null);
+        return new PocaoVida("Poção de Vida", "Restaura 30 de vida", 30, 20, null);
     }
 
     // Variante mais forte da mesma poção -- mesmo comportamento (consumir),
     // só muda o número e, futuramente, o sprite. Por isso não é uma classe
     // nova, é só outra chamada de PocaoVida com valores diferentes.
     public static Item pocaoDeVidaMaior() {
-        return new PocaoVida("Poção de Vida Maior", "Restaura 50 de vida", 50, null);
+        return new PocaoVida("Poção de Vida Maior", "Restaura 50 de vida", 50, 30, null);
     }
 
     public static Item pocaoDeMana() {
-        return new PocaoMana("Poção de Mana", "Restaura 30 de mana", 30, null);
+        return new PocaoMana("Poção de Mana", "Restaura 30 de mana", 30, 25, null);
     }
 }

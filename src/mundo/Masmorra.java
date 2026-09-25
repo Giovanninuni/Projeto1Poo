@@ -8,7 +8,9 @@ import entidades.Goblin;
 import entidades.Monstro;
 import equipamentos.CatalogoDeEquipamentos;
 import itens.*;
+import loja.CatalogoDeLojas;
 import objetos.Bau;
+import objetos.Mercador;
 
 /**
  * Modelo do mapa da masmorra: guarda a posição do herói, os limites do
@@ -50,6 +52,7 @@ public class Masmorra {
     private int heroiY;
     private final List<Encontro> encontros;
     private final List<Bau> baus;
+    private final List<Mercador> mercadores;
 
     public Masmorra(Mapa mapa) {
         this.mapa = mapa;
@@ -77,6 +80,11 @@ public class Masmorra {
         List<Item> itensDoBauDois = new ArrayList<>();
         itensDoBauDois.add(CatalogoDeItens.pocaoDeVida());
         this.baus.add(new Bau(10, 10, itensDoBauDois, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
+
+        // Mercador perto do ponto de partida, longe do encontro e dos baús.
+        // O que ele vende é definido no CatalogoDeLojas, não aqui.
+        this.mercadores = new ArrayList<>();
+        this.mercadores.add(new Mercador(5, 12, CatalogoDeLojas.lojaDaMasmorra()));
     }
 
     /**
@@ -88,7 +96,7 @@ public class Masmorra {
         int novoX = heroiX + dx;
         int novoY = heroiY + dy;
         
-        if (!mapa.podeAndar(novoX, novoY) || existeBau(novoX, novoY)) {
+        if (!mapa.podeAndar(novoX, novoY) || existeBau(novoX, novoY) || existeMercador(novoX, novoY)) {
             return false;
         }
 
@@ -132,9 +140,31 @@ public class Masmorra {
         return false;
     }
 
+    // Mesmo padrão de getBauAdjacenteAoHeroi/existeBau. Terceira cópia desse
+    // tipo de loop (Encontro, Bau, Mercador): candidato a virar uma interface
+    // comum (ex: Posicionavel) com um único método genérico.
+    public Mercador getMercadorAdjacenteAoHeroi() {
+        for (Mercador m : mercadores) {
+            if (Math.abs(m.getX() - heroiX) + Math.abs(m.getY() - heroiY) == 1) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    public boolean existeMercador(int x, int y) {
+        for (Mercador m : mercadores) {
+            if (m.getX() == x && m.getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int getHeroiX() { return heroiX; }
     public int getHeroiY() { return heroiY; }
     public Mapa getMapa() { return mapa; }
     public List<Encontro> getEncontros() { return encontros; }
     public List<Bau> getBaus() { return baus; }
+    public List<Mercador> getMercadores() { return mercadores; }
 }

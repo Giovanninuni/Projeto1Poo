@@ -1,4 +1,4 @@
-package acoes;
+package contratos;
 
 import entidades.Personagem;
 

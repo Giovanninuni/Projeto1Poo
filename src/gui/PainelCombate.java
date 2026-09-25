@@ -21,7 +21,7 @@ import core.EstadoBatalha;
 import entidades.Heroi;
 import entidades.Monstro;
 import ataques.Habilidade;
-import acoes.ResultadoAcao;
+import contratos.ResultadoAcao;
 
 public class PainelCombate extends JPanel {
 	private static final long serialVersionUID = 1L;

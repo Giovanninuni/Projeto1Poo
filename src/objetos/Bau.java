@@ -4,9 +4,10 @@
  */
 package objetos;
 
-import acoes.ResultadoAcao;
 import itens.Item;
 import java.util.List;
+
+import contratos.ResultadoAcao;
 import entidades.Heroi;
 import equipamentos.DepositoEquipamentos;
 import equipamentos.Equipamento;

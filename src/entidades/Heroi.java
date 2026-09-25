@@ -1,12 +1,12 @@
 package entidades;
 
 import atributos.Mana;
+import contratos.ResultadoAcao;
 import atributos.Experiencia;
 import itens.Inventario;
 import itens.Item;
 import ataques.Ataque;
 import ataques.Habilidade;
-import acoes.ResultadoAcao;
 import equipamentos.DepositoEquipamentos;
 import equipamentos.Equipamento;
 import equipamentos.Equipagem;

@@ -4,7 +4,7 @@
  */
 package objetos;
 
-import acoes.ResultadoAcao;
+import contratos.ResultadoAcao;
 import entidades.Heroi;
 
 /**

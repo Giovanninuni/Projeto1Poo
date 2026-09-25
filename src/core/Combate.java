@@ -5,9 +5,10 @@ import entidades.Monstro;
 import entidades.Personagem;
 import ataques.Ataque;
 import ataques.Habilidade;
-import acoes.ResultadoAcao;
 import atributos.Dano;
 import atributos.Ouro;
+import contratos.ResultadoAcao;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

@@ -15,29 +15,29 @@ import entidades.Mago;
  * compartilhando o mesmo item.
  */
 public class CatalogoDeEquipamentos {
-
+	// String nome, String descricao, TipoEquipamento tipo, int bonusAtaque, int bonusDefesa, int valor
     public static Equipamento acessorioDoViajante() {
-        return new Equipamento("Acessório do Viajante", "Aumenta o ataque em 2", TipoEquipamento.ACESSORIO, 2, 0);
+        return new Equipamento("Acessório do Viajante", "Aumenta o ataque em 2", TipoEquipamento.ACESSORIO, 2, 0, 100);
     }
 
     public static Equipamento cajadoAncestral() {
-        return new Equipamento("Cajado Ancestral", "Cajado mágico ancestral, só pode ser usado por magos", TipoEquipamento.ARMA, 5, 0, Mago.class);
+        return new Equipamento("Cajado Ancestral", "Cajado mágico ancestral, só pode ser usado por magos", TipoEquipamento.ARMA, 5, 0, 180, Mago.class);
     }
 
     // Equipamentos iniciais de cada heroi (ver JanelaPrincipal).
     public static Equipamento espadaDeTreino() {
-        return new Equipamento("Espada de Treino", "Espada básica de treino, +3 de ataque", TipoEquipamento.ARMA, 3, 0, Guerreiro.class);
+        return new Equipamento("Espada de Treino", "Espada básica de treino, +3 de ataque", TipoEquipamento.ARMA, 3, 0, 150, Guerreiro.class);
     }
 
     public static Equipamento armaduraDeCouro() {
-        return new Equipamento("Armadura de Couro", "Armadura leve, +2 de defesa", TipoEquipamento.ARMADURA, 0, 2);
+        return new Equipamento("Armadura de Couro", "Armadura leve, +2 de defesa", TipoEquipamento.ARMADURA, 0, 2, 120);
     }
 
     public static Equipamento cajadoDeAprendiz() {
-        return new Equipamento("Cajado de Aprendiz", "Cajado básico de estudo, +3 de ataque", TipoEquipamento.ARMA, 3, 0, Mago.class);
+        return new Equipamento("Cajado de Aprendiz", "Cajado básico de estudo, +3 de ataque", TipoEquipamento.ARMA, 3, 0, 150, Mago.class);
     }
 
     public static Equipamento vestesDeAprendiz() {
-        return new Equipamento("Vestes de Aprendiz", "Robe leve, +1 de defesa", TipoEquipamento.ARMADURA, 0, 1);
+        return new Equipamento("Vestes de Aprendiz", "Robe leve, +1 de defesa", TipoEquipamento.ARMADURA, 0, 1, 80);
     }
 }
