@@ -36,12 +36,13 @@ public class PainelCombate extends JPanel {
 	// Listas para armazenar as barras e nomes da HUD dinâmica
 	private List<JProgressBar> barrasHPHerois = new ArrayList<>();
 	private List<JProgressBar> barrasMPHerois = new ArrayList<>();
+	private List<JProgressBar> barrasHPMonstros = new ArrayList<>();
 	private List<JLabel> labelsNomesHerois = new ArrayList<>();
 
 	// Elementos gerais da HUD
 	private JTextArea logBatalha;
 	private JButton btnAtaque;
-	private JButton btnMagia;
+	private JButton btnHabilidade;
 	private JButton btnItem;
 	private JPanel painelComandos;
 	private JButton btnContinuar;
@@ -81,6 +82,7 @@ public class PainelCombate extends JPanel {
 			barraHP.setForeground(Color.RED);
 			barraHP.setBackground(Color.BLACK);
 			barraHP.setStringPainted(true);
+			barrasHPMonstros.add(barraHP);
 
 			btnAlvo.addActionListener(e -> {
 				// Dispara a ação "armada" no alvo clicado. -1 é o ataque
@@ -92,13 +94,8 @@ public class PainelCombate extends JPanel {
 				ResultadoAcao resultado = (habilidadeArmada == -1)
 						? combate.processarAtaqueBasicoHeroi(indiceAlvo)
 						: combate.processarAcaoHeroiHabilidade(habilidadeArmada, indiceAlvo);
-				logBatalha.append("\n> " + resultado.getMensagem());
-
-				// Atualiza a barra do monstro específico
-				barraHP.setValue(monstroAtual.getVida().getAtual());
-				atualizarStatus();
-
-				verificarFimDeJogo();
+				
+				aposAcao(resultado);
 			});
 
 			painelMonstro.add(barraHP, BorderLayout.NORTH);
@@ -133,13 +130,13 @@ public class PainelCombate extends JPanel {
 		painelComandos.setLayout(new GridLayout(2, 2, 5, 5));
 
 		btnAtaque = estilizarBotao("Ataque");
-		btnMagia = estilizarBotao("Habilidade");
+		btnHabilidade = estilizarBotao("Habilidade");
 		btnItem = estilizarBotao("Item");
 		JButton btnFugir = estilizarBotao("Fugir");
 		btnContinuar = estilizarBotao("Continuar");
 
 		painelComandos.add(btnAtaque);
-		painelComandos.add(btnMagia);
+		painelComandos.add(btnHabilidade);
 		painelComandos.add(btnItem);
 		painelComandos.add(btnFugir);
 
@@ -191,7 +188,7 @@ public class PainelCombate extends JPanel {
 			logBatalha.append("\n> " + nomeAtaque + " selecionado. Clique em um alvo!");
 		});
 
-		btnMagia.addActionListener(e -> {
+		btnHabilidade.addActionListener(e -> {
 			List<Habilidade> habilidadesHeroi = combate.getHeroiAtual().getHabilidades();
 			if (habilidadesHeroi.isEmpty()) {
 				logBatalha.append("\n> Nenhuma habilidade disponível!");
@@ -220,18 +217,13 @@ public class PainelCombate extends JPanel {
 				// Assim como no ataque, o Combate já resolve sozinho se o
 				// turno dos monstros deve entrar em seguida.
 				ResultadoAcao resultado = combate.processarAcaoHeroiItem(indiceItem);
-				logBatalha.append("\n> " + resultado.getMensagem());
-				atualizarStatus();
-
-				verificarFimDeJogo();
+				aposAcao(resultado);
 			}
 		});
 
 		btnFugir.addActionListener(e -> {
 			ResultadoAcao resultado = combate.fugir();
-			logBatalha.append("\n> " + resultado.getMensagem());
-			atualizarStatus();
-			verificarFimDeJogo();
+			aposAcao(resultado);
 		});
 
 		btnContinuar.addActionListener(e -> {
@@ -262,6 +254,14 @@ public class PainelCombate extends JPanel {
 		btn.setBorder(BorderFactory.createLineBorder(BRANCO, 1)); // Borda fina no botão
 		return btn;
 	}
+	
+	// Tudo o que a tela precisa fazer depois de qualquer ação que gasta o turno:
+	// mostrar o que aconteceu, redesenhar as barras e ver se a batalha acabou.
+	private void aposAcao(ResultadoAcao resultado) {
+		logBatalha.append("\n> " + resultado.getMensagem());
+		atualizarStatus();
+		verificarFimDeJogo();
+	}
 
 	private void atualizarStatus() {
 		for (int i = 0; i < combate.getHerois().size(); i++) {
@@ -285,6 +285,11 @@ public class PainelCombate extends JPanel {
 				labelsNomesHerois.get(i).setText(h.getNome());
 			}
 		}
+		for (int i = 0; i < combate.getMonstros().size(); i++) {
+		    Monstro m = combate.getMonstros().get(i);
+		    barrasHPMonstros.get(i).setValue(m.getVida().getAtual());
+		}
+		
 	}
 
 	private void verificarFimDeJogo() {

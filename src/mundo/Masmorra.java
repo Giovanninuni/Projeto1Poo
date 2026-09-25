@@ -62,8 +62,9 @@ public class Masmorra {
         // Encontro de teste que já existia no protótipo original,
         // só que agora vive aqui, e não dentro da classe de GUI.
         List<Monstro> grupoTeste = new ArrayList<>();
-        grupoTeste.add(new Goblin("Vitor Santos"));
-        grupoTeste.add(new Esqueleto("Vitor Santos 2"));
+        grupoTeste.add(new Goblin("Goblin 1"));
+        grupoTeste.add(new Goblin("Goblin 2"));
+        grupoTeste.add(new Goblin("Goblin 3"));
         this.encontros.add(new Encontro(10, 5, grupoTeste));
         
         this.baus = new ArrayList<>();
