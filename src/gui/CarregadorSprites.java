@@ -1,5 +1,7 @@
 package gui;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  * Carrega imagens de assets/sprites e guarda em cache, pra não ler o
@@ -53,5 +56,62 @@ public class CarregadorSprites {
         int coluna = indice % colunas;
         int linha = indice / colunas;
         return folha.getSubimage(coluna * tamanhoTile, linha * tamanhoTile, tamanhoTile, tamanhoTile);
+    }
+
+    /**
+     * Carrega uma imagem grande (ex: sprite de batalha de 1254x1254) já
+     * encolhida pra caber num quadrado tamanho x tamanho — usado pra mostrar
+     * herói e monstros no mapa, onde cada um ocupa um tile só. Antes de
+     * encolher, corta a borda transparente em volta do desenho (senão o
+     * personagem ficaria minúsculo no meio do tile). Mantém a proporção e
+     * alinha pela base, pra ele parecer "em pé" no chão. O resultado fica
+     * no cache, então o trabalho pesado só acontece uma vez.
+     */
+    public static BufferedImage carregarMiniatura(String caminhoRelativo, int tamanho) {
+        String chave = caminhoRelativo + "@" + tamanho;
+        if (CACHE.containsKey(chave)) {
+            return CACHE.get(chave);
+        }
+
+        BufferedImage original = carregar(caminhoRelativo);
+        BufferedImage miniatura = (original == null) ? null : encolher(cortarBordaTransparente(original), tamanho);
+
+        CACHE.put(chave, miniatura);
+        return miniatura;
+    }
+
+    private static BufferedImage cortarBordaTransparente(BufferedImage imagem) {
+        int minX = imagem.getWidth(), minY = imagem.getHeight(), maxX = -1, maxY = -1;
+        for (int y = 0; y < imagem.getHeight(); y++) {
+            for (int x = 0; x < imagem.getWidth(); x++) {
+                boolean visivel = (imagem.getRGB(x, y) >>> 24) != 0; // canal alfa
+                if (visivel) {
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                }
+            }
+        }
+        if (maxX < 0) {
+            return imagem; // imagem toda transparente: não tem o que cortar
+        }
+        return imagem.getSubimage(minX, minY, maxX - minX + 1, maxY - minY + 1);
+    }
+
+    private static BufferedImage encolher(BufferedImage imagem, int tamanho) {
+        double escala = Math.min((double) tamanho / imagem.getWidth(), (double) tamanho / imagem.getHeight());
+        int largura = Math.max(1, (int) Math.round(imagem.getWidth() * escala));
+        int altura = Math.max(1, (int) Math.round(imagem.getHeight() * escala));
+
+        // SCALE_SMOOTH faz a média dos pixels (fica bem melhor que só pular
+        // pixels ao reduzir tanto). O ImageIcon espera a imagem ficar pronta.
+        Image reduzida = new ImageIcon(imagem.getScaledInstance(largura, altura, Image.SCALE_SMOOTH)).getImage();
+
+        BufferedImage resultado = new BufferedImage(tamanho, tamanho, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = resultado.createGraphics();
+        g.drawImage(reduzida, (tamanho - largura) / 2, tamanho - altura, null);
+        g.dispose();
+        return resultado;
     }
 }

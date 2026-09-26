@@ -47,6 +47,6 @@ public class FabricaDeJogoNovo {
     }
 
     public static Masmorra criarMasmorraInicial() {
-        return new Masmorra(CarregadorMapa.carregarDeTmx("mapa1.tmx"));
+        return new Masmorra(CarregadorMapa.carregarDeTexto("masmorra1.txt"));
     }
 }

@@ -25,4 +25,8 @@ public abstract class Monstro extends Personagem{
 	public int getOuroDropado() {
 		return this.ouroDropado;
 	}
+
+	// Cada monstro diz qual imagem (em assets/sprites/) o representa.
+	// Abstrato: toda subclasse nova (Orc, Dragao...) é obrigada a informar o seu.
+	public abstract String getArquivoSprite();
 }

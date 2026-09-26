@@ -7,4 +7,9 @@ public class Goblin extends Monstro{
 	public Goblin(String nome) {
 		super(nome, 50, 12, 2, 8, 5, new GolpeGoblin());
 	}
+
+	@Override
+	public String getArquivoSprite() {
+		return "goblin.png";
+	}
 }

@@ -16,7 +16,7 @@ import equipamentos.DepositoEquipamentos;
 import equipamentos.Equipamento;
 import mundo.Mapa;
 import mundo.Masmorra;
-import mundo.TipoTile;
+import mundo.TilesetMasmorra;
 import objetos.Bau;
 import objetos.Mercador;
 
@@ -27,13 +27,14 @@ public class PainelMasmorra extends JPanel implements KeyListener {
 
     private final int TAMANHO_TILE = 32;
 
-    private static final String FOLHA_MODICUS = "tiles/modicus.png";
-    private static final int MODICUS_COLUNAS = 4;
+    // O tileset da masmorra não tem personagens: herói e monstros usam os
+    // sprites de batalha, encolhidos pra caber num tile (ver CarregadorSprites).
+    private static final String SPRITE_HEROI = "heroi_batalha_recortado.png";
 
     public PainelMasmorra(JanelaPrincipal janela, Masmorra masmorra) {
         this.janela = janela;
         this.masmorra = masmorra;
-        setBackground(Color.DARK_GRAY);
+        setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
     }
@@ -42,34 +43,40 @@ public class PainelMasmorra extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // Ordem importa: o que é desenhado depois fica por cima.
         desenharMapa(g);
 
-        // Pinta o herói (Azul) na posição informada pelo modelo
-        desenharTile(g, masmorra.getHeroiX(), masmorra.getHeroiY(), Color.BLUE);
+        //baus fechados e abertos com sprites diferentes -- Lalae
+        for (Bau i: masmorra.getBaus()) {
+            int id = i.isFechado() ? TilesetMasmorra.BAU_FECHADO : TilesetMasmorra.BAU_VAZIO;
+            desenharImagem(g, tileDoTileset(id), i.getX(), i.getY(), Color.YELLOW);
+        }
 
-        // Pinta cada encontro (Vermelho) que ainda não foi derrotado
+        // Cada encontro que ainda não foi derrotado aparece com o sprite do
+        // primeiro monstro do grupo (ex: 3 goblins -> um goblin no mapa).
         for (Masmorra.Encontro encontro : masmorra.getEncontros()) {
             if (!encontro.isDerrotado()) {
-                desenharTile(g, encontro.getX(), encontro.getY(), Color.RED);
+                String arquivo = encontro.getInimigos().get(0).getArquivoSprite();
+                BufferedImage sprite = CarregadorSprites.carregarMiniatura(arquivo, TAMANHO_TILE);
+                desenharImagem(g, sprite, encontro.getX(), encontro.getY(), Color.RED);
             }
         }
 
-        //pinta os baus fechados e abertos de cores diferentes -- Lalae
-        for (Bau i: masmorra.getBaus()) {
-            Color cor = i.isFechado() ? Color.YELLOW : Color.ORANGE;
-            desenharTile(g, i.getX(), i.getY(), cor);
-        }
-
-        // Pinta cada mercador (Verde)
+        // Mercador (Verde) ainda sem sprite
         for (Mercador mercador : masmorra.getMercadores()) {
             desenharTile(g, mercador.getX(), mercador.getY(), Color.GREEN);
         }
 
+        // Herói por último, pra ficar por cima de tudo (ex: parado em cima
+        // de um encontro do qual acabou de fugir).
+        BufferedImage spriteHeroi = CarregadorSprites.carregarMiniatura(SPRITE_HEROI, TAMANHO_TILE);
+        desenharImagem(g, spriteHeroi, masmorra.getHeroiX(), masmorra.getHeroiY(), Color.BLUE);
     }
 
     /**
      * Pinta um tile de cor sólida na posição (x, y) do grid — usado pra
-     * herói, encontros e baús, que ainda não têm sprite próprio.
+     * quem ainda não tem sprite próprio (mercador) ou quando a imagem
+     * não foi encontrada.
      */
     private void desenharTile(Graphics g, int x, int y, Color cor) {
         g.setColor(cor);
@@ -77,36 +84,51 @@ public class PainelMasmorra extends JPanel implements KeyListener {
     }
 
     /**
-     * Desenha cada tile do mapa. Se o sprite ainda não existir em
-     * assets/sprites/tiles/, cai pro retângulo da cor placeholder do
-     * TipoTile — assim o jogo roda normalmente antes dos sprites prontos.
+     * Desenha uma imagem na posição (x, y) do grid. Se a imagem não existir
+     * (arquivo faltando), cai pro retângulo da corReserva; se corReserva
+     * for null, simplesmente não desenha nada.
+     */
+    private void desenharImagem(Graphics g, BufferedImage imagem, int x, int y, Color corReserva) {
+        if (imagem != null) {
+            g.drawImage(imagem, x * TAMANHO_TILE, y * TAMANHO_TILE, TAMANHO_TILE, TAMANHO_TILE, null);
+        } else if (corReserva != null) {
+            desenharTile(g, x, y, corReserva);
+        }
+    }
+
+    /** Recorta o tile de número id da folha tileset_masmorra.png. */
+    private BufferedImage tileDoTileset(int id) {
+        return CarregadorSprites.recortarTile(TilesetMasmorra.ARQUIVO, id, TilesetMasmorra.COLUNAS, TAMANHO_TILE);
+    }
+
+    /**
+     * Desenha cada tile do mapa em duas camadas: primeiro o chão/parede,
+     * depois a decoração por cima (ex: ossos, que têm fundo transparente).
+     * Se o tileset não existir em assets/sprites/tiles/, cai pro retângulo
+     * da cor placeholder do TipoTile — assim o jogo roda mesmo sem a imagem.
      */
     private void desenharMapa(Graphics g) {
         Mapa mapa = masmorra.getMapa();
 
         for (int y = 0; y < mapa.getAltura(); y++) {
             for (int x = 0; x < mapa.getLargura(); x++) {
-                int px = x * TAMANHO_TILE;
-                int py = y * TAMANHO_TILE;
                 int idVisual = mapa.getIdVisual(x, y);
 
-                // Se a célula tem um tile específico de uma folha de sprites
-                // (ex: veio de um mapa do Tiled), desenha esse recorte. Senão,
-                // cai pro sprite único por TipoTile (ou a cor placeholder).
+                // Se a célula tem um tile específico do tileset, desenha esse
+                // recorte. Senão, cai pro sprite único por TipoTile.
                 BufferedImage sprite = (idVisual >= 0)
-                        ? CarregadorSprites.recortarTile(FOLHA_MODICUS, idVisual, MODICUS_COLUNAS, TAMANHO_TILE)
+                        ? tileDoTileset(idVisual)
                         : CarregadorSprites.carregar(mapa.getTile(x, y).getArquivoSprite());
+                desenharImagem(g, sprite, x, y, mapa.getTile(x, y).getCorPlaceholder());
 
-                if (sprite != null) {
-                    g.drawImage(sprite, px, py, TAMANHO_TILE, TAMANHO_TILE, null);
-                } else {
-                    g.setColor(mapa.getTile(x, y).getCorPlaceholder());
-                    g.fillRect(px, py, TAMANHO_TILE, TAMANHO_TILE);
+                int idDecoracao = mapa.getIdDecoracao(x, y);
+                if (idDecoracao >= 0) {
+                    desenharImagem(g, tileDoTileset(idDecoracao), x, y, null);
                 }
             }
         }
     }
-    
+
     // Metodos abaixo da classe keyListener
 
     @Override
