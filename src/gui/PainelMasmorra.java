@@ -14,6 +14,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JOptionPane;
 import entidades.Heroi;
+import entidades.Sprite;
 import equipamentos.DepositoEquipamentos;
 import equipamentos.Equipamento;
 import mundo.Mapa;
@@ -28,10 +29,6 @@ public class PainelMasmorra extends JPanel implements KeyListener {
     private Masmorra masmorra;
 
     private final int TAMANHO_TILE = 32;
-
-    // O tileset da masmorra não tem personagens: herói e monstros usam os
-    // sprites de batalha, encolhidos pra caber num tile (ver CarregadorSprites).
-    private static final String SPRITE_HEROI = "heroi_batalha_recortado.png";
 
     // Zoom 2x: cada tile de 32 px aparece com 64 px na tela (16x12 tiles
     // visíveis numa janela 1024x768), e a câmera acompanha o herói.
@@ -83,40 +80,39 @@ public class PainelMasmorra extends JPanel implements KeyListener {
             desenharImagem(g, tileDoTileset(id), i.getX(), i.getY(), Color.YELLOW);
         }
 
+        // PROVISÓRIO: herói e encontros usam os mesmos sprites da batalha
+        // até o grupo decidir como mostrar aliados/inimigos no mapa.
         // Cada encontro que ainda não foi derrotado aparece com o sprite do
         // primeiro monstro do grupo (ex: 3 goblins -> um goblin no mapa).
         for (Masmorra.Encontro encontro : masmorra.getEncontros()) {
             if (!encontro.isDerrotado()) {
-                String arquivo = encontro.getInimigos().get(0).getArquivoSprite();
-                BufferedImage sprite = CarregadorSprites.carregarMiniatura(arquivo, tamanhoMiniatura());
-                desenharImagem(g, sprite, encontro.getX(), encontro.getY(), Color.RED);
+                Sprite sprite = encontro.getInimigos().get(0).getSprite();
+                desenharImagem(g, recortar(sprite), encontro.getX(), encontro.getY(), Color.RED);
             }
         }
 
-        // Mercador (Verde) ainda sem sprite
         for (Mercador mercador : masmorra.getMercadores()) {
-            desenharTile(g, mercador.getX(), mercador.getY(), Color.GREEN);
+            desenharImagem(g, recortar(mercador.getSprite()), mercador.getX(), mercador.getY(), Color.GREEN);
         }
 
         // Herói por último, pra ficar por cima de tudo (ex: parado em cima
-        // de um encontro do qual acabou de fugir).
-        BufferedImage spriteHeroi = CarregadorSprites.carregarMiniatura(SPRITE_HEROI, tamanhoMiniatura());
-        desenharImagem(g, spriteHeroi, masmorra.getHeroiX(), masmorra.getHeroiY(), Color.BLUE);
+        // de um encontro do qual acabou de fugir). O grupo aparece no mapa
+        // com o sprite do primeiro herói.
+        Sprite spriteHeroi = janela.getGrupo().getHerois().get(0).getSprite();
+        desenharImagem(g, recortar(spriteHeroi), masmorra.getHeroiX(), masmorra.getHeroiY(), Color.BLUE);
     }
 
     /**
-     * As miniaturas são geradas já no tamanho da tela (32 x zoom = 64 px):
-     * desenhadas num tile de 32 com zoom 2x, cada pixel delas cai em um
-     * pixel da tela, e o personagem sai com o dobro de detalhe.
+     * Sprites do 32rogues têm 32 px, o mesmo tamanho do tile: recorta em
+     * escala 1 e deixa a câmera ampliar junto com o resto do mapa.
      */
-    private int tamanhoMiniatura() {
-        return TAMANHO_TILE * camera.getZoom();
+    private BufferedImage recortar(Sprite sprite) {
+        return CarregadorSprites.recortarSprite(sprite, 1);
     }
 
     /**
-     * Pinta um tile de cor sólida na posição (x, y) do grid — usado pra
-     * quem ainda não tem sprite próprio (mercador) ou quando a imagem
-     * não foi encontrada.
+     * Pinta um tile de cor sólida na posição (x, y) do grid — usado
+     * quando a imagem não foi encontrada.
      */
     private void desenharTile(Graphics g, int x, int y, Color cor) {
         g.setColor(cor);

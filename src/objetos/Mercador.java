@@ -1,5 +1,6 @@
 package objetos;
 
+import entidades.Sprite;
 import loja.Loja;
 
 /**
@@ -11,6 +12,9 @@ public class Mercador {
     private final int x;
     private final int y;
     private final Loja loja;
+
+    // Lojista do 32rogues (linha 6, coluna 2 de rogues.png).
+    private static final Sprite SPRITE = Sprite.rogue(6, 2);
 
     public Mercador(int x, int y, Loja loja) {
         this.x = x;
@@ -28,6 +32,10 @@ public class Mercador {
 
     public Loja getLoja() {
         return loja;
+    }
+
+    public Sprite getSprite() {
+        return SPRITE;
     }
 }
 		

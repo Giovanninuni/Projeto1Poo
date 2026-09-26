@@ -1,7 +1,7 @@
 package gui;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
+
+import entidades.Sprite;
 
 /**
  * Carrega imagens de assets/sprites e guarda em cache, pra não ler o
@@ -59,59 +60,33 @@ public class CarregadorSprites {
     }
 
     /**
-     * Carrega uma imagem grande (ex: sprite de batalha de 1254x1254) já
-     * encolhida pra caber num quadrado tamanho x tamanho — usado pra mostrar
-     * herói e monstros no mapa, onde cada um ocupa um tile só. Antes de
-     * encolher, corta a borda transparente em volta do desenho (senão o
-     * personagem ficaria minúsculo no meio do tile). Mantém a proporção e
-     * alinha pela base, pra ele parecer "em pé" no chão. O resultado fica
-     * no cache, então o trabalho pesado só acontece uma vez.
+     * Recorta o desenho de um personagem da folha dele (ver entidades.Sprite)
+     * e amplia pela escala pedida (1 = 32 px, 4 = 128 px...). A ampliação é
+     * por "vizinho mais próximo": cada pixel vira um quadradinho nítido, que
+     * é o jeito certo de aumentar pixel art. Fica no cache, então cada
+     * sprite só é recortado/ampliado uma vez. Retorna null se a folha não
+     * existir.
      */
-    public static BufferedImage carregarMiniatura(String caminhoRelativo, int tamanho) {
-        String chave = caminhoRelativo + "@" + tamanho;
+    public static BufferedImage recortarSprite(Sprite sprite, int escala) {
+        String chave = sprite.folha() + "@" + sprite.linha() + "," + sprite.coluna() + "x" + escala;
         if (CACHE.containsKey(chave)) {
             return CACHE.get(chave);
         }
 
-        BufferedImage original = carregar(caminhoRelativo);
-        BufferedImage miniatura = (original == null) ? null : encolher(cortarBordaTransparente(original), tamanho);
+        BufferedImage folha = carregar(sprite.folha());
+        BufferedImage resultado = null;
+        if (folha != null) {
+            int t = Sprite.TAMANHO;
+            BufferedImage recorte = folha.getSubimage(sprite.coluna() * t, sprite.linha() * t, t, t);
 
-        CACHE.put(chave, miniatura);
-        return miniatura;
-    }
-
-    private static BufferedImage cortarBordaTransparente(BufferedImage imagem) {
-        int minX = imagem.getWidth(), minY = imagem.getHeight(), maxX = -1, maxY = -1;
-        for (int y = 0; y < imagem.getHeight(); y++) {
-            for (int x = 0; x < imagem.getWidth(); x++) {
-                boolean visivel = (imagem.getRGB(x, y) >>> 24) != 0; // canal alfa
-                if (visivel) {
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
-                }
-            }
+            resultado = new BufferedImage(t * escala, t * escala, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = resultado.createGraphics();
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            g.drawImage(recorte, 0, 0, t * escala, t * escala, null);
+            g.dispose();
         }
-        if (maxX < 0) {
-            return imagem; // imagem toda transparente: não tem o que cortar
-        }
-        return imagem.getSubimage(minX, minY, maxX - minX + 1, maxY - minY + 1);
-    }
 
-    private static BufferedImage encolher(BufferedImage imagem, int tamanho) {
-        double escala = Math.min((double) tamanho / imagem.getWidth(), (double) tamanho / imagem.getHeight());
-        int largura = Math.max(1, (int) Math.round(imagem.getWidth() * escala));
-        int altura = Math.max(1, (int) Math.round(imagem.getHeight() * escala));
-
-        // SCALE_SMOOTH faz a média dos pixels (fica bem melhor que só pular
-        // pixels ao reduzir tanto). O ImageIcon espera a imagem ficar pronta.
-        Image reduzida = new ImageIcon(imagem.getScaledInstance(largura, altura, Image.SCALE_SMOOTH)).getImage();
-
-        BufferedImage resultado = new BufferedImage(tamanho, tamanho, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = resultado.createGraphics();
-        g.drawImage(reduzida, (tamanho - largura) / 2, tamanho - altura, null);
-        g.dispose();
+        CACHE.put(chave, resultado);
         return resultado;
     }
 }

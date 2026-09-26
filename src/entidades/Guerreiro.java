@@ -9,4 +9,9 @@ public class Guerreiro extends Heroi {
 		super(nome, vidaMaxima, ataqueBase, defesa, manaMaxima, new GolpeEspada());
 		aprenderHabilidade(new Ciclone());
 	}
+
+	@Override
+	public Sprite getSprite() {
+		return Sprite.rogue(1, 0); // cavaleiro
+	}
 }

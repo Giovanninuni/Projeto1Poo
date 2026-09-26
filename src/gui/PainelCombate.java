@@ -2,12 +2,20 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -20,6 +28,8 @@ import core.Combate;
 import core.EstadoBatalha;
 import entidades.Heroi;
 import entidades.Monstro;
+import entidades.Sprite;
+import mundo.TilesetMasmorra;
 import ataques.Habilidade;
 import contratos.ResultadoAcao;
 
@@ -38,6 +48,14 @@ public class PainelCombate extends JPanel {
 	private List<JProgressBar> barrasMPHerois = new ArrayList<>();
 	private List<JProgressBar> barrasHPMonstros = new ArrayList<>();
 	private List<JLabel> labelsNomesHerois = new ArrayList<>();
+
+	// Sprites na arena: botões dos monstros (clicáveis, são os alvos) e
+	// labels dos heróis (só mostram quem está no grupo e de quem é a vez)
+	private List<JButton> botoesMonstros = new ArrayList<>();
+	private List<JLabel> spritesHerois = new ArrayList<>();
+
+	// Sprites do 32rogues têm 32 px: 4x = 128 px na tela
+	private static final int ESCALA_SPRITE = 4;
 
 	// Elementos gerais da HUD
 	private JTextArea logBatalha;
@@ -60,10 +78,15 @@ public class PainelCombate extends JPanel {
 
 		// ==========================================
 		// 1. ÁREA DA ARENA (Centro) - LISTA DINÂMICA
+		// Monstros à esquerda, heróis à direita (estilo Final Fantasy), em
+		// cima do chão da masmorra (ver PainelArena no fim da classe)
 		// ==========================================
-		JPanel painelArena = new JPanel(new GridLayout(1, combate.getMonstros().size(), 10, 0));
-		painelArena.setBackground(Color.DARK_GRAY);
-		painelArena.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		JPanel painelArena = new PainelArena();
+		painelArena.setLayout(new BorderLayout(40, 0));
+		painelArena.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 40));
+
+		JPanel painelMonstros = new JPanel(new GridLayout(1, combate.getMonstros().size(), 10, 0));
+		painelMonstros.setOpaque(false);
 
 		for (int i = 0; i < combate.getMonstros().size(); i++) {
 			Monstro monstroAtual = combate.getMonstros().get(i);
@@ -72,9 +95,11 @@ public class PainelCombate extends JPanel {
 			JPanel painelMonstro = new JPanel(new BorderLayout());
 			painelMonstro.setOpaque(false);
 
-			// Botão que representa o monstro e serve como alvo
-			JButton btnAlvo = new JButton(monstroAtual.getNome());
-			btnAlvo.setFont(new Font("SansSerif", Font.BOLD, 14));
+			// Botão que representa o monstro e serve como alvo: o sprite
+			// é o próprio botão, com o nome embaixo
+			JButton btnAlvo = new JButton(monstroAtual.getNome(), iconeDoSprite(monstroAtual.getSprite()));
+			estilizarAlvo(btnAlvo);
+			botoesMonstros.add(btnAlvo);
 
 			// Barra de vida individual
 			JProgressBar barraHP = new JProgressBar(0, monstroAtual.getVida().getMaxima());
@@ -98,10 +123,35 @@ public class PainelCombate extends JPanel {
 				aposAcao(resultado);
 			});
 
-			painelMonstro.add(barraHP, BorderLayout.NORTH);
-			painelMonstro.add(btnAlvo, BorderLayout.CENTER);
-			painelArena.add(painelMonstro);
+			// Barra + sprite juntos num "cartão", e o cartão centralizado na
+			// coluna (GridBagLayout sem restrições centraliza o que recebe):
+			// assim a barra de HP fica logo acima do monstro, não no topo da tela
+			JPanel cartaoMonstro = new JPanel(new BorderLayout(0, 4));
+			cartaoMonstro.setOpaque(false);
+			cartaoMonstro.add(barraHP, BorderLayout.NORTH);
+			cartaoMonstro.add(btnAlvo, BorderLayout.CENTER);
+
+			painelMonstro.setLayout(new GridBagLayout());
+			painelMonstro.add(cartaoMonstro);
+			painelMonstros.add(painelMonstro);
 		}
+
+		// Heróis empilhados na direita, um embaixo do outro
+		JPanel painelHerois = new JPanel(new GridLayout(combate.getHerois().size(), 1, 0, 10));
+		painelHerois.setOpaque(false);
+
+		for (Heroi h : combate.getHerois()) {
+			JLabel lblSprite = new JLabel(h.getNome(), iconeDoSprite(h.getSprite()), JLabel.CENTER);
+			lblSprite.setHorizontalTextPosition(JLabel.CENTER);
+			lblSprite.setVerticalTextPosition(JLabel.BOTTOM);
+			lblSprite.setForeground(BRANCO);
+			lblSprite.setFont(new Font("SansSerif", Font.BOLD, 14));
+			painelHerois.add(lblSprite);
+			spritesHerois.add(lblSprite);
+		}
+
+		painelArena.add(painelMonstros, BorderLayout.CENTER);
+		painelArena.add(painelHerois, BorderLayout.EAST);
 
 		this.add(painelArena, BorderLayout.CENTER);
 
@@ -255,6 +305,29 @@ public class PainelCombate extends JPanel {
 		return btn;
 	}
 	
+	// Deixa o botão do monstro "invisível": sem o fundo cinza do botão,
+	// aparece só o sprite com o nome embaixo. Ao passar o mouse, surge uma
+	// borda amarela pra mostrar que dá pra clicar nele.
+	private void estilizarAlvo(JButton btn) {
+		btn.setHorizontalTextPosition(JButton.CENTER);
+		btn.setVerticalTextPosition(JButton.BOTTOM);
+		btn.setForeground(BRANCO);
+		btn.setFont(new Font("SansSerif", Font.BOLD, 14));
+		btn.setContentAreaFilled(false);
+		btn.setFocusPainted(false);
+		btn.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2));
+		btn.setBorderPainted(false);
+		btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btn.getModel().addChangeListener(e -> btn.setBorderPainted(btn.isEnabled() && btn.getModel().isRollover()));
+	}
+
+	// Ícone do sprite ampliado; null se a folha não existir (aí o botão/label
+	// mostra só o nome, como era antes)
+	private Icon iconeDoSprite(Sprite sprite) {
+		BufferedImage imagem = CarregadorSprites.recortarSprite(sprite, ESCALA_SPRITE);
+		return (imagem != null) ? new ImageIcon(imagem) : null;
+	}
+
 	// Tudo o que a tela precisa fazer depois de qualquer ação que gasta o turno:
 	// mostrar o que aconteceu, redesenhar as barras e ver se a batalha acabou.
 	private void aposAcao(ResultadoAcao resultado) {
@@ -280,14 +353,23 @@ public class PainelCombate extends JPanel {
 			if (h == combate.getHeroiAtual()) {
 				labelsNomesHerois.get(i).setForeground(Color.YELLOW);
 				labelsNomesHerois.get(i).setText("▶ " + h.getNome());
+				spritesHerois.get(i).setForeground(Color.YELLOW);
 			} else {
 				labelsNomesHerois.get(i).setForeground(BRANCO);
 				labelsNomesHerois.get(i).setText(h.getNome());
+				spritesHerois.get(i).setForeground(BRANCO);
 			}
+
+			// Desabilitado, o Swing desenha o sprite acinzentado sozinho
+			spritesHerois.get(i).setEnabled(h.estaVivo());
 		}
 		for (int i = 0; i < combate.getMonstros().size(); i++) {
 		    Monstro m = combate.getMonstros().get(i);
 		    barrasHPMonstros.get(i).setValue(m.getVida().getAtual());
+
+		    // Monstro derrotado fica cinza e deixa de ser clicável (o Combate
+		    // já recusava atacar alvo morto; isso só deixa visível na tela)
+		    botoesMonstros.get(i).setEnabled(m.estaVivo());
 		}
 		
 	}
@@ -313,4 +395,39 @@ public class PainelCombate extends JPanel {
 		painelComandos.repaint();
 	}
 
+	/**
+	 * Fundo da arena: o chão da masmorra repetido (ampliado 2x, igual ao
+	 * mapa), escurecido pra os sprites se destacarem. Se o tileset não
+	 * existir, fica o cinza escuro de antes.
+	 */
+	private static class PainelArena extends JPanel {
+		private static final long serialVersionUID = 1L;
+		private static final int TAMANHO_TILE = 32 * 2;
+
+		PainelArena() {
+			setBackground(Color.DARK_GRAY);
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+
+			BufferedImage chao = CarregadorSprites.recortarTile(TilesetMasmorra.ARQUIVO, TilesetMasmorra.CHAO,
+					TilesetMasmorra.COLUNAS, 32);
+			if (chao == null) {
+				return;
+			}
+
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+			for (int y = 0; y < getHeight(); y += TAMANHO_TILE) {
+				for (int x = 0; x < getWidth(); x += TAMANHO_TILE) {
+					g2.drawImage(chao, x, y, TAMANHO_TILE, TAMANHO_TILE, null);
+				}
+			}
+
+			g2.setColor(new Color(0, 0, 0, 110)); // preto meio transparente por cima
+			g2.fillRect(0, 0, getWidth(), getHeight());
+		}
+	}
 }

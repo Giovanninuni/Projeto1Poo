@@ -9,7 +9,7 @@ public class Goblin extends Monstro{
 	}
 
 	@Override
-	public String getArquivoSprite() {
-		return "goblin.png";
+	public Sprite getSprite() {
+		return Sprite.monstro(0, 2);
 	}
 }

@@ -46,5 +46,9 @@ public abstract class Personagem {
     public Atributos getAtributos() { 
     	return this.atributos; 
     }
+
+    // Cada personagem diz qual desenho o representa na batalha.
+    // Abstrato: toda subclasse nova (Orc, Paladino...) é obrigada a informar o seu.
+    public abstract Sprite getSprite();
  
 }

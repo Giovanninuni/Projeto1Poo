@@ -9,7 +9,7 @@ public class Esqueleto extends Monstro{
 	}
 
 	@Override
-	public String getArquivoSprite() {
-		return "esqueleto.png";
+	public Sprite getSprite() {
+		return Sprite.monstro(4, 0);
 	}
 }
