@@ -6,6 +6,8 @@ import contratos.ResultadoAcao;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -31,6 +33,10 @@ public class PainelMasmorra extends JPanel implements KeyListener {
     // sprites de batalha, encolhidos pra caber num tile (ver CarregadorSprites).
     private static final String SPRITE_HEROI = "heroi_batalha_recortado.png";
 
+    // Zoom 2x: cada tile de 32 px aparece com 64 px na tela (16x12 tiles
+    // visíveis numa janela 1024x768), e a câmera acompanha o herói.
+    private final Camera camera = new Camera(2);
+
     public PainelMasmorra(JanelaPrincipal janela, Masmorra masmorra) {
         this.janela = janela;
         this.masmorra = masmorra;
@@ -43,6 +49,31 @@ public class PainelMasmorra extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // A câmera mira o centro do tile do herói.
+        Mapa mapa = masmorra.getMapa();
+        camera.seguir(
+                masmorra.getHeroiX() * TAMANHO_TILE + TAMANHO_TILE / 2,
+                masmorra.getHeroiY() * TAMANHO_TILE + TAMANHO_TILE / 2,
+                mapa.getLargura() * TAMANHO_TILE,
+                mapa.getAltura() * TAMANHO_TILE,
+                getWidth(),
+                getHeight());
+
+        // Trabalha numa cópia do Graphics pra o zoom não "vazar" pro resto
+        // do Swing. Vizinho mais próximo: ao ampliar, cada pixel vira um
+        // quadradinho nítido, em vez de ficar borrado.
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        camera.aplicar(g2);
+        desenharCena(g2);
+        g2.dispose();
+    }
+
+    /**
+     * Desenha tudo em pixels do mapa (tile = 32), como se não houvesse
+     * câmera — o zoom e o deslocamento já foram aplicados no Graphics.
+     */
+    private void desenharCena(Graphics g) {
         // Ordem importa: o que é desenhado depois fica por cima.
         desenharMapa(g);
 
@@ -57,7 +88,7 @@ public class PainelMasmorra extends JPanel implements KeyListener {
         for (Masmorra.Encontro encontro : masmorra.getEncontros()) {
             if (!encontro.isDerrotado()) {
                 String arquivo = encontro.getInimigos().get(0).getArquivoSprite();
-                BufferedImage sprite = CarregadorSprites.carregarMiniatura(arquivo, TAMANHO_TILE);
+                BufferedImage sprite = CarregadorSprites.carregarMiniatura(arquivo, tamanhoMiniatura());
                 desenharImagem(g, sprite, encontro.getX(), encontro.getY(), Color.RED);
             }
         }
@@ -69,8 +100,17 @@ public class PainelMasmorra extends JPanel implements KeyListener {
 
         // Herói por último, pra ficar por cima de tudo (ex: parado em cima
         // de um encontro do qual acabou de fugir).
-        BufferedImage spriteHeroi = CarregadorSprites.carregarMiniatura(SPRITE_HEROI, TAMANHO_TILE);
+        BufferedImage spriteHeroi = CarregadorSprites.carregarMiniatura(SPRITE_HEROI, tamanhoMiniatura());
         desenharImagem(g, spriteHeroi, masmorra.getHeroiX(), masmorra.getHeroiY(), Color.BLUE);
+    }
+
+    /**
+     * As miniaturas são geradas já no tamanho da tela (32 x zoom = 64 px):
+     * desenhadas num tile de 32 com zoom 2x, cada pixel delas cai em um
+     * pixel da tela, e o personagem sai com o dobro de detalhe.
+     */
+    private int tamanhoMiniatura() {
+        return TAMANHO_TILE * camera.getZoom();
     }
 
     /**
