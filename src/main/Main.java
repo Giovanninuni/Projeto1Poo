@@ -10,8 +10,7 @@ public class Main {
         // de iniciar uma interface gráfica em Java, evitando travamentos na tela.
         SwingUtilities.invokeLater(() -> {
             
-            // Instancia a janela principal que construímos.
-            // (Como colocamos setVisible(true) no construtor dela, o jogo já vai abrir!)
+            // Instancia a janela principal que construímos e a torna visível.
             new JanelaPrincipal().setVisible(true);
             
         });

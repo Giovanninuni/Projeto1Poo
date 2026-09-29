@@ -20,8 +20,8 @@ public class PocaoVida extends Item{
 	public ResultadoAcao consumir(Personagem usuario, Personagem alvo) {
 			alvo.getVida().restaurar(quantidadeCura);
 			
-			return new ResultadoAcao(true, String.format("%s usou uma Poção de Cura em %s, lhe concedendo %d de Vida!%n", 
-                    usuario.getNome(), alvo.getNome(), quantidadeCura));
+			return new ResultadoAcao(true, String.format("%s usou uma %s em %s, lhe concedendo %d de Vida!%n",
+                    usuario.getNome(), getNome(), alvo.getNome(), quantidadeCura));
 	}
 		
 	}

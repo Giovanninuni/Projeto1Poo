@@ -23,6 +23,8 @@ public class Combate {
     private int indiceHeroiAtual = 0;
     private final Random sorteador = new Random();
 
+    private static final String MSG_BATALHA_ACABOU = "A batalha já acabou.";
+
     // Recebe o Ouro do grupo (não o Grupo inteiro) pelo mesmo motivo de só
     // receber List<Heroi> em vez de Grupo: Combate só deve enxergar o que
     // precisa pra creditar recompensa, não o depósito de equipamentos nem
@@ -31,7 +33,6 @@ public class Combate {
         this.herois = grupoHerois;
         this.monstros = grupoMonstros;
         this.ouro = ouro;
-        this.indiceHeroiAtual = 0;
         this.estadoBatalha = EstadoBatalha.EM_ANDAMENTO;
     }
 
@@ -44,14 +45,12 @@ public class Combate {
     // log dessas ações para quem chamou (a GUI só exibe o texto, não decide
     // quando os monstros atacam).
     private String avancarTurno() {
-        if (estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return "";
+        if (batalhaEncerrada()) {
+            return "";
+        }
 
         indiceHeroiAtual++;
-
-        // Pula o turno de heróis que já não estão vivos
-        while (indiceHeroiAtual < herois.size() && !herois.get(indiceHeroiAtual).estaVivo()) {
-            indiceHeroiAtual++;
-        }
+        pularHeroisMortos();
 
         String logMonstros = "";
 
@@ -61,13 +60,28 @@ public class Combate {
 
             if (estadoBatalha == EstadoBatalha.EM_ANDAMENTO) {
                 indiceHeroiAtual = 0;
-                while (indiceHeroiAtual < herois.size() && !herois.get(indiceHeroiAtual).estaVivo()) {
-                    indiceHeroiAtual++;
-                }
+                pularHeroisMortos();
             }
         }
 
         return logMonstros;
+    }
+
+    // Avança o índice até o próximo herói vivo (ou até o fim da lista)
+    private void pularHeroisMortos() {
+        while (indiceHeroiAtual < herois.size() && !herois.get(indiceHeroiAtual).estaVivo()) {
+            indiceHeroiAtual++;
+        }
+    }
+
+    private List<Heroi> heroisVivos() {
+        List<Heroi> vivos = new ArrayList<>();
+        for (Heroi h : herois) {
+            if (h.estaVivo()) {
+                vivos.add(h);
+            }
+        }
+        return vivos;
     }
 
     private String turnoDosMonstros() {
@@ -79,8 +93,7 @@ public class Combate {
             Heroi alvoSorteado = sortearHeroiVivo();
 
             if (alvoSorteado != null) {
-                ResultadoAcao acao = executarAtaque(monstro, alvoSorteado, monstro.getAtaque());
-                log.append(acao.getMensagem()).append("\n");
+                log.append(executarAtaque(monstro, alvoSorteado, monstro.getAtaque())).append("\n");
             }
         }
 
@@ -90,12 +103,7 @@ public class Combate {
     }
 
     private Heroi sortearHeroiVivo() {
-        List<Heroi> vivos = new ArrayList<>();
-        for (Heroi h : herois) {
-            if (h.estaVivo()) {
-                vivos.add(h);
-            }
-        }
+        List<Heroi> vivos = heroisVivos();
 
         if (vivos.isEmpty()) {
             return null;
@@ -113,22 +121,28 @@ public class Combate {
     }
 
     private boolean verificarDerrota() {
-        for (Heroi h : herois) {
-            if (h.estaVivo()) return false;
-        }
-        return true;
+        return heroisVivos().isEmpty();
     }
-    
+
     private void atualizarEstado() {
         if (verificarVitoria()) {
             estadoBatalha = EstadoBatalha.VITORIA;
         } else if (verificarDerrota()) {
             estadoBatalha = EstadoBatalha.DERROTA;
         }
-    } //Ainda não mudei nada para que esse metodo seja usado
+    }
 
-    public List<Heroi> getHerois() { return herois; }
-    public List<Monstro> getMonstros() { return monstros; }
+    private boolean batalhaEncerrada() {
+        return estadoBatalha != EstadoBatalha.EM_ANDAMENTO;
+    }
+
+    public List<Heroi> getHerois() {
+        return herois;
+    }
+
+    public List<Monstro> getMonstros() {
+        return monstros;
+    }
 
     public Heroi getHeroiAtual() {
         // Impede que o sistema procure um índice inválido quando a party morre
@@ -146,7 +160,9 @@ public class Combate {
     // A checagem de estado vem antes de getHeroiAtual() de propósito: com a
     // batalha em andamento sempre existe um herói da vez (nunca null).
     public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHabilidade, int indiceAlvo) {
-        if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
+        if (batalhaEncerrada()) {
+            return new ResultadoAcao(false, MSG_BATALHA_ACABOU);
+        }
 
         Heroi atacante = getHeroiAtual();
         Monstro alvo = this.monstros.get(indiceAlvo);
@@ -166,13 +182,13 @@ public class Combate {
                 "%s não tem mana suficiente para usar %s!", atacante.getNome(), habilidade.getNome()));
         }
 
-        ResultadoAcao resultado = executarAtaque(atacante, alvo, habilidade);
-
-        return finalizarAcao(new StringBuilder(resultado.getMensagem()));
+        return finalizarAcao(executarAtaque(atacante, alvo, habilidade));
     }
 
     public ResultadoAcao processarAtaqueBasicoHeroi(int indiceAlvo) {
-        if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
+        if (batalhaEncerrada()) {
+            return new ResultadoAcao(false, MSG_BATALHA_ACABOU);
+        }
 
         Heroi atacante = getHeroiAtual();
         Monstro alvo = this.monstros.get(indiceAlvo);
@@ -181,13 +197,13 @@ public class Combate {
             return new ResultadoAcao(false, "O alvo já está derrotado!");
         }
 
-        ResultadoAcao resultado = executarAtaque(atacante, alvo, atacante.getAtaquePadrao());
-
-        return finalizarAcao(new StringBuilder(resultado.getMensagem()));
+        return finalizarAcao(executarAtaque(atacante, alvo, atacante.getAtaquePadrao()));
     }
 
     public ResultadoAcao processarAcaoHeroiItem(int indiceItem) {
-        if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
+        if (batalhaEncerrada()) {
+            return new ResultadoAcao(false, MSG_BATALHA_ACABOU);
+        }
 
         Heroi consumidor = getHeroiAtual();
         ResultadoAcao resultado = consumidor.usarItem(indiceItem);
@@ -196,13 +212,14 @@ public class Combate {
             return resultado;
         }
 
-        return finalizarAcao(new StringBuilder(resultado.getMensagem()));
+        return finalizarAcao(resultado.getMensagem());
     }
 
     // avancarTurno() decide sozinho se é a vez do próximo herói ou se a
     // rodada virou e os monstros devem atacar agora; se a vitória aconteceu
     // nesta ação, concede as recompensas em vez de continuar os turnos.
-    private ResultadoAcao finalizarAcao(StringBuilder mensagem) {
+    private ResultadoAcao finalizarAcao(String mensagemAcao) {
+        StringBuilder mensagem = new StringBuilder(mensagemAcao);
     	atualizarEstado();
         if (estadoBatalha == EstadoBatalha.VITORIA) {
             mensagem.append("\n").append(concederRecompensas());
@@ -217,7 +234,9 @@ public class Combate {
     }
 
     public ResultadoAcao fugir() {
-    	if (this.estadoBatalha != EstadoBatalha.EM_ANDAMENTO) return new ResultadoAcao(false, "A batalha já acabou.");
+    	if (batalhaEncerrada()) {
+    		return new ResultadoAcao(false, MSG_BATALHA_ACABOU);
+    	}
     	
     	boolean conseguiuFugir = sorteador.nextInt(100) < 50;
     	// 50% de chance de fugir
@@ -227,7 +246,7 @@ public class Combate {
         	return new ResultadoAcao(true, "A equipe fugiu!");
     	}
     	
-    	return finalizarAcao(new StringBuilder("A equipe não conseguiu fugir!"));
+    	return finalizarAcao("A equipe não conseguiu fugir!");
     	
     } 
     
@@ -247,12 +266,7 @@ public class Combate {
             ouroTotal += m.getOuroDropado();
         }
 
-        List<Heroi> vivos = new ArrayList<>();
-        for (Heroi h : herois) {
-            if (h.estaVivo()) {
-                vivos.add(h);
-            }
-        }
+        List<Heroi> vivos = heroisVivos();
 
         int xpPorHeroi = vivos.isEmpty() ? 0 : xpTotal / vivos.size();
 
@@ -260,9 +274,7 @@ public class Combate {
             String.format("O grupo ganhou %d de ouro! Cada sobrevivente recebeu %d de XP.", ouroTotal, xpPorHeroi));
 
         for (Heroi h : vivos) {
-            int nivelAntes = h.getNivel();
-            h.ganharXp(xpPorHeroi);
-            if (h.getNivel() > nivelAntes) {
+            if (h.ganharXp(xpPorHeroi) > 0) {
                 mensagem.append(String.format("%n%s subiu para o nível %d!", h.getNome(), h.getNivel()));
             }
         }
@@ -278,19 +290,13 @@ public class Combate {
     // Único ponto do sistema que resolve um ataque: o Ataque só calcula o
     // Dano (calcularDano), quem aplica no alvo e monta a mensagem é o
     // Combate — evita repetir esse padrão em cada Habilidade/Monstro.
-    private ResultadoAcao executarAtaque(Personagem atacante, Personagem alvo, Ataque ataque) {
+    private String executarAtaque(Personagem atacante, Personagem alvo, Ataque ataque) {
         Dano dano = ataque.calcularDano(atacante);
         int danoSofrido = alvo.receberDano(dano);
 
-        String mensagem;
-        if (dano.isCritico()) {
-            mensagem = String.format("ACERTO CRÍTICO! %s usa %s em %s, causando %d de dano!",
-                atacante.getNome(), ataque.getNome(), alvo.getNome(), danoSofrido);
-        } else {
-            mensagem = String.format("%s usa %s em %s, causando %d de dano.",
-                atacante.getNome(), ataque.getNome(), alvo.getNome(), danoSofrido);
-        }
-
-        return new ResultadoAcao(true, mensagem);
+        String prefixo = dano.isCritico() ? "ACERTO CRÍTICO! " : "";
+        String pontuacao = dano.isCritico() ? "!" : ".";
+        return String.format("%s%s usa %s em %s, causando %d de dano%s",
+            prefixo, atacante.getNome(), ataque.getNome(), alvo.getNome(), danoSofrido, pontuacao);
     }
 }

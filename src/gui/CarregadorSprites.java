@@ -47,16 +47,25 @@ public class CarregadorSprites {
      * tileset exportado do Tiled com vários tiles lado a lado). indice conta
      * da esquerda pra direita, de cima pra baixo, começando em 0 — do jeito
      * que o Tiled também numera. Retorna null se a folha ainda não existir.
+     * O recorte fica no cache: sem ele, cada repaint da masmorra criava
+     * centenas de imagens novas (uma por tile desenhado).
      */
     public static BufferedImage recortarTile(String caminhoRelativoFolha, int indice, int colunas, int tamanhoTile) {
-        BufferedImage folha = carregar(caminhoRelativoFolha);
-        if (folha == null) {
-            return null;
+        String chave = caminhoRelativoFolha + "#" + indice + "/" + tamanhoTile;
+        if (CACHE.containsKey(chave)) {
+            return CACHE.get(chave);
         }
 
-        int coluna = indice % colunas;
-        int linha = indice / colunas;
-        return folha.getSubimage(coluna * tamanhoTile, linha * tamanhoTile, tamanhoTile, tamanhoTile);
+        BufferedImage folha = carregar(caminhoRelativoFolha);
+        BufferedImage recorte = null;
+        if (folha != null) {
+            int coluna = indice % colunas;
+            int linha = indice / colunas;
+            recorte = folha.getSubimage(coluna * tamanhoTile, linha * tamanhoTile, tamanhoTile, tamanhoTile);
+        }
+
+        CACHE.put(chave, recorte);
+        return recorte;
     }
 
     /**

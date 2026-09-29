@@ -22,8 +22,8 @@ public class PocaoMana extends Item {
 			if(usuario instanceof Heroi heroiUsuario && alvo instanceof Heroi heroiAlvo) {
 			heroiAlvo.getMana().restaurar(quantidadeMana);
 			
-			return new ResultadoAcao(true, String.format("%s usou uma Poção de Mana em %s, lhe concedendo %d de Mana!%n", 
-                    heroiUsuario.getNome(), heroiAlvo.getNome(), quantidadeMana));
+			return new ResultadoAcao(true, String.format("%s usou uma %s em %s, lhe concedendo %d de Mana!%n",
+                    heroiUsuario.getNome(), getNome(), heroiAlvo.getNome(), quantidadeMana));
 			}
 			
 			else {

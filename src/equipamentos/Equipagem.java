@@ -12,34 +12,39 @@ import java.util.Map;
 public class Equipagem {
     private final Map<TipoEquipamento, Equipamento> slots = new EnumMap<>(TipoEquipamento.class);
 
+    // Map.put já devolve o que estava no slot antes (ou null se estava vazio)
     public Equipamento equipar(Atributos atributos, Equipamento novo) {
-        Equipamento antigo = slots.get(novo.getTipo());
+        Equipamento antigo = slots.put(novo.getTipo(), novo);
 
         if (antigo != null) {
-            atributos.reduzirAtaque(antigo.getBonusAtaque());
-            atributos.reduzirDefesa(antigo.getBonusDefesa());
+            removerBonus(atributos, antigo);
         }
-
-        atributos.aumentarAtaque(novo.getBonusAtaque());
-        atributos.aumentarDefesa(novo.getBonusDefesa());
-        slots.put(novo.getTipo(), novo);
+        aplicarBonus(atributos, novo);
 
         return antigo;
     }
 
     // Esvazia um slot sem colocar outro equipamento no lugar (diferente de
     // equipar, que so troca). Retorna o que estava equipado ali, ou null
-    // se o slot ja estava vazio.
+    // se o slot ja estava vazio. Map.remove também devolve o valor removido.
     public Equipamento desequipar(Atributos atributos, TipoEquipamento tipo) {
-        Equipamento atual = slots.get(tipo);
+        Equipamento atual = slots.remove(tipo);
 
         if (atual != null) {
-            atributos.reduzirAtaque(atual.getBonusAtaque());
-            atributos.reduzirDefesa(atual.getBonusDefesa());
-            slots.remove(tipo);
+            removerBonus(atributos, atual);
         }
 
         return atual;
+    }
+
+    private void aplicarBonus(Atributos atributos, Equipamento equipamento) {
+        atributos.aumentarAtaque(equipamento.getBonusAtaque());
+        atributos.aumentarDefesa(equipamento.getBonusDefesa());
+    }
+
+    private void removerBonus(Atributos atributos, Equipamento equipamento) {
+        atributos.reduzirAtaque(equipamento.getBonusAtaque());
+        atributos.reduzirDefesa(equipamento.getBonusDefesa());
     }
 
     public Equipamento getArma() {

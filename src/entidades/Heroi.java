@@ -32,7 +32,8 @@ public abstract class Heroi extends Personagem {
       this.equipagem = new Equipagem();
    }
 
-   public void ganharXp(int quantidade) {
+   // Devolve quantos níveis o herói subiu (0 se não subiu nenhum)
+   public int ganharXp(int quantidade) {
        int niveisGanhos = experiencia.ganhar(quantidade);
 
        for (int i = 0; i < niveisGanhos; i++) {
@@ -41,6 +42,8 @@ public abstract class Heroi extends Personagem {
            getAtributos().aumentarAtaque(2);
            getAtributos().aumentarDefesa(1);
        }
+
+       return niveisGanhos;
    }
 
    public int getNivel() {

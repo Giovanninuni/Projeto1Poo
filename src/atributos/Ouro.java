@@ -12,8 +12,8 @@ public class Ouro {
 	}
 
 	// Espelha Mana.gastar(): o próprio Ouro garante que nunca fica negativo,
-	// em vez de quem chama precisar checar getQuantidade() antes. Ainda sem
-	// uso (preparado pra quando a loja existir).
+	// em vez de quem chama precisar checar getQuantidade() antes. Usado
+	// pela Loja nas compras.
 	public boolean gastar(int valor) {
 		if (valor > 0 && valor <= quantidade) {
 			quantidade -= valor;
