@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import entidades.Sprite;
+import entidades.SpriteMapa;
 
 /**
  * Carrega imagens de assets/sprites e guarda em cache, pra não ler o
@@ -93,6 +94,43 @@ public class CarregadorSprites {
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             g.drawImage(recorte, 0, 0, t * escala, t * escala, null);
             g.dispose();
+        }
+
+        CACHE.put(chave, resultado);
+        return resultado;
+    }
+
+    /**
+     * Recorta um quadro da animação de mapa (ver entidades.SpriteMapa).
+     * andando escolhe a linha da folha (parado ou andando), quadro vai de
+     * 0 a 3, e espelhado vira o desenho pra esquerda (a folha só tem os
+     * personagens olhando pra direita). Cada combinação é recortada uma
+     * vez só e fica no cache. Retorna null se a folha não existir.
+     */
+    public static BufferedImage recortarQuadro(SpriteMapa sprite, boolean andando, int quadro, boolean espelhado) {
+        String chave = SpriteMapa.FOLHA + "@" + sprite.x() + "," + sprite.y()
+                + (andando ? "/andando" : "/parado") + quadro + (espelhado ? "/espelhado" : "");
+        if (CACHE.containsKey(chave)) {
+            return CACHE.get(chave);
+        }
+
+        BufferedImage folha = carregar(SpriteMapa.FOLHA);
+        BufferedImage resultado = null;
+        if (folha != null) {
+            int t = SpriteMapa.TAMANHO;
+            int x = sprite.x() + quadro * t;
+            int y = sprite.y() + (andando ? t : 0); // a linha "andando" fica logo abaixo da "parado"
+            resultado = folha.getSubimage(x, y, t, t);
+
+            if (espelhado) {
+                // Desenhar com o x de destino invertido (de t até 0) vira a
+                // imagem na horizontal, como um espelho.
+                BufferedImage virada = new BufferedImage(t, t, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = virada.createGraphics();
+                g.drawImage(resultado, t, 0, 0, t, 0, 0, t, t, null);
+                g.dispose();
+                resultado = virada;
+            }
         }
 
         CACHE.put(chave, resultado);

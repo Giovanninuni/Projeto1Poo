@@ -1,6 +1,6 @@
 package objetos;
 
-import entidades.Sprite;
+import entidades.SpriteMapa;
 import loja.Loja;
 
 /**
@@ -13,8 +13,8 @@ public class Mercador {
     private final int y;
     private final Loja loja;
 
-    // Lojista do 32rogues (linha 6, coluna 2 de rogues.png).
-    private static final Sprite SPRITE = Sprite.rogue(6, 2);
+    // Anão barbudo do pacote Momonga (animado no mapa).
+    private static final SpriteMapa SPRITE_MAPA = SpriteMapa.personagem(3);
 
     public Mercador(int x, int y, Loja loja) {
         this.x = x;
@@ -34,8 +34,8 @@ public class Mercador {
         return loja;
     }
 
-    public Sprite getSprite() {
-        return SPRITE;
+    public SpriteMapa getSpriteMapa() {
+        return SPRITE_MAPA;
     }
 }
 		

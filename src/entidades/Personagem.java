@@ -50,5 +50,8 @@ public abstract class Personagem {
     // Cada personagem diz qual desenho o representa na batalha.
     // Abstrato: toda subclasse nova (Orc, Paladino...) é obrigada a informar o seu.
     public abstract Sprite getSprite();
+
+    // E qual desenho animado o representa no mapa da masmorra.
+    public abstract SpriteMapa getSpriteMapa();
  
 }

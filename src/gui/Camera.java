@@ -16,8 +16,10 @@ public class Camera {
     private final int zoom;
 
     // Canto superior esquerdo da parte visível, em pixels do mapa (sem zoom).
-    private int x;
-    private int y;
+    // É double porque, com zoom 2, a câmera pode parar em meio pixel do mapa
+    // (= 1 pixel da tela): o herói anda livre, e a câmera acompanha liso.
+    private double x;
+    private double y;
 
     /**
      * zoom deve ser inteiro (2, 3...): com zoom quebrado (1.5) cada pixel
@@ -33,20 +35,29 @@ public class Camera {
      * beirada da tela. Todas as medidas de mapa são em pixels do mapa; as
      * de tela, em pixels reais da janela.
      */
-    public void seguir(int alvoX, int alvoY, int larguraMapa, int alturaMapa, int larguraTela, int alturaTela) {
-        int larguraVisivel = larguraTela / zoom;
-        int alturaVisivel = alturaTela / zoom;
+    public void seguir(double alvoX, double alvoY, int larguraMapa, int alturaMapa, int larguraTela, int alturaTela) {
+        double larguraVisivel = (double) larguraTela / zoom;
+        double alturaVisivel = (double) alturaTela / zoom;
 
-        this.x = limitar(alvoX - larguraVisivel / 2, larguraMapa, larguraVisivel);
-        this.y = limitar(alvoY - alturaVisivel / 2, alturaMapa, alturaVisivel);
+        this.x = alinharAoPixelDaTela(limitar(alvoX - larguraVisivel / 2, larguraMapa, larguraVisivel));
+        this.y = alinharAoPixelDaTela(limitar(alvoY - alturaVisivel / 2, alturaMapa, alturaVisivel));
     }
 
-    private static int limitar(int posicao, int tamanhoMapa, int tamanhoVisivel) {
+    private static double limitar(double posicao, int tamanhoMapa, double tamanhoVisivel) {
         if (tamanhoMapa <= tamanhoVisivel) {
             // Mapa menor que a tela nessa direção: centraliza e não mexe mais.
             return -(tamanhoVisivel - tamanhoMapa) / 2;
         }
         return Math.max(0, Math.min(posicao, tamanhoMapa - tamanhoVisivel));
+    }
+
+    /**
+     * Arredonda uma posição do mapa pro pixel de TELA mais próximo (com zoom
+     * 2, de meio em meio pixel do mapa). Mais fino que isso não aparece na
+     * tela; e sempre caindo num pixel inteiro da tela, o desenho fica nítido.
+     */
+    public double alinharAoPixelDaTela(double valor) {
+        return Math.round(valor * zoom) / (double) zoom;
     }
 
     /** Aplica zoom e deslocamento: tudo desenhado depois disso já sai no lugar certo. */

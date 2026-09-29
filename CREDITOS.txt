@@ -1,0 +1,15 @@
+CRÉDITOS DE ARTE
+================
+
+Personagens e monstros no mapa da masmorra
+  Arquivo: assets/sprites/momonga.png
+  Pacote:  "Roguelite Dungeon Tileset" — Art by Momonga
+  Link:    https://momongaa.itch.io/roguelite-dungeon-tileset
+  Licença: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+  Uso:     o arquivo não foi modificado; o jogo recorta os quadros e os
+           espelha na horizontal ao desenhar.
+
+Personagens e monstros na batalha
+  Pasta:   assets/sprites/32rogues/
+  Pacote:  "32rogues" — Seth Boyles
+  Licença: do autor, ver assets/sprites/32rogues/LICENSE.txt

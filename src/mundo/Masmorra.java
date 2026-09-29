@@ -47,17 +47,29 @@ public class Masmorra {
     }
     
 
+    public static final int TAMANHO_TILE = 32;
+
+    // Caixa de colisão do herói: só a região dos pés, mais estreita que o
+    // tile (18 x 12 px). Assim ele encosta nas coisas de um jeito natural
+    // numa visão 3/4: a cabeça pode "passar na frente" da parede de cima.
+    private static final double MEIA_LARGURA_COLISAO = 9;
+    private static final double ALTURA_COLISAO = 12;
+
     private final Mapa mapa;
-    private int heroiX;
-    private int heroiY;
+
+    // Posição do herói em pixels do mapa (tile = 32): x é o meio dos pés e
+    // y é a linha dos pés (o fundo da caixa de colisão). Com o movimento
+    // livre ele pode estar entre dois tiles; getHeroiX/getHeroiY dizem em
+    // qual tile ele está.
+    private double heroiPx;
+    private double heroiPy;
     private final List<Encontro> encontros;
     private final List<Bau> baus;
     private final List<Mercador> mercadores;
 
     public Masmorra(Mapa mapa) {
         this.mapa = mapa;
-        this.heroiX = 5;
-        this.heroiY = 5;
+        posicionarHeroiNoTile(5, 5);
         this.encontros = new ArrayList<>();
         
         
@@ -87,24 +99,85 @@ public class Masmorra {
         this.mercadores.add(new Mercador(5, 12, CatalogoDeLojas.lojaDaMasmorra()));
     }
 
+    // Coloca o herói no meio do tile (x, y), com os pés perto do fundo dele.
+    private void posicionarHeroiNoTile(int x, int y) {
+        this.heroiPx = x * TAMANHO_TILE + TAMANHO_TILE / 2.0;
+        this.heroiPy = (y + 1) * TAMANHO_TILE - 2;
+    }
+
     /**
-     * Tenta mover o herói por (dx, dy). Retorna false e não move nada se o
-     * destino for fora do mapa ou for um tile que bloqueia passagem
-     * (ex: parede) — quem decide isso é o Mapa, não a Masmorra.
+     * Move o herói (dx, dy) pixels, um eixo de cada vez: primeiro x, depois
+     * y. Se o eixo bater em algo (parede, baú, mercador), o herói encosta
+     * nele e para só nesse eixo — o outro continua. É isso que faz ele
+     * "deslizar" pela parede ao andar na diagonal encostado nela.
+     *
+     * Retorna true se o herói saiu do lugar.
      */
-    public boolean mover(int dx, int dy) {
-        int novoX = heroiX + dx;
-        int novoY = heroiY + dy;
-        
-        if (!mapa.podeAndar(novoX, novoY) || existeBau(novoX, novoY) || existeMercador(novoX, novoY)) {
-            return false;
+    public boolean moverHeroi(double dx, double dy) {
+        double antesX = heroiPx;
+        double antesY = heroiPy;
+
+        if (dx != 0) {
+            double novoX = heroiPx + dx;
+            heroiPx = caixaLivre(novoX, heroiPy) ? novoX : encostarX(novoX, dx);
+        }
+        if (dy != 0) {
+            double novoY = heroiPy + dy;
+            heroiPy = caixaLivre(heroiPx, novoY) ? novoY : encostarY(novoY, dy);
         }
 
-        this.heroiX = novoX;
-        this.heroiY = novoY;
+        return heroiPx != antesX || heroiPy != antesY;
+    }
+
+    /**
+     * A caixa de colisão do herói, com os pés em (px, py), cabe aqui? Olha
+     * todos os tiles que a caixa encosta (normalmente 1 a 4) e todos têm
+     * que estar livres.
+     */
+    private boolean caixaLivre(double px, double py) {
+        // O "- 0.001" trata a borda direita/de baixo como aberta: encostar
+        // exatamente na linha de um tile não conta como estar dentro dele.
+        int tileEsquerda = (int) Math.floor((px - MEIA_LARGURA_COLISAO) / TAMANHO_TILE);
+        int tileDireita = (int) Math.floor((px + MEIA_LARGURA_COLISAO - 0.001) / TAMANHO_TILE);
+        int tileCima = (int) Math.floor((py - ALTURA_COLISAO) / TAMANHO_TILE);
+        int tileBaixo = (int) Math.floor((py - 0.001) / TAMANHO_TILE);
+
+        for (int y = tileCima; y <= tileBaixo; y++) {
+            for (int x = tileEsquerda; x <= tileDireita; x++) {
+                if (!podeOcupar(x, y)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
-    
+
+    // Bateu andando na horizontal: cola a lateral da caixa na borda do tile
+    // que bloqueou (em vez de parar alguns pixels antes dele).
+    private double encostarX(double novoX, double dx) {
+        if (dx > 0) {
+            int tileBloqueio = (int) Math.floor((novoX + MEIA_LARGURA_COLISAO - 0.001) / TAMANHO_TILE);
+            return tileBloqueio * TAMANHO_TILE - MEIA_LARGURA_COLISAO;
+        }
+        int tileBloqueio = (int) Math.floor((novoX - MEIA_LARGURA_COLISAO) / TAMANHO_TILE);
+        return (tileBloqueio + 1) * TAMANHO_TILE + MEIA_LARGURA_COLISAO;
+    }
+
+    // Mesma ideia na vertical: cola o topo ou o fundo da caixa no tile.
+    private double encostarY(double novoY, double dy) {
+        if (dy > 0) {
+            int tileBloqueio = (int) Math.floor((novoY - 0.001) / TAMANHO_TILE);
+            return tileBloqueio * TAMANHO_TILE;
+        }
+        int tileBloqueio = (int) Math.floor((novoY - ALTURA_COLISAO) / TAMANHO_TILE);
+        return (tileBloqueio + 1) * TAMANHO_TILE + ALTURA_COLISAO;
+    }
+
+    // Um tile onde o herói pode ficar: dentro do mapa, sem parede, sem baú
+    // e sem mercador (encontros não bloqueiam: pisar neles inicia a batalha).
+    private boolean podeOcupar(int x, int y) {
+        return mapa.podeAndar(x, y) && !existeBau(x, y) && !existeMercador(x, y);
+    }
 
     /**
      * Retorna o encontro (ainda não derrotado) na posição atual do herói,
@@ -112,7 +185,7 @@ public class Masmorra {
      */
     public Encontro getEncontroNaPosicaoDoHeroi() {
         for (Encontro encontro : encontros) {
-            if (!encontro.isDerrotado() && encontro.getX() == heroiX && encontro.getY() == heroiY) {
+            if (!encontro.isDerrotado() && encontro.getX() == getHeroiX() && encontro.getY() == getHeroiY()) {
                 return encontro;
             }
         }
@@ -122,7 +195,7 @@ public class Masmorra {
     //retorna baus que tiverem adjacente ao heroi por posiçao absoluta (checagem para interação) -- lalae
     public Bau getBauAdjacenteAoHeroi(){
         for(Bau i: baus){
-            if(Math.abs(i.getX() - heroiX) + Math.abs(i.getY() - heroiY) == 1){
+            if(Math.abs(i.getX() - getHeroiX()) + Math.abs(i.getY() - getHeroiY()) == 1){
                 return i;
             }
         }
@@ -145,7 +218,7 @@ public class Masmorra {
     // comum (ex: Posicionavel) com um único método genérico.
     public Mercador getMercadorAdjacenteAoHeroi() {
         for (Mercador m : mercadores) {
-            if (Math.abs(m.getX() - heroiX) + Math.abs(m.getY() - heroiY) == 1) {
+            if (Math.abs(m.getX() - getHeroiX()) + Math.abs(m.getY() - getHeroiY()) == 1) {
                 return m;
             }
         }
@@ -161,8 +234,25 @@ public class Masmorra {
         return false;
     }
 
-    public int getHeroiX() { return heroiX; }
-    public int getHeroiY() { return heroiY; }
+    /** Tile (coluna) em que o herói está: o do meio da caixa de colisão. */
+    public int getHeroiX() {
+        return (int) Math.floor(heroiPx / TAMANHO_TILE);
+    }
+
+    /** Tile (linha) em que o herói está: o do meio da caixa de colisão. */
+    public int getHeroiY() {
+        return (int) Math.floor((heroiPy - ALTURA_COLISAO / 2) / TAMANHO_TILE);
+    }
+
+    /** Posição exata dos pés do herói, em pixels do mapa (usado pra desenhar). */
+    public double getHeroiPx() {
+        return heroiPx;
+    }
+
+    public double getHeroiPy() {
+        return heroiPy;
+    }
+
     public Mapa getMapa() { return mapa; }
     public List<Encontro> getEncontros() { return encontros; }
     public List<Bau> getBaus() { return baus; }

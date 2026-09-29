@@ -12,4 +12,9 @@ public class Goblin extends Monstro{
 	public Sprite getSprite() {
 		return Sprite.monstro(0, 2);
 	}
+
+	@Override
+	public SpriteMapa getSpriteMapa() {
+		return SpriteMapa.monstro(4); // goblin
+	}
 }

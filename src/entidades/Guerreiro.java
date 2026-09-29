@@ -14,4 +14,9 @@ public class Guerreiro extends Heroi {
 	public Sprite getSprite() {
 		return Sprite.rogue(1, 0); // cavaleiro
 	}
+
+	@Override
+	public SpriteMapa getSpriteMapa() {
+		return SpriteMapa.personagem(1); // cavaleiro
+	}
 }

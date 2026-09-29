@@ -12,4 +12,9 @@ public class Esqueleto extends Monstro{
 	public Sprite getSprite() {
 		return Sprite.monstro(4, 0);
 	}
+
+	@Override
+	public SpriteMapa getSpriteMapa() {
+		return SpriteMapa.monstro(3); // esqueleto
+	}
 }

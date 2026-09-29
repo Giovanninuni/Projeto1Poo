@@ -14,4 +14,9 @@ public class Mago extends Heroi {
 	public Sprite getSprite() {
 		return Sprite.rogue(4, 1); // mago de barba azul
 	}
+
+	@Override
+	public SpriteMapa getSpriteMapa() {
+		return SpriteMapa.personagem(2); // encapuzado azul
+	}
 }
