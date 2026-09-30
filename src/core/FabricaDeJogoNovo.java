@@ -23,7 +23,7 @@ public class FabricaDeJogoNovo {
     public static Grupo criarGrupoInicial() {
         Heroi arthur = new Guerreiro("Arthur", 100, 15, 5, 50);
         Heroi merlin = new Mago("Mago Merlin", 80, 5, 2, 120);
-        // (Nome, Vida, AtaqueBase, Defesa, Mana)
+        // (Nome, Vida, PoderBase, Defesa, Mana)
 
         // Cada herói começa com poções básicas na mochila
         arthur.getInventario().adicionarItem(CatalogoDeItens.pocaoDeVida());

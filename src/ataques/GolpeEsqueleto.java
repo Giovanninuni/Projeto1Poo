@@ -11,7 +11,7 @@ public class GolpeEsqueleto extends Ataque {
 
 	@Override
 	public Dano calcularDano(Personagem usuario) {
-		int ataque = usuario.getAtributos().getAtaque();
-		return new Dano(ataque, false, TipoDano.PERFURANTE);
+		int poder = usuario.getAtributos().getPoder();
+		return new Dano(poder, false, TipoDano.PERFURANTE);
 	}
 }

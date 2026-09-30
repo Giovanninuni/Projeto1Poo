@@ -12,7 +12,7 @@ public class GolpeEspada extends Ataque {
 
 	@Override
 	public Dano calcularDano(Personagem usuario) {
-		int ataqueBase = usuario.getAtributos().getAtaque();
-		return gerarDanoComCritico(ataqueBase, 25, TipoDano.FISICO);
+		int poder = usuario.getAtributos().getPoder();
+		return gerarDanoComCritico(poder, 25, TipoDano.FISICO);
 	}
 }

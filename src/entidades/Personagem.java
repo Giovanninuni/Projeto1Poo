@@ -9,10 +9,10 @@ public abstract class Personagem {
     private Vida vida;
     private Atributos atributos;
 
-    public Personagem(String nome, int vidaMaxima, int ataqueBase, int defesa) {
+    public Personagem(String nome, int vidaMaxima, int poderBase, int defesa) {
         this.nome = nome;
         this.vida = new Vida(vidaMaxima); // Inicia com a vida cheia
-        this.atributos = new Atributos(ataqueBase, defesa);
+        this.atributos = new Atributos(poderBase, defesa);
     }
 
     // Método de negócio com cálculo de dano e encapsulamento

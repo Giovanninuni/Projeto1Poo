@@ -15,9 +15,9 @@ import entidades.Mago;
  * compartilhando o mesmo item.
  */
 public class CatalogoDeEquipamentos {
-	// String nome, String descricao, TipoEquipamento tipo, int bonusAtaque, int bonusDefesa, int valor
+	// String nome, String descricao, TipoEquipamento tipo, int bonusPoder, int bonusDefesa, int valor
     public static Equipamento acessorioDoViajante() {
-        return new Equipamento("Acessório do Viajante", "Aumenta o ataque em 2", TipoEquipamento.ACESSORIO, 2, 0, 100);
+        return new Equipamento("Acessório do Viajante", "Aumenta o poder em 2", TipoEquipamento.ACESSORIO, 2, 0, 100);
     }
 
     public static Equipamento cajadoAncestral() {
@@ -26,7 +26,7 @@ public class CatalogoDeEquipamentos {
 
     // Equipamentos iniciais de cada heroi (ver JanelaPrincipal).
     public static Equipamento espadaDeTreino() {
-        return new Equipamento("Espada de Treino", "Espada básica de treino, +3 de ataque", TipoEquipamento.ARMA, 3, 0, 150, Guerreiro.class);
+        return new Equipamento("Espada de Treino", "Espada básica de treino, +3 de poder", TipoEquipamento.ARMA, 3, 0, 150, Guerreiro.class);
     }
 
     public static Equipamento armaduraDeCouro() {
@@ -34,7 +34,7 @@ public class CatalogoDeEquipamentos {
     }
 
     public static Equipamento cajadoDeAprendiz() {
-        return new Equipamento("Cajado de Aprendiz", "Cajado básico de estudo, +3 de ataque", TipoEquipamento.ARMA, 3, 0, 150, Mago.class);
+        return new Equipamento("Cajado de Aprendiz", "Cajado básico de estudo, +3 de poder", TipoEquipamento.ARMA, 3, 0, 150, Mago.class);
     }
 
     public static Equipamento vestesDeAprendiz() {

@@ -6,7 +6,7 @@ import atributos.Experiencia;
 import itens.Inventario;
 import itens.Item;
 import ataques.Ataque;
-import ataques.Habilidade;
+import ataques.Tecnica;
 import equipamentos.DepositoEquipamentos;
 import equipamentos.Equipamento;
 import equipamentos.Equipagem;
@@ -17,16 +17,16 @@ import java.util.List;
 public abstract class Heroi extends Personagem {
    private Mana mana;
    private Inventario inventario;
-   private List<Habilidade> habilidades;
+   private List<Tecnica> tecnicas;
    private Ataque ataquePadrao;
    private Experiencia experiencia;
    private Equipagem equipagem;
 
-   public Heroi(String nome, int vidaMaxima, int ataqueBase, int defesa, int manaMaxima, Ataque ataquePadrao) {
-      super(nome, vidaMaxima, ataqueBase, defesa);
+   public Heroi(String nome, int vidaMaxima, int poderBase, int defesa, int manaMaxima, Ataque ataquePadrao) {
+      super(nome, vidaMaxima, poderBase, defesa);
       this.mana = new Mana(manaMaxima);
       this.inventario = new Inventario(10);
-      this.habilidades = new ArrayList<>();
+      this.tecnicas = new ArrayList<>();
       this.ataquePadrao = ataquePadrao;
       this.experiencia = new Experiencia();
       this.equipagem = new Equipagem();
@@ -39,7 +39,7 @@ public abstract class Heroi extends Personagem {
        for (int i = 0; i < niveisGanhos; i++) {
            getVida().aumentarMaxima(10);
            getMana().aumentarMaxima(5);
-           getAtributos().aumentarAtaque(2);
+           getAtributos().aumentarPoder(2);
            getAtributos().aumentarDefesa(1);
        }
 
@@ -121,12 +121,12 @@ public abstract class Heroi extends Personagem {
 	   return this.inventario;
    }
 
-   public List<Habilidade> getHabilidades() {
-       return this.habilidades;
+   public List<Tecnica> getTecnicas() {
+       return this.tecnicas;
    }
 
-   public void aprenderHabilidade(Habilidade novaHabilidade) {
-       this.habilidades.add(novaHabilidade);
+   public void aprenderTecnicas(Tecnica novaTecnica) {
+       this.tecnicas.add(novaTecnica);
    }
 
 }

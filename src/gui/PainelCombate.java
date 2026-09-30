@@ -30,7 +30,7 @@ import entidades.Heroi;
 import entidades.Monstro;
 import entidades.Sprite;
 import mundo.TilesetMasmorra;
-import ataques.Habilidade;
+import ataques.Tecnica;
 import contratos.ResultadoAcao;
 
 public class PainelCombate extends JPanel {
@@ -40,8 +40,8 @@ public class PainelCombate extends JPanel {
 	private Combate combate;
 
 	// Variável de controle: -1 = ataque básico (sempre disponível), >=0 = índice na
-	// lista de habilidades
-	private int habilidadeArmada = -1;
+	// lista de técnicas
+	private int tecnicaArmada = -1;
 
 	// Listas para armazenar as barras e nomes da HUD dinâmica
 	private List<JProgressBar> barrasHPHerois = new ArrayList<>();
@@ -60,7 +60,7 @@ public class PainelCombate extends JPanel {
 	// Elementos gerais da HUD
 	private JTextArea logBatalha;
 	private JButton btnAtaque;
-	private JButton btnHabilidade;
+	private JButton btnTecnica;
 	private JButton btnItem;
 	private JPanel painelComandos;
 	private JButton btnContinuar;
@@ -112,13 +112,13 @@ public class PainelCombate extends JPanel {
 			btnAlvo.addActionListener(e -> {
 				// Dispara a ação "armada" no alvo clicado. -1 é o ataque
 				// básico (sempre disponível); >=0 é o índice na lista de
-				// habilidades (as que custam mana). O Combate já decide
+				// técnicas (as que custam mana). O Combate já decide
 				// sozinho, internamente, se depois dessa ação é a vez do
 				// próximo herói ou se os monstros atacam agora (o log
 				// dessas ações já vem embutido na mensagem de retorno).
-				ResultadoAcao resultado = (habilidadeArmada == -1)
+				ResultadoAcao resultado = (tecnicaArmada == -1)
 						? combate.processarAtaqueBasicoHeroi(indiceAlvo)
-						: combate.processarAcaoHeroiHabilidade(habilidadeArmada, indiceAlvo);
+						: combate.processarAcaoHeroiTecnica(tecnicaArmada, indiceAlvo);
 				
 				aposAcao(resultado);
 			});
@@ -180,13 +180,13 @@ public class PainelCombate extends JPanel {
 		painelComandos.setLayout(new GridLayout(2, 2, 5, 5));
 
 		btnAtaque = estilizarBotao("Ataque");
-		btnHabilidade = estilizarBotao("Habilidade");
+		btnTecnica = estilizarBotao("Técnica");
 		btnItem = estilizarBotao("Item");
 		JButton btnFugir = estilizarBotao("Fugir");
 		btnContinuar = estilizarBotao("Continuar");
 
 		painelComandos.add(btnAtaque);
-		painelComandos.add(btnHabilidade);
+		painelComandos.add(btnTecnica);
 		painelComandos.add(btnItem);
 		painelComandos.add(btnFugir);
 
@@ -233,19 +233,19 @@ public class PainelCombate extends JPanel {
 		// 3. EVENTOS DOS BOTÕES
 		// ==========================================
 		btnAtaque.addActionListener(e -> {
-			this.habilidadeArmada = -1;
+			this.tecnicaArmada = -1;
 			String nomeAtaque = combate.getHeroiAtual().getAtaquePadrao().getNome();
 			logBatalha.append("\n> " + nomeAtaque + " selecionado. Clique em um alvo!");
 		});
 
-		btnHabilidade.addActionListener(e -> {
-			List<Habilidade> habilidadesHeroi = combate.getHeroiAtual().getHabilidades();
-			if (habilidadesHeroi.isEmpty()) {
-				logBatalha.append("\n> Nenhuma habilidade disponível!");
+		btnTecnica.addActionListener(e -> {
+			List<Tecnica> tecnicasHeroi = combate.getHeroiAtual().getTecnicas();
+			if (tecnicasHeroi.isEmpty()) {
+				logBatalha.append("\n> Nenhuma técnica disponível!");
 				return;
 			}
-			this.habilidadeArmada = 0;
-			logBatalha.append("\n> " + habilidadesHeroi.get(0).getNome() + " selecionada. Clique em um alvo!");
+			this.tecnicaArmada = 0;
+			logBatalha.append("\n> " + tecnicasHeroi.get(0).getNome() + " selecionada. Clique em um alvo!");
 		});
 
 		btnItem.addActionListener(e -> {

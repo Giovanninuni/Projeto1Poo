@@ -38,12 +38,12 @@ public class Equipagem {
     }
 
     private void aplicarBonus(Atributos atributos, Equipamento equipamento) {
-        atributos.aumentarAtaque(equipamento.getBonusAtaque());
+        atributos.aumentarPoder(equipamento.getBonusPoder());
         atributos.aumentarDefesa(equipamento.getBonusDefesa());
     }
 
     private void removerBonus(Atributos atributos, Equipamento equipamento) {
-        atributos.reduzirAtaque(equipamento.getBonusAtaque());
+        atributos.reduzirPoder(equipamento.getBonusPoder());
         atributos.reduzirDefesa(equipamento.getBonusDefesa());
     }
 

@@ -12,7 +12,7 @@ public class ToqueArcano extends Ataque {
 
 	@Override
 	public Dano calcularDano(Personagem usuario) {
-		int poder = usuario.getAtributos().getAtaque() + 3;
+		int poder = usuario.getAtributos().getPoder() + 3;
 		return gerarDanoComCritico(poder, 15, TipoDano.MAGICO);
 	}
 }

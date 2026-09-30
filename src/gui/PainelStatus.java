@@ -79,8 +79,8 @@ public class PainelStatus extends JPanel {
         cartao.add(criarBarra("MP", heroi.getMana().getAtual(), heroi.getMana().getMaxima(), new Color(30, 144, 255)));
         cartao.add(criarBarra("XP", heroi.getExperiencia().getXpAtual(), heroi.getExperiencia().getXpParaProximoNivel(), Color.ORANGE));
 
-        cartao.add(criarLabel(String.format("Ataque: %d   Defesa: %d",
-                heroi.getAtributos().getAtaque(), heroi.getAtributos().getDefesa())));
+        cartao.add(criarLabel(String.format("Poder: %d   Defesa: %d",
+                heroi.getAtributos().getPoder(), heroi.getAtributos().getDefesa())));
 
         cartao.add(criarLabel("— Equipamento —"));
         Equipagem equipagem = heroi.getEquipagem();

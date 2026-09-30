@@ -16,11 +16,11 @@ public abstract class Ataque {
 
 	public abstract Dano calcularDano(Personagem usuario);
 
-	protected Dano gerarDanoComCritico(int ataqueBase, int chanceCritico, TipoDano tipo) {
+	protected Dano gerarDanoComCritico(int poderBase, int chanceCritico, TipoDano tipo) {
         boolean critico = sorteador.nextInt(100) < chanceCritico;
-        int danoFinal = ataqueBase;
+        int danoFinal = poderBase;
         if (critico) {
-            danoFinal = (int) (ataqueBase * 1.5); // Aumenta em 50%
+            danoFinal = (int) (poderBase * 1.5); // Aumenta em 50%
         }
 
         return new Dano(danoFinal, critico, tipo);

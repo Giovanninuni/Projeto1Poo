@@ -7,8 +7,8 @@ public abstract class Monstro extends Personagem{
 	private int ouroDropado;
 	private Ataque ataque;
 
-	public Monstro(String nome, int vidaMaxima, int ataqueBase, int defesa, int xpConcedida, int ouroDropado, Ataque ataque) {
-		super(nome, vidaMaxima, ataqueBase, defesa);
+	public Monstro(String nome, int vidaMaxima, int poderBase, int defesa, int xpConcedida, int ouroDropado, Ataque ataque) {
+		super(nome, vidaMaxima, poderBase, defesa);
 		this.xpConcedida = xpConcedida;
 		this.ouroDropado = ouroDropado;
 		this.ataque = ataque;

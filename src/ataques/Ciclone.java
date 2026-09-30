@@ -4,7 +4,7 @@ import atributos.Dano;
 import atributos.Dano.TipoDano;
 import entidades.Personagem;
 
-public class Ciclone extends Habilidade {
+public class Ciclone extends Tecnica {
 
 	public Ciclone() {
 		super("Ciclone", 10);
@@ -12,7 +12,7 @@ public class Ciclone extends Habilidade {
 
 	@Override
 	public Dano calcularDano(Personagem usuario) {
-		int ataqueBase = usuario.getAtributos().getAtaque() + 8;
-		return gerarDanoComCritico(ataqueBase, 30, TipoDano.FISICO);
+		int poder = usuario.getAtributos().getPoder() + 8;
+		return gerarDanoComCritico(poder, 30, TipoDano.FISICO);
 	}
 }

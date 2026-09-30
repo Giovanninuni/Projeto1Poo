@@ -4,7 +4,7 @@ import entidades.Heroi;
 import entidades.Monstro;
 import entidades.Personagem;
 import ataques.Ataque;
-import ataques.Habilidade;
+import ataques.Tecnica;
 import atributos.Dano;
 import atributos.Ouro;
 import contratos.ResultadoAcao;
@@ -159,7 +159,7 @@ public class Combate {
     // o índice do turno, e não consegue mandar agir um herói fora da vez.
     // A checagem de estado vem antes de getHeroiAtual() de propósito: com a
     // batalha em andamento sempre existe um herói da vez (nunca null).
-    public ResultadoAcao processarAcaoHeroiHabilidade(int indiceHabilidade, int indiceAlvo) {
+    public ResultadoAcao processarAcaoHeroiTecnica(int indiceTecnica, int indiceAlvo) {
         if (batalhaEncerrada()) {
             return new ResultadoAcao(false, MSG_BATALHA_ACABOU);
         }
@@ -171,18 +171,18 @@ public class Combate {
             return new ResultadoAcao(false, "O alvo já está derrotado!");
         }
 
-        List<Habilidade> habilidadesHeroi = atacante.getHabilidades();
-        if (indiceHabilidade < 0 || indiceHabilidade >= habilidadesHeroi.size()) {
-            return new ResultadoAcao(false, "Habilidade inválida ou não encontrada!");
+        List<Tecnica> tecnicasHeroi = atacante.getTecnicas();
+        if (indiceTecnica < 0 || indiceTecnica >= tecnicasHeroi.size()) {
+            return new ResultadoAcao(false, "Técnica inválida ou não encontrada!");
         }
-        Habilidade habilidade = habilidadesHeroi.get(indiceHabilidade);
+        Tecnica tecnica = tecnicasHeroi.get(indiceTecnica);
 
-        if (!atacante.getMana().gastar(habilidade.getCustoMana())) {
+        if (!atacante.getMana().gastar(tecnica.getCustoMana())) {
             return new ResultadoAcao(false, String.format(
-                "%s não tem mana suficiente para usar %s!", atacante.getNome(), habilidade.getNome()));
+                "%s não tem mana suficiente para usar %s!", atacante.getNome(), tecnica.getNome()));
         }
 
-        return finalizarAcao(executarAtaque(atacante, alvo, habilidade));
+        return finalizarAcao(executarAtaque(atacante, alvo, tecnica));
     }
 
     public ResultadoAcao processarAtaqueBasicoHeroi(int indiceAlvo) {
@@ -289,7 +289,7 @@ public class Combate {
     // ==========================================
     // Único ponto do sistema que resolve um ataque: o Ataque só calcula o
     // Dano (calcularDano), quem aplica no alvo e monta a mensagem é o
-    // Combate — evita repetir esse padrão em cada Habilidade/Monstro.
+    // Combate — evita repetir esse padrão em cada Tecnica/Monstro.
     private String executarAtaque(Personagem atacante, Personagem alvo, Ataque ataque) {
         Dano dano = ataque.calcularDano(atacante);
         int danoSofrido = alvo.receberDano(dano);
