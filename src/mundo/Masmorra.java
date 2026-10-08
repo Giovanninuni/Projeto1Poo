@@ -3,12 +3,7 @@ package mundo;
 import java.util.ArrayList;
 import java.util.List;
 
-import entidades.Esqueleto;
-import entidades.Goblin;
 import entidades.Monstro;
-import equipamentos.CatalogoDeEquipamentos;
-import itens.*;
-import loja.CatalogoDeLojas;
 import objetos.Bau;
 import objetos.Mercador;
 
@@ -67,36 +62,17 @@ public class Masmorra {
     private final List<Bau> baus;
     private final List<Mercador> mercadores;
 
-    public Masmorra(Mapa mapa) {
+    // Laedson: o conteúdo (encontro dos Goblins, os dois baús e o mercador)
+    // que era criado aqui foi movido, sem mudar nada, para
+    // FabricaDeJogoNovo.criarMasmorraInicial(). A Masmorra agora só recebe
+    // pronto, num EstadoMasmorra, para o save poder montar o mesmo objeto
+    // a partir do arquivo. O resto da classe continua igual.
+    public Masmorra(Mapa mapa, EstadoMasmorra estado) {
         this.mapa = mapa;
-        posicionarHeroiNoTile(5, 5);
-        this.encontros = new ArrayList<>();
-        
-        
-
-        // Encontro de teste que já existia no protótipo original,
-        // só que agora vive aqui, e não dentro da classe de GUI.
-        List<Monstro> grupoTeste = new ArrayList<>();
-        grupoTeste.add(new Goblin("Goblin 1"));
-        grupoTeste.add(new Goblin("Goblin 2"));
-        grupoTeste.add(new Goblin("Goblin 3"));
-        this.encontros.add(new Encontro(10, 5, grupoTeste));
-        
-        this.baus = new ArrayList<>();
-
-        List<Item> itensDoBauUm = new ArrayList<>();
-        itensDoBauUm.add(CatalogoDeItens.pocaoDeMana());
-        itensDoBauUm.add(CatalogoDeItens.pocaoDeVida());
-        this.baus.add(new Bau(17, 6, itensDoBauUm, List.of(CatalogoDeEquipamentos.acessorioDoViajante())));
-
-        List<Item> itensDoBauDois = new ArrayList<>();
-        itensDoBauDois.add(CatalogoDeItens.pocaoDeVida());
-        this.baus.add(new Bau(10, 10, itensDoBauDois, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
-
-        // Mercador perto do ponto de partida, longe do encontro e dos baús.
-        // O que ele vende é definido no CatalogoDeLojas, não aqui.
-        this.mercadores = new ArrayList<>();
-        this.mercadores.add(new Mercador(5, 12, CatalogoDeLojas.lojaDaMasmorra()));
+        posicionarHeroiNoTile(estado.getHeroiTileX(), estado.getHeroiTileY());
+        this.encontros = new ArrayList<>(estado.getEncontros());
+        this.baus = new ArrayList<>(estado.getBaus());
+        this.mercadores = new ArrayList<>(estado.getMercadores());
     }
 
     // Coloca o herói no meio do tile (x, y), com os pés perto do fundo dele.

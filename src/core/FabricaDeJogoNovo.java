@@ -1,14 +1,22 @@
 package core;
 
+import entidades.Goblin;
 import entidades.Grupo;
 import entidades.Guerreiro;
 import entidades.Heroi;
 import entidades.Mago;
+import entidades.Monstro;
 import equipamentos.CatalogoDeEquipamentos;
 import itens.CatalogoDeItens;
+import itens.Item;
+import java.util.ArrayList;
 import java.util.List;
+import loja.CatalogoDeLojas;
 import mundo.CarregadorMapa;
+import mundo.EstadoMasmorra;
 import mundo.Masmorra;
+import objetos.Bau;
+import objetos.Mercador;
 
 /**
  * Sabe montar o estado inicial de uma partida nova: quais heróis existem,
@@ -46,7 +54,33 @@ public class FabricaDeJogoNovo {
         return grupo;
     }
 
+    // O conteúdo da masmorra 1 (antes criado dentro da própria Masmorra).
     public static Masmorra criarMasmorraInicial() {
-        return new Masmorra(CarregadorMapa.carregarDeTexto("masmorra1.txt"));
+        // Encontro de teste que já existia no protótipo original.
+        List<Monstro> grupoTeste = new ArrayList<>();
+        grupoTeste.add(new Goblin("Goblin 1"));
+        grupoTeste.add(new Goblin("Goblin 2"));
+        grupoTeste.add(new Goblin("Goblin 3"));
+        List<Masmorra.Encontro> encontros = new ArrayList<>();
+        encontros.add(new Masmorra.Encontro(10, 5, grupoTeste));
+
+        List<Bau> baus = new ArrayList<>();
+
+        List<Item> itensDoBauUm = new ArrayList<>();
+        itensDoBauUm.add(CatalogoDeItens.pocaoDeMana());
+        itensDoBauUm.add(CatalogoDeItens.pocaoDeVida());
+        baus.add(new Bau(17, 6, itensDoBauUm, List.of(CatalogoDeEquipamentos.acessorioDoViajante())));
+
+        List<Item> itensDoBauDois = new ArrayList<>();
+        itensDoBauDois.add(CatalogoDeItens.pocaoDeVida());
+        baus.add(new Bau(10, 10, itensDoBauDois, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
+
+        // Mercador perto do ponto de partida, longe do encontro e dos baús.
+        // O que ele vende é definido no CatalogoDeLojas, não aqui.
+        List<Mercador> mercadores = new ArrayList<>();
+        mercadores.add(new Mercador(5, 12, CatalogoDeLojas.lojaDaMasmorra()));
+
+        EstadoMasmorra estado = new EstadoMasmorra(5, 5, baus, encontros, mercadores);
+        return new Masmorra(CarregadorMapa.carregarDeTexto("masmorra1.txt"), estado);
     }
 }
