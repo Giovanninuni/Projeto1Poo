@@ -6,6 +6,7 @@ import java.util.List;
 import entidades.Monstro;
 import objetos.Bau;
 import objetos.Mercador;
+import objetos.Porta;
 
 /**
  * Modelo do mapa da masmorra: guarda a posição do herói, os limites do
@@ -61,6 +62,7 @@ public class Masmorra {
     private final List<Encontro> encontros;
     private final List<Bau> baus;
     private final List<Mercador> mercadores;
+    private final List<Porta> portas;
 
     // Laedson: o conteúdo (encontro dos Goblins, os dois baús e o mercador)
     // que era criado aqui foi movido, sem mudar nada, para
@@ -73,6 +75,7 @@ public class Masmorra {
         this.encontros = new ArrayList<>(estado.getEncontros());
         this.baus = new ArrayList<>(estado.getBaus());
         this.mercadores = new ArrayList<>(estado.getMercadores());
+        this.portas = new ArrayList<>(estado.getPortas());
     }
 
     // Coloca o herói no meio do tile (x, y), com os pés perto do fundo dele.
@@ -152,7 +155,7 @@ public class Masmorra {
     // Um tile onde o herói pode ficar: dentro do mapa, sem parede, sem baú
     // e sem mercador (encontros não bloqueiam: pisar neles inicia a batalha).
     private boolean podeOcupar(int x, int y) {
-        return mapa.podeAndar(x, y) && !existeBau(x, y) && !existeMercador(x, y);
+        return mapa.podeAndar(x, y) && !existeBau(x, y) && !existeMercador(x, y) && !existePortaFechada(x, y);
     }
 
     /**
@@ -187,6 +190,24 @@ public class Masmorra {
             }
         }
         return false;
+    }
+    
+    public boolean existePortaFechada(int x, int y){
+        for(Porta i: portas){
+            if(i.getX() == x && i.getY() == y && i.isFechada()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public Porta getPortaAdjacenteAoHeroi(){
+        for(Porta i: portas){
+            if(Math.abs(i.getX() - getHeroiX()) + Math.abs(i.getY() - getHeroiY()) == 1){
+                return i;
+            }
+        }
+        return null;
     }
 
     // Mesmo padrão de getBauAdjacenteAoHeroi/existeBau. Terceira cópia desse
@@ -232,5 +253,6 @@ public class Masmorra {
     public Mapa getMapa() { return mapa; }
     public List<Encontro> getEncontros() { return encontros; }
     public List<Bau> getBaus() { return baus; }
+    public List<Porta> getPortas() { return portas;}
     public List<Mercador> getMercadores() { return mercadores; }
 }

@@ -17,6 +17,7 @@ import mundo.EstadoMasmorra;
 import mundo.Masmorra;
 import objetos.Bau;
 import objetos.Mercador;
+import objetos.Porta;
 
 /**
  * Sabe montar o estado inicial de uma partida nova: quais heróis existem,
@@ -74,13 +75,15 @@ public class FabricaDeJogoNovo {
         List<Item> itensDoBauDois = new ArrayList<>();
         itensDoBauDois.add(CatalogoDeItens.pocaoDeVida());
         baus.add(new Bau(10, 10, itensDoBauDois, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
-
+        
+        List<Porta> portas = new ArrayList<>();
+        portas.add(new Porta(14,13, false));
         // Mercador perto do ponto de partida, longe do encontro e dos baús.
         // O que ele vende é definido no CatalogoDeLojas, não aqui.
         List<Mercador> mercadores = new ArrayList<>();
         mercadores.add(new Mercador(5, 12, CatalogoDeLojas.lojaDaMasmorra()));
 
-        EstadoMasmorra estado = new EstadoMasmorra(5, 5, baus, encontros, mercadores);
+        EstadoMasmorra estado = new EstadoMasmorra(5, 5, baus, encontros, mercadores, portas);
         return new Masmorra(CarregadorMapa.carregarDeTexto("masmorra1.txt"), estado);
     }
 }

@@ -29,6 +29,7 @@ import mundo.Masmorra;
 import mundo.TilesetMasmorra;
 import objetos.Bau;
 import objetos.Mercador;
+import objetos.Porta;
 
 public class PainelMasmorra extends JPanel implements KeyListener {
 
@@ -215,6 +216,14 @@ public class PainelMasmorra extends JPanel implements KeyListener {
             int id = i.isFechado() ? TilesetMasmorra.BAU_FECHADO : TilesetMasmorra.BAU_VAZIO;
             desenharImagem(g, tileDoTileset(id), i.getX(), i.getY(), Color.YELLOW);
         }
+        
+        for(Porta i: masmorra.getPortas()) {
+            int idBase = i.isFechada() ? TilesetMasmorra.PORTA_BASE : TilesetMasmorra.PORTA_ABERTA_BASE;
+            int idTopo = i.isFechada() ? TilesetMasmorra.PORTA_TOPO : TilesetMasmorra.PORTA_ABERTA_TOPO;
+            
+            desenharImagem(g, tileDoTileset(idBase), i.getX(), i.getY(), Color.PINK);
+            desenharImagem(g, tileDoTileset(idTopo), i.getX(), i.getY() - 1, Color.MAGENTA);
+        }
 
         // Personagens: primeiro junta todos numa lista, depois desenha de
         // cima pra baixo na tela (ordem de y). Como o desenho é mais alto que
@@ -363,6 +372,7 @@ public class PainelMasmorra extends JPanel implements KeyListener {
         //checagem para abrir baus apertando E -- Lalae
         if (tecla == KeyEvent.VK_E){
             Bau bauAdjacente = masmorra.getBauAdjacenteAoHeroi();
+            Porta portaAdjacente = masmorra.getPortaAdjacenteAoHeroi();
             Mercador mercadorAdjacente = masmorra.getMercadorAdjacenteAoHeroi();
 
             // Se o herói estiver ao lado de um baú E de um mercador ao mesmo
@@ -396,6 +406,8 @@ public class PainelMasmorra extends JPanel implements KeyListener {
                 // Provisório até a PainelLoja existir: depois vira
                 // janela.mostrarLoja(mercadorAdjacente.getLoja());
                 JOptionPane.showMessageDialog(janela, "Bem-vindo à " + mercadorAdjacente.getLoja().getNome() + "!");
+            } else if (portaAdjacente != null){
+                portaAdjacente.abrir(janela.getGrupo());
             }
         }
 

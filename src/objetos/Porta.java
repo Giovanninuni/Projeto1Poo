@@ -5,7 +5,7 @@
 package objetos;
 
 import contratos.ResultadoAcao;
-import entidades.Heroi;
+import entidades.Grupo;
 
 /**
  *
@@ -15,13 +15,15 @@ public class Porta {
     private int x;
     private int y;
     private boolean fechada = true;
+    private boolean trancada;
     
-    public Porta(int x, int y){
+    public Porta(int x, int y, boolean trancada){
         this.x = x;
         this.y = y;
+        this.trancada = trancada;
     }
     //adicionar mecanica de porta trancada depois
-    public ResultadoAcao abrir(Heroi usuario){
+    public ResultadoAcao abrir(Grupo grupo){
         if(isFechada()){
             this.fechada = false;
             return new ResultadoAcao(true, "A porta foi aberta");
