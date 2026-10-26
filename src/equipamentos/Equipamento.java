@@ -39,6 +39,7 @@ public class Equipamento implements Negociavel {
         return nome;
     }
 
+    @Override
     public String getDescricao() {
         return descricao;
     }

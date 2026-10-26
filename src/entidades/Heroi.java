@@ -83,6 +83,8 @@ public abstract class Heroi extends Personagem {
 
        if (antigo != null) {
            deposito.adicionar(antigo);
+           return new ResultadoAcao(true, this.getNome() + " equipou " + novo.getNome() + "! ("
+                   + antigo.getNome() + " voltou para o depósito)");
        }
 
        return new ResultadoAcao(true, this.getNome() + " equipou " + novo.getNome() + "!");

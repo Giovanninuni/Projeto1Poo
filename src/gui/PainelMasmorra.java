@@ -259,6 +259,19 @@ public class PainelMasmorra extends JPanel implements KeyListener {
         for (Figura figura : figuras) {
             desenharPersonagem(g, figura);
         }
+
+        // A parede atrás de cada porta (as linhas acima dela) é desenhada de
+        // novo, por cima dos personagens. Quem entra na passagem some debaixo
+        // dela e vai aparecendo aos poucos do outro lado. A porta em si fica
+        // por baixo, pra ver o herói parado nela. Entram também as colunas
+        // vizinhas, porque o herói (48 px) é mais largo que o tile (32 px).
+        for (Porta porta : masmorra.getPortas()) {
+            for (int y = masmorra.getTopoDaPassagem(porta); y <= porta.getY() - 2; y++) {
+                for (int x = porta.getX() - 1; x <= porta.getX() + 1; x++) {
+                    desenharTileDoMapa(g, x, y);
+                }
+            }
+        }
     }
 
     /** Monta a figura de um personagem parado (animação de "respirar") no tile (x, y). */
@@ -337,20 +350,29 @@ public class PainelMasmorra extends JPanel implements KeyListener {
 
         for (int y = 0; y < mapa.getAltura(); y++) {
             for (int x = 0; x < mapa.getLargura(); x++) {
-                int idVisual = mapa.getIdVisual(x, y);
-
-                // Se a célula tem um tile específico do tileset, desenha esse
-                // recorte. Senão, cai pro sprite único por TipoTile.
-                BufferedImage sprite = (idVisual >= 0)
-                        ? tileDoTileset(idVisual)
-                        : CarregadorSprites.carregar(mapa.getTile(x, y).getArquivoSprite());
-                desenharImagem(g, sprite, x, y, mapa.getTile(x, y).getCorPlaceholder());
-
-                int idDecoracao = mapa.getIdDecoracao(x, y);
-                if (idDecoracao >= 0) {
-                    desenharImagem(g, tileDoTileset(idDecoracao), x, y, null);
-                }
+                desenharTileDoMapa(g, x, y);
             }
+        }
+    }
+
+    /** Desenha a célula (x, y) do mapa, com a decoração por cima. Fora do mapa não desenha nada. */
+    private void desenharTileDoMapa(Graphics g, int x, int y) {
+        Mapa mapa = masmorra.getMapa();
+        if (x < 0 || x >= mapa.getLargura() || y < 0 || y >= mapa.getAltura()) {
+            return;
+        }
+        int idVisual = mapa.getIdVisual(x, y);
+
+        // Se a célula tem um tile específico do tileset, desenha esse
+        // recorte. Senão, cai pro sprite único por TipoTile.
+        BufferedImage sprite = (idVisual >= 0)
+                ? tileDoTileset(idVisual)
+                : CarregadorSprites.carregar(mapa.getTile(x, y).getArquivoSprite());
+        desenharImagem(g, sprite, x, y, mapa.getTile(x, y).getCorPlaceholder());
+
+        int idDecoracao = mapa.getIdDecoracao(x, y);
+        if (idDecoracao >= 0) {
+            desenharImagem(g, tileDoTileset(idDecoracao), x, y, null);
         }
     }
 
@@ -403,9 +425,7 @@ public class PainelMasmorra extends JPanel implements KeyListener {
 
 
             } else if (mercadorAdjacente != null) {
-                // Provisório até a PainelLoja existir: depois vira
-                // janela.mostrarLoja(mercadorAdjacente.getLoja());
-                JOptionPane.showMessageDialog(janela, "Bem-vindo à " + mercadorAdjacente.getLoja().getNome() + "!");
+                janela.mostrarLoja(mercadorAdjacente.getLoja());
             } else if (portaAdjacente != null){
                 portaAdjacente.abrir(janela.getGrupo());
             }

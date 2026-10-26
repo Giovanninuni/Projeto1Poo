@@ -7,6 +7,7 @@ import core.FabricaDeJogoNovo;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
+import loja.Loja;
 import mundo.Masmorra;
 
 public class JanelaPrincipal extends JFrame {
@@ -112,6 +113,12 @@ public class JanelaPrincipal extends JFrame {
         mostrarTelaTemporaria(telaStatus, "TELA_STATUS");
     }
     
+    // Recriada a cada abertura, como a de status.
+    public void mostrarLoja(Loja loja) {
+        PainelLoja telaLoja = new PainelLoja(this, loja, this.grupo);
+        mostrarTelaTemporaria(telaLoja, "TELA_LOJA");
+    }
+
     public void mostrarGameOver() {
         PainelGameOver telaGameOver = new PainelGameOver(this);
         mostrarTelaTemporaria(telaGameOver, "TELA_GAME_OVER");

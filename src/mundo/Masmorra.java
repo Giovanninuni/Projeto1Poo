@@ -154,7 +154,12 @@ public class Masmorra {
 
     // Um tile onde o herói pode ficar: dentro do mapa, sem parede, sem baú
     // e sem mercador (encontros não bloqueiam: pisar neles inicia a batalha).
+    // A passagem de uma porta aberta atravessa a parede, então ela vale mais
+    // que o mapa.
     private boolean podeOcupar(int x, int y) {
+        if (estaNaPassagemAberta(x, y)) {
+            return true;
+        }
         return mapa.podeAndar(x, y) && !existeBau(x, y) && !existeMercador(x, y) && !existePortaFechada(x, y);
     }
 
@@ -195,6 +200,30 @@ public class Masmorra {
     public boolean existePortaFechada(int x, int y){
         for(Porta i: portas){
             if(i.getX() == x && i.getY() == y && i.isFechada()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * A porta fica numa parede, e atrás dela (na mesma coluna) a parede
+     * continua até chegar no chão do outro lado. Esse trecho, da base da
+     * porta até o último tile de parede, é a passagem. Retorna a linha de
+     * cima da passagem.
+     */
+    public int getTopoDaPassagem(Porta porta) {
+        int y = porta.getY();
+        while (y - 1 >= 0 && !mapa.podeAndar(porta.getX(), y - 1)) {
+            y--;
+        }
+        return y;
+    }
+
+    // O tile (x, y) faz parte da passagem de alguma porta aberta?
+    private boolean estaNaPassagemAberta(int x, int y) {
+        for (Porta porta : portas) {
+            if (!porta.isFechada() && porta.getX() == x && y <= porta.getY() && y >= getTopoDaPassagem(porta)) {
                 return true;
             }
         }

@@ -29,6 +29,7 @@ public abstract class Item implements Consumivel, Negociavel {
 		return this.nome;
 	}
 
+	@Override
 	public String getDescricao() {
 		return this.descricao;
 	}

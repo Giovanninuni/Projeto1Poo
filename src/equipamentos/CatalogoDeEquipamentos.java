@@ -33,6 +33,10 @@ public class CatalogoDeEquipamentos {
         return new Equipamento("Armadura de Couro", "Armadura leve, +2 de defesa", TipoEquipamento.ARMADURA, 0, 2, 120);
     }
 
+    public static Equipamento elmoDeFerro() {
+        return new Equipamento("Elmo de Ferro", "Elmo pesado, +2 de defesa", TipoEquipamento.ELMO, 0, 2, 90);
+    }
+
     public static Equipamento cajadoDeAprendiz() {
         return new Equipamento("Cajado de Aprendiz", "Cajado básico de estudo, +3 de poder", TipoEquipamento.ARMA, 3, 0, 150, Mago.class);
     }

@@ -45,6 +45,9 @@ public class FabricaDeJogoNovo {
 
         Grupo grupo = new Grupo(List.of(arthur, merlin));
 
+        // Ouro inicial: dá pra comprar algo na loja antes da primeira batalha
+        grupo.getOuro().adicionar(150);
+
         // Equipamentos iniciais de cada heroi (ver CatalogoDeEquipamentos)
         arthur.equipar(CatalogoDeEquipamentos.espadaDeTreino(), grupo.getDeposito());
         arthur.equipar(CatalogoDeEquipamentos.armaduraDeCouro(), grupo.getDeposito());
