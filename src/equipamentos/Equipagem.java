@@ -3,6 +3,7 @@ package equipamentos;
 import atributos.Atributos;
 import java.util.EnumMap;
 import java.util.Map;
+import core.ContadorObjetos;
 
 /**
  * Os 4 slots de equipamento de um heroi (um Equipamento por TipoEquipamento).
@@ -10,6 +11,9 @@ import java.util.Map;
  * trocar o equipamento de um slot remove o bonus antigo antes de aplicar o novo.
  */
 public class Equipagem {
+    
+    { ContadorObjetos.registrar(this); }
+    
     private final Map<TipoEquipamento, Equipamento> slots = new EnumMap<>(TipoEquipamento.class);
 
     // Map.put já devolve o que estava no slot antes (ou null se estava vazio)

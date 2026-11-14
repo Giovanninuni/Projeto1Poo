@@ -1,6 +1,11 @@
 package atributos;
 
+import core.ContadorObjetos;
+
 public class Dano {
+    
+        { ContadorObjetos.registrar(this); }
+    
 	private int valor;
 	private boolean critico;
 	private TipoDano tipo;

@@ -3,11 +3,15 @@ package entidades;
 import atributos.Ouro;
 import equipamentos.DepositoEquipamentos;
 import java.util.List;
+import core.ContadorObjetos;
 
 // Estado persistente do grupo do jogador — sobrevive entre a exploração e
 // os combates. Fica em entidades, não na GUI, porque é estado de domínio:
 // a janela só exibe, não é dona dele.
 public class Grupo {
+    
+        { ContadorObjetos.registrar(this); }
+    
 	private List<Heroi> herois;
 	private Ouro ouro;
 	private DepositoEquipamentos deposito;

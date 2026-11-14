@@ -9,8 +9,12 @@ import entidades.Heroi;
 import equipamentos.DepositoEquipamentos;
 import equipamentos.Equipamento;
 import itens.Item;
+import core.ContadorObjetos;
 
 public class Loja {
+        
+        { ContadorObjetos.registrar(this); }
+    
 	private final String nome;
 	private final List<Oferta<Item>> ofertasDeItens;
 	private final List<Oferta<Equipamento>> ofertasDeEquipamentos;

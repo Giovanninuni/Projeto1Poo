@@ -15,6 +15,8 @@ import java.util.Random;
 
 public class Combate {
 
+    { ContadorObjetos.registrar(this); }
+    
     private List<Heroi> herois;
     private List<Monstro> monstros;
     private Ouro ouro;

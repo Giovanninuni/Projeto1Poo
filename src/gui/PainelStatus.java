@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import core.ContadorObjetos;
 import entidades.Grupo;
 import entidades.Heroi;
 import equipamentos.Equipagem;
@@ -23,6 +24,9 @@ import equipamentos.Equipamento;
  * azuis com borda branca).
  */
 public class PainelStatus extends JPanel {
+    
+    { ContadorObjetos.registrar(this); }
+    
     private static final long serialVersionUID = 1L;
 
     private final Color AZUL_RPG = new Color(0, 0, 128);

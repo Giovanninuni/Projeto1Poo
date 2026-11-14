@@ -2,13 +2,18 @@ package equipamentos;
 
 import java.util.ArrayList;
 import java.util.List;
+import core.ContadorObjetos;
 
 /**
  * Guarda equipamentos achados (ex: em baus) que ainda nao foram equipados
  * em nenhum heroi. E compartilhado pelo grupo todo (fica em Grupo), assim
  * como o Ouro -- diferente do Inventario, que e por heroi.
  */
+
 public class DepositoEquipamentos {
+    
+    { ContadorObjetos.registrar(this); }
+    
     private List<Equipamento> equipamentos = new ArrayList<>();
 
     public void adicionar(Equipamento equipamento) {

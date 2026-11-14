@@ -2,8 +2,12 @@ package itens;
 
 import java.util.ArrayList;
 import java.util.List;
+import core.ContadorObjetos;
 
 public class Inventario {
+    
+        { ContadorObjetos.registrar(this); }
+    
 	private List<Item> itens;
 	private int capacidadeMaxima;
 	

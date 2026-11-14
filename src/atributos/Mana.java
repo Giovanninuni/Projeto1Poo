@@ -1,6 +1,11 @@
 package atributos;
 
+import core.ContadorObjetos;
+
 public class Mana {
+    
+        { ContadorObjetos.registrar(this); }
+    
 	private int atual;
 	private int maxima;
 	

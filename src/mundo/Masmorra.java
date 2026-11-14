@@ -8,6 +8,8 @@ import objetos.Bau;
 import objetos.Mercador;
 import objetos.Porta;
 
+import core.ContadorObjetos;
+
 /**
  * Modelo do mapa da masmorra: guarda a posição do herói, os limites do
  * grid e os encontros (grupos de monstros) espalhados pelo mapa.
@@ -22,7 +24,13 @@ public class Masmorra {
      * Um encontro fixo no mapa: uma posição (x, y) e o grupo de monstros
      * que aparece quando o herói pisa ali.
      */
+    
+        { ContadorObjetos.registrar(this); }
+        
     public static class Encontro {
+        
+        { ContadorObjetos.registrar(this); }
+        
         private final int x;
         private final int y;
         private final List<Monstro> inimigos;

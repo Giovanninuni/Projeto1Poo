@@ -1,6 +1,10 @@
 package atributos;
 
+import core.ContadorObjetos;
+
 public class Vida {
+        { ContadorObjetos.registrar(this); }
+        
 	private int atual;
 	private int maxima;
 	

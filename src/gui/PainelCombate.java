@@ -26,6 +26,7 @@ import javax.swing.JTextArea;
 
 import core.Combate;
 import core.EstadoBatalha;
+import core.ContadorObjetos;
 import entidades.Heroi;
 import entidades.Monstro;
 import entidades.Sprite;
@@ -34,6 +35,9 @@ import ataques.Tecnica;
 import contratos.ResultadoAcao;
 
 public class PainelCombate extends JPanel {
+    
+        { ContadorObjetos.registrar(this); }
+    
 	private static final long serialVersionUID = 1L;
 
 	private JanelaPrincipal janela;
@@ -401,6 +405,9 @@ public class PainelCombate extends JPanel {
 	 * existir, fica o cinza escuro de antes.
 	 */
 	private static class PainelArena extends JPanel {
+            
+                { ContadorObjetos.registrar(this); }
+                
 		private static final long serialVersionUID = 1L;
 		private static final int TAMANHO_TILE = 32 * 2;
 

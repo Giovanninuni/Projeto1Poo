@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import core.ContadorObjetos;
 
 /**
  * Lê um mapa escrito como texto (assets/mapas/*.txt) e monta um Mapa.
@@ -30,6 +31,8 @@ import java.util.List;
  * (aberto/fechado, derrotado...) e são criados na Masmorra.
  */
 public class CarregadorMapa {
+    
+    { ContadorObjetos.registrar(this); }
 
     private static final String PASTA_BASE = "assets/mapas/";
 

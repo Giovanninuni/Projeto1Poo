@@ -1,6 +1,11 @@
 package atributos;
 
+import core.ContadorObjetos;
+
 public class Atributos {
+    
+        { ContadorObjetos.registrar(this);}
+    
 	private int poder;
 	private int defesa;
 	

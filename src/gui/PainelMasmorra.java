@@ -20,6 +20,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
+import core.ContadorObjetos;
 import entidades.Heroi;
 import entidades.SpriteMapa;
 import equipamentos.DepositoEquipamentos;
@@ -33,6 +34,8 @@ import objetos.Porta;
 
 public class PainelMasmorra extends JPanel implements KeyListener {
 
+    { ContadorObjetos.registrar(this); }
+    
     private JanelaPrincipal janela;
     private Masmorra masmorra;
 
@@ -62,7 +65,11 @@ public class PainelMasmorra extends JPanel implements KeyListener {
     private static final int TAMANHO_PERSONAGEM = 48;
 
     /** Um personagem pronto pra desenhar: qual quadro e onde ficam os pés dele (em pixels do mapa). */
-    private record Figura(BufferedImage imagem, double pesX, double pesY, Color corReserva) {}
+    private record Figura(BufferedImage imagem, double pesX, double pesY, Color corReserva) {
+    
+        public Figura { ContadorObjetos.registrar(this); }
+        
+    }
 
     // Game loop: ~60 vezes por segundo lê o teclado, move o herói e redesenha.
     private final Timer relogio = new Timer(16, e -> aCadaQuadro());

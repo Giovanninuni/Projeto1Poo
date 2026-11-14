@@ -9,9 +9,12 @@ import javax.swing.JPanel;
 import java.awt.CardLayout;
 import loja.Loja;
 import mundo.Masmorra;
+import core.ContadorObjetos;
 
 public class JanelaPrincipal extends JFrame {
     
+    { ContadorObjetos.registrar(this); }
+
     private CardLayout gerenciadorTelas;
     private JPanel painelTelas;
     private JPanel telaTemporaria; // combate, status ou game over que está por cima da masmorra
