@@ -11,16 +11,18 @@ import contratos.ResultadoAcao;
 import entidades.Heroi;
 import equipamentos.DepositoEquipamentos;
 import equipamentos.Equipamento;
-
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 /**
  *
  * @author laeds
  */
 public class Bau {
-    
-    { ContadorObjetos.registrar(this); }
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private boolean fechado = true;
     private int x;
     private int y;

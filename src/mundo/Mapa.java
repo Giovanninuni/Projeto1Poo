@@ -1,6 +1,6 @@
 package mundo;
 
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 /**
  * Grid de tiles do mapa: cada posição (x, y) guarda um TipoTile.
@@ -9,8 +9,10 @@ import core.ContadorObjetos;
  * que é a ordem natural de um mapa lido linha por linha de um arquivo.
  */
 public class Mapa {
-    
-    { ContadorObjetos.registrar(this); }
+
+    {
+        ContadorObjetos.registrar(this);
+    }
 
     private final TipoTile[][] tiles;
     private final int[][] idsVisuais;

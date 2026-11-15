@@ -9,13 +9,14 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
-
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 public class PainelGameOver extends JPanel {
-    
-    { ContadorObjetos.registrar(this); }
-    
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private static final long serialVersionUID = 1L;
 
     public PainelGameOver(JanelaPrincipal janela) {

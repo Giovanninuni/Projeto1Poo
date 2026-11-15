@@ -2,7 +2,7 @@ package objetos;
 
 import entidades.SpriteMapa;
 import loja.Loja;
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 /**
  * Vendedor parado num tile do mapa. Ele TEM uma loja (composição), mas não
@@ -10,9 +10,11 @@ import core.ContadorObjetos;
  * loja.Loja. O Mercador só sabe onde está e qual loja abre ao interagir.
  */
 public class Mercador {
-    
-    { ContadorObjetos.registrar(this); }
-    
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private final int x;
     private final int y;
     private final Loja loja;

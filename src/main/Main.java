@@ -1,7 +1,7 @@
 package main;
 
 import javax.swing.SwingUtilities;
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 import gui.JanelaPrincipal;
 
 public class Main {

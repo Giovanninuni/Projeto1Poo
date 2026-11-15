@@ -7,8 +7,7 @@ import entidades.Monstro;
 import objetos.Bau;
 import objetos.Mercador;
 import objetos.Porta;
-
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 /**
  * Modelo do mapa da masmorra: guarda a posição do herói, os limites do
@@ -20,17 +19,20 @@ import core.ContadorObjetos;
  */
 public class Masmorra {
 
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     /**
      * Um encontro fixo no mapa: uma posição (x, y) e o grupo de monstros
      * que aparece quando o herói pisa ali.
      */
-    
-        { ContadorObjetos.registrar(this); }
-        
     public static class Encontro {
-        
-        { ContadorObjetos.registrar(this); }
-        
+
+        {
+            ContadorObjetos.registrar(this);
+        }
+
         private final int x;
         private final int y;
         private final List<Monstro> inimigos;

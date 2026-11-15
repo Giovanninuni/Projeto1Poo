@@ -12,11 +12,14 @@ import contratos.ResultadoAcao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import util.ContadorObjetos;
 
 public class Combate {
 
-    { ContadorObjetos.registrar(this); }
-    
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private List<Heroi> herois;
     private List<Monstro> monstros;
     private Ouro ouro;

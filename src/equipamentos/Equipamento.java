@@ -2,12 +2,14 @@ package equipamentos;
 
 import contratos.Negociavel;
 import entidades.Heroi;
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 public class Equipamento implements Negociavel {
-    
-    { ContadorObjetos.registrar(this); }
-    
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private String nome;
     private String descricao;
     private TipoEquipamento tipo;

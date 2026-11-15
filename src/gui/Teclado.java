@@ -4,8 +4,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
-
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 /**
  * Guarda quais teclas estão apertadas AGORA.
@@ -21,8 +20,10 @@ import core.ContadorObjetos;
  */
 public class Teclado extends KeyAdapter {
 
-    { ContadorObjetos.registrar(this); } 
-    
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private final Set<Integer> apertadas = new HashSet<>();
 
     @Override

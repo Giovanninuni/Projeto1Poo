@@ -1,12 +1,14 @@
 package contratos;
 
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 public class ResultadoAcao {
-	
-    { ContadorObjetos.registrar(this); }
-    
-    private final boolean sucesso; // final aplicada a um atributo significa que o valor dele só pode ser atribuído uma única vez
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
+	private final boolean sucesso; // final aplicada a um atributo significa que o valor dele só pode ser atribuído uma única vez
     private final String mensagem;
 
     public ResultadoAcao(boolean sucesso, String mensagem) {

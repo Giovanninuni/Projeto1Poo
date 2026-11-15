@@ -1,11 +1,13 @@
 package atributos;
 
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 public class Ouro {
-    
-        { ContadorObjetos.registrar(this); }
-    
+
+	{
+		ContadorObjetos.registrar(this);
+	}
+
 	private int quantidade;
 
 	public Ouro() {

@@ -4,13 +4,15 @@ import contratos.Consumivel;
 import contratos.Negociavel;
 import contratos.ResultadoAcao;
 import entidades.Personagem;
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 public abstract class Item implements Consumivel, Negociavel {
 
-        { ContadorObjetos.registrar(this); }
-        
-        private String nome;
+	{
+		ContadorObjetos.registrar(this);
+	}
+
+	private String nome;
 	private String descricao;
 	private int valor;
 	private String caminhoSprite;

@@ -1,6 +1,6 @@
 package entidades;
 
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 /**
  * Aparência animada de um personagem NO MAPA (pacote Momonga, em
@@ -17,8 +17,10 @@ import core.ContadorObjetos;
  */
 public record SpriteMapa(int x, int y) {
 
-    public SpriteMapa { ContadorObjetos.registrar(this);}
-    
+    public SpriteMapa {
+        ContadorObjetos.registrar(this);
+    }
+
     public static final String FOLHA = "momonga.png";
     public static final int TAMANHO = 32;
     public static final int QUADROS = 4;

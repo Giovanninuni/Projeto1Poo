@@ -1,7 +1,7 @@
 package gui;
 
 import java.awt.Graphics2D;
-import core.ContadorObjetos;
+import util.ContadorObjetos;
 
 /**
  * Decide qual pedaço do mapa aparece na tela e com quanto zoom.
@@ -13,8 +13,10 @@ import core.ContadorObjetos;
  * saber que a câmera existe.
  */
 public class Camera {
-    
-    { ContadorObjetos.registrar(this); }
+
+    {
+        ContadorObjetos.registrar(this);
+    }
 
     private final int zoom;
 
