@@ -1,6 +1,13 @@
 package contratos;
 
+import util.ContadorObjetos;
+
 public class ResultadoAcao {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
 	private final boolean sucesso; // final aplicada a um atributo significa que o valor dele só pode ser atribuído uma única vez
     private final String mensagem;
 

@@ -14,6 +14,7 @@ import entidades.Grupo;
 import entidades.Heroi;
 import equipamentos.Equipagem;
 import equipamentos.Equipamento;
+import util.ContadorObjetos;
 
 /**
  * Tela só de leitura: mostra nível, vida/mana/xp, ataque/defesa totais
@@ -23,6 +24,11 @@ import equipamentos.Equipamento;
  * azuis com borda branca).
  */
 public class PainelStatus extends JPanel {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private static final long serialVersionUID = 1L;
 
     private final Color AZUL_RPG = new Color(0, 0, 128);

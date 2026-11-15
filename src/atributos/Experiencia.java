@@ -1,6 +1,13 @@
 package atributos;
 
+import util.ContadorObjetos;
+
 public class Experiencia {
+
+	{
+		ContadorObjetos.registrar(this);
+	}
+
 	private int xpAtual;
 	private int nivel;
 

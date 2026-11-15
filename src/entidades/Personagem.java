@@ -3,8 +3,14 @@ package entidades;
 import atributos.Vida;
 import atributos.Atributos;
 import atributos.Dano;
+import util.ContadorObjetos;
 
 public abstract class Personagem {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private String nome;
     private Vida vida;
     private Atributos atributos;

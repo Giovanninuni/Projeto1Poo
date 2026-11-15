@@ -4,6 +4,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
+import util.ContadorObjetos;
 
 /**
  * Guarda quais teclas estão apertadas AGORA.
@@ -18,6 +19,10 @@ import java.util.Set;
  * precisar escrever o keyTyped vazio.
  */
 public class Teclado extends KeyAdapter {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
 
     private final Set<Integer> apertadas = new HashSet<>();
 

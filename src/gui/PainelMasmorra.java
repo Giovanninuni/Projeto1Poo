@@ -30,8 +30,13 @@ import mundo.TilesetMasmorra;
 import objetos.Bau;
 import objetos.Mercador;
 import objetos.Porta;
+import util.ContadorObjetos;
 
 public class PainelMasmorra extends JPanel implements KeyListener {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
 
     private JanelaPrincipal janela;
     private Masmorra masmorra;

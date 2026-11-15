@@ -1,5 +1,7 @@
 package entidades;
 
+import util.ContadorObjetos;
+
 /**
  * Onde fica o desenho de um personagem: em qual folha de sprites e em que
  * linha/coluna da grade (cada célula tem 32x32 px, contando do 0).
@@ -14,6 +16,10 @@ package entidades;
  * células — os números dos .txt que vêm junto nem sempre batem com a grade.
  */
 public record Sprite(String folha, int linha, int coluna) {
+
+    public Sprite {
+        ContadorObjetos.registrar(this);
+    }
 
     public static final int TAMANHO = 32;
 

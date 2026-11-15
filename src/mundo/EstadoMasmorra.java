@@ -5,6 +5,7 @@ import java.util.List;
 import objetos.Bau;
 import objetos.Mercador;
 import objetos.Porta;
+import util.ContadorObjetos;
 
 /**
  * Agrupa tudo o que a Masmorra precisa receber para ser montada: onde o
@@ -16,6 +17,10 @@ import objetos.Porta;
  * partir do arquivo. A Masmorra não precisa saber de onde ele veio.
  */
 public class EstadoMasmorra {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
 
     private final int heroiTileX;
     private final int heroiTileY;

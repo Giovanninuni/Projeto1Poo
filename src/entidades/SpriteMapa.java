@@ -1,5 +1,7 @@
 package entidades;
 
+import util.ContadorObjetos;
+
 /**
  * Aparência animada de um personagem NO MAPA (pacote Momonga, em
  * assets/sprites/momonga.png). Na batalha continua valendo o Sprite
@@ -14,6 +16,10 @@ package entidades;
  * começa no meio de uma célula da folha (x = 272, que não é múltiplo de 32).
  */
 public record SpriteMapa(int x, int y) {
+
+    public SpriteMapa {
+        ContadorObjetos.registrar(this);
+    }
 
     public static final String FOLHA = "momonga.png";
     public static final int TAMANHO = 32;

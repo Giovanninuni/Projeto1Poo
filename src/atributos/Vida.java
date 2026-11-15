@@ -1,6 +1,13 @@
 package atributos;
 
+import util.ContadorObjetos;
+
 public class Vida {
+
+	{
+		ContadorObjetos.registrar(this);
+	}
+
 	private int atual;
 	private int maxima;
 	

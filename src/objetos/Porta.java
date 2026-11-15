@@ -6,12 +6,18 @@ package objetos;
 
 import contratos.ResultadoAcao;
 import entidades.Grupo;
+import util.ContadorObjetos;
 
 /**
  *
  * @author laeds
  */
 public class Porta {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private int x;
     private int y;
     private boolean fechada = true;

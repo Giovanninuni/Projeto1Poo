@@ -2,6 +2,7 @@ package equipamentos;
 
 import java.util.ArrayList;
 import java.util.List;
+import util.ContadorObjetos;
 
 /**
  * Guarda equipamentos achados (ex: em baus) que ainda nao foram equipados
@@ -9,6 +10,11 @@ import java.util.List;
  * como o Ouro -- diferente do Inventario, que e por heroi.
  */
 public class DepositoEquipamentos {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private List<Equipamento> equipamentos = new ArrayList<>();
 
     public void adicionar(Equipamento equipamento) {

@@ -5,8 +5,14 @@ import java.util.Random;
 import atributos.Dano;
 import atributos.Dano.TipoDano;
 import entidades.Personagem;
+import util.ContadorObjetos;
 
 public abstract class Ataque {
+
+	{
+		ContadorObjetos.registrar(this);
+	}
+
 	private String nome;
 	private static final Random sorteador = new Random();
 

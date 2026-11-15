@@ -9,8 +9,13 @@ import javax.swing.JPanel;
 import java.awt.CardLayout;
 import loja.Loja;
 import mundo.Masmorra;
+import util.ContadorObjetos;
 
 public class JanelaPrincipal extends JFrame {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
     
     private CardLayout gerenciadorTelas;
     private JPanel painelTelas;

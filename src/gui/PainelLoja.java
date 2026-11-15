@@ -19,6 +19,7 @@ import equipamentos.Equipamento;
 import itens.Item;
 import loja.Loja;
 import loja.Oferta;
+import util.ContadorObjetos;
 
 /**
  * Tela da loja: lista as ofertas de itens e de equipamentos com o preço, e
@@ -27,6 +28,11 @@ import loja.Oferta;
  * ResultadoAcao que ela devolve. Mesmo estilo visual de PainelStatus.
  */
 public class PainelLoja extends JPanel {
+
+    {
+        ContadorObjetos.registrar(this);
+    }
+
     private static final long serialVersionUID = 1L;
 
     private final Color AZUL_RPG = new Color(0, 0, 128);
