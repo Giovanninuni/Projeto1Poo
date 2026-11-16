@@ -1,5 +1,6 @@
 package core;
 
+import entidades.Esqueleto;
 import entidades.Goblin;
 import entidades.Grupo;
 import entidades.Guerreiro;
@@ -58,35 +59,62 @@ public class FabricaDeJogoNovo {
         return grupo;
     }
 
-    // O conteúdo da masmorra 1 (antes criado dentro da própria Masmorra).
+    /**
+     * O conteúdo da masmorra 1 (assets/mapas/masmorra1.txt). O caminho
+     * pensado é uma progressão de dificuldade, com recompensa depois de
+     * cada luta:
+     *
+     *   1. Sala de entrada (sudoeste): o herói começa aqui, ao lado do
+     *      mercador, para comprar algo antes da primeira luta.
+     *   2. Corredor estreito: os goblins bloqueiam a passagem para a sala
+     *      leste (não dá pra desviar, o corredor tem 1 tile de altura).
+     *   3. Sala leste: baú com a recompensa dos goblins e a porta na parede
+     *      de cima.
+     *   4. Atrás da porta, os esqueletos (grupo mais forte) guardam a saída
+     *      da passagem. Depois deles, o salão norte, com o baú do cajado
+     *      no canto mais distante.
+     */
     public static Masmorra criarMasmorraInicial() {
-        // Encontro de teste que já existia no protótipo original.
-        List<Monstro> grupoTeste = new ArrayList<>();
-        grupoTeste.add(new Goblin("Goblin 1"));
-        grupoTeste.add(new Goblin("Goblin 2"));
-        grupoTeste.add(new Goblin("Goblin 3"));
         List<Masmorra.Encontro> encontros = new ArrayList<>();
-        encontros.add(new Masmorra.Encontro(10, 5, grupoTeste));
+
+        // Primeiro grupo: goblins no gargalo do corredor entre as salas.
+        List<Monstro> goblins = new ArrayList<>();
+        goblins.add(new Goblin("Goblin 1"));
+        goblins.add(new Goblin("Goblin 2"));
+        goblins.add(new Goblin("Goblin 3"));
+        encontros.add(new Masmorra.Encontro(12, 17, goblins));
+
+        // Segundo grupo, mais forte: esqueletos logo na saída da porta.
+        // O mapa mostra o primeiro monstro da lista (um esqueleto).
+        List<Monstro> esqueletos = new ArrayList<>();
+        esqueletos.add(new Esqueleto("Esqueleto 1"));
+        esqueletos.add(new Esqueleto("Esqueleto 2"));
+        encontros.add(new Masmorra.Encontro(22, 8, esqueletos));
 
         List<Bau> baus = new ArrayList<>();
 
+        // Recompensa dos goblins, no canto da sala leste.
         List<Item> itensDoBauUm = new ArrayList<>();
         itensDoBauUm.add(CatalogoDeItens.pocaoDeMana());
         itensDoBauUm.add(CatalogoDeItens.pocaoDeVida());
-        baus.add(new Bau(17, 6, itensDoBauUm, List.of(CatalogoDeEquipamentos.acessorioDoViajante())));
+        baus.add(new Bau(27, 13, itensDoBauUm, List.of(CatalogoDeEquipamentos.acessorioDoViajante())));
 
+        // Recompensa final, no canto do salão norte (ao lado dos ossos).
         List<Item> itensDoBauDois = new ArrayList<>();
         itensDoBauDois.add(CatalogoDeItens.pocaoDeVida());
-        baus.add(new Bau(10, 10, itensDoBauDois, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
-        
+        baus.add(new Bau(3, 3, itensDoBauDois, List.of(CatalogoDeEquipamentos.cajadoAncestral())));
+
+        // A porta fica na linha de baixo da parede da sala leste; a passagem
+        // atravessa a parede grossa até o salão norte (linha 8).
         List<Porta> portas = new ArrayList<>();
-        portas.add(new Porta(14,13, false));
-        // Mercador perto do ponto de partida, longe do encontro e dos baús.
+        portas.add(new Porta(22, 12, false));
+
+        // Mercador na sala de entrada, perto do ponto de partida.
         // O que ele vende é definido no CatalogoDeLojas, não aqui.
         List<Mercador> mercadores = new ArrayList<>();
-        mercadores.add(new Mercador(5, 12, CatalogoDeLojas.lojaDaMasmorra()));
+        mercadores.add(new Mercador(2, 14, CatalogoDeLojas.lojaDaMasmorra()));
 
-        EstadoMasmorra estado = new EstadoMasmorra(5, 5, baus, encontros, mercadores, portas);
+        EstadoMasmorra estado = new EstadoMasmorra(4, 16, baus, encontros, mercadores, portas);
         return new Masmorra(CarregadorMapa.carregarDeTexto("masmorra1.txt"), estado);
     }
 }
